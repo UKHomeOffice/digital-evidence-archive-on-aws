@@ -14,7 +14,7 @@ import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { FilterPattern, LogGroup, QueryDefinition, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
+import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
