@@ -351,6 +351,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
       encryption: QueueEncryption.KMS,
       encryptionMasterKey: kmsKey,
+      enforceSSL: true,
     });
 
     const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
@@ -361,6 +362,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       },
       encryption: QueueEncryption.KMS,
       encryptionMasterKey: kmsKey,
+      enforceSSL: true,
     });
 
     opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
