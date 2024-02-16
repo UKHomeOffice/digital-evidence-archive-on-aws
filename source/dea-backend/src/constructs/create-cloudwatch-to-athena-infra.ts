@@ -347,7 +347,9 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       })
     );
 
-    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {});
+    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
+      enforceSSL: true,
+    });
 
     const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
       visibilityTimeout: objectLockHandler.timeout,
@@ -355,6 +357,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         queue: objectLockDLQ,
         maxReceiveCount: 5,
       },
+      enforceSSL: true,
     });
 
     opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
