@@ -5,7 +5,14 @@
 
 /* eslint-disable no-new */
 import { Aws, StackProps, Duration, CfnResource } from 'aws-cdk-lib';
-import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import {
+  AttributeType,
+  BillingMode,
+  ProjectionType,
+  StreamViewType,
+  Table,
+  TableEncryption,
+} from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import {
@@ -71,6 +78,7 @@ export class DeaBackendConstruct extends Construct {
       encryptionKey: key,
       pointInTimeRecovery: true,
       timeToLiveAttribute: 'ttl',
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
     });
 
     deaTable.addGlobalSecondaryIndex({
