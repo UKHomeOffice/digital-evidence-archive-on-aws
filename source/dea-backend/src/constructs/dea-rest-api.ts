@@ -170,6 +170,7 @@ export class DeaRestApiConstruct extends Construct {
     const vpcEndpoints = this.getVpcEndPointObject();
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
+      cloudWatchRole: true,
       description: 'Backend API',
       endpointConfiguration: {
         types: [endpoint],
