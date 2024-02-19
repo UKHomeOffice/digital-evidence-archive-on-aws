@@ -449,7 +449,7 @@ export class DeaAuth extends Construct {
       // Below is Basic Password Policy, though it is missing the ability for
       // banned passwords, password expiry, password history etc
       passwordPolicy: {
-        minLength: 8,
+        minLength: 16,
         requireLowercase: true,
         requireUppercase: true,
         requireDigits: true,
