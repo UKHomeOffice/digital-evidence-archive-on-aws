@@ -21,6 +21,7 @@ import {
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountRecovery,
+  AdvancedSecurityMode,
   CfnIdentityPool,
   CfnIdentityPoolRoleAttachment,
   ClientAttributes,
@@ -493,6 +494,7 @@ export class DeaAuth extends Construct {
       },
       removalPolicy: deaConfig.retainPolicy(),
       lambdaTriggers,
+      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
     });
 
     let domainPrefix = deaConfig.cognitoDomain();
