@@ -179,6 +179,7 @@ export class DeaRestApiConstruct extends Construct {
       deployOptions: {
         stageName: STAGE,
         loggingLevel: MethodLoggingLevel.INFO,
+        tracingEnabled: true,
         metricsEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
