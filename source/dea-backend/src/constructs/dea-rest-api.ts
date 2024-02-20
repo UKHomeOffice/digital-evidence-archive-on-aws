@@ -178,7 +178,6 @@ export class DeaRestApiConstruct extends Construct {
       },
       deployOptions: {
         stageName: STAGE,
-        loggingLevel: MethodLoggingLevel.INFO,
         tracingEnabled: true,
         metricsEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
@@ -191,6 +190,7 @@ export class DeaRestApiConstruct extends Construct {
             throttlingBurstLimit: 40,
             throttlingRateLimit: 40,
             metricsEnabled: true,
+            loggingLevel: MethodLoggingLevel.INFO,
           },
           // /availableEndpoints reads data from the Parameter Store.
           // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
