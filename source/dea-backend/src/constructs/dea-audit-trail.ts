@@ -28,7 +28,6 @@ interface DeaAuditProps extends StackProps {
   readonly deaTableArn: string;
   readonly accessLoggingBucket: IBucket;
   readonly opsDashboard?: DeaOperationalDashboard;
-  readonly accessLogsBucket?: Bucket;
   readonly queryResultAccessLogsPrefix?: string;
   readonly auditBucketAccessLogsPrefix?: string;
   readonly trailBucketAccessLogsPrefix?: string;
@@ -64,7 +63,6 @@ export class DeaAuditTrail extends Construct {
       trailLogGroup: this.trailLogGroup,
       accessLogsBucket: props.accessLoggingBucket,
       opsDashboard: props.opsDashboard,
-      accessLogsBucket: props.accessLogsBucket,
       queryResultAccessLogsPrefix: props.queryResultAccessLogsPrefix,
       auditBucketAccessLogsPrefix: props.auditBucketAccessLogsPrefix,
     });
