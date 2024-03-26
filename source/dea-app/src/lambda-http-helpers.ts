@@ -169,16 +169,15 @@ export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
     throw new ValidationError('Refresh Token cookie is not set');
   }
 
-  try {
+  if (tokenVal && refreshVal) {
     const token: Oauth2Token = {
       ...JSON.parse(tokenVal),
       ...JSON.parse(refreshVal),
     };
     Joi.assert(token, Oauth2TokenSchema);
     return token;
-  } catch {
-    throw new ValidationError(`Invalid OAuth token validation`);
   }
+  throw new ValidationError(`invalid oauth`);
 };
 
 export const getAllowedOrigins = (): string[] => {
