@@ -176,6 +176,7 @@ export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
     };
     Joi.assert(token, Oauth2TokenSchema);
     return token;
+  }
   throw new ValidationError(`invalid oauth`);
 };
 
