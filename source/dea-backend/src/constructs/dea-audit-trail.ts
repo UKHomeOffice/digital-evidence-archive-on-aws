@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { CfnResource, StackProps } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
 import { Effect, PolicyStatement, ServicePrincipal, StarPrincipal } from 'aws-cdk-lib/aws-iam';
@@ -26,11 +26,8 @@ interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
   readonly deaDatasetsBucket: IBucket;
   readonly deaTableArn: string;
+  readonly accessLoggingBucket: IBucket;
   readonly opsDashboard?: DeaOperationalDashboard;
-  readonly accessLogsBucket?: Bucket;
-  readonly queryResultAccessLogsPrefix?: string;
-  readonly auditBucketAccessLogsPrefix?: string;
-  readonly trailBucketAccessLogsPrefix?: string;
 }
 
 export class DeaAuditTrail extends Construct {
@@ -61,10 +58,8 @@ export class DeaAuditTrail extends Construct {
       kmsKey: props.kmsKey,
       auditLogGroup: this.auditLogGroup,
       trailLogGroup: this.trailLogGroup,
+      accessLogsBucket: props.accessLoggingBucket,
       opsDashboard: props.opsDashboard,
-      accessLogsBucket: props.accessLogsBucket,
-      queryResultAccessLogsPrefix: props.queryResultAccessLogsPrefix,
-      auditBucketAccessLogsPrefix: props.auditBucketAccessLogsPrefix,
     });
 
     this.auditTrail = this.createAuditTrail(
@@ -73,8 +68,7 @@ export class DeaAuditTrail extends Construct {
       props.kmsKey,
       props.deaDatasetsBucket,
       props.deaTableArn,
-      props.accessLogsBucket,
-      props.trailBucketAccessLogsPrefix
+      props.accessLoggingBucket
     );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
 
@@ -100,8 +94,7 @@ export class DeaAuditTrail extends Construct {
     kmsKey: Key,
     deaDatasetsBucket: IBucket,
     deaTableArn: string,
-    accessLogsBucket?: Bucket,
-    accessLogsPrefix?: string
+    deaAccessLoggingBucket: IBucket
   ) {
     const trailBucket = new Bucket(this, 'deaTrailBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -110,11 +103,10 @@ export class DeaAuditTrail extends Construct {
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
-      versioned: true,
-      serverAccessLogsBucket: accessLogsBucket,
-      serverAccessLogsPrefix: accessLogsPrefix,
+      serverAccessLogsBucket: deaAccessLoggingBucket,
+      serverAccessLogsPrefix: 'trail-bucket-access-logs',
     });
 
     createCfnOutput(this, 'deaTrailBucketName', {
@@ -138,7 +130,7 @@ export class DeaAuditTrail extends Construct {
           actions: ['s3:PutLifecycleConfiguration'],
           resources: [trailBucket.bucketArn],
           principals: [new StarPrincipal()],
-          sid: 'accesslogs-deny-bucket-policy',
+          sid: 'accesslogs-deny-lifecycle',
         })
       );
     }
