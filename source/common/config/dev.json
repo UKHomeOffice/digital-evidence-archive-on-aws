@@ -9,7 +9,7 @@
     "domain": "cfidevforensics"
   },
   "idpInfo": {
-    "metadataPath": "https://eur02.safelinks.protection.outlook.com/?url=https%3A%2F%2Flogin.microsoftonline.com%2Ff24d93ec-b291-4192-a08a-f182245945c2%2Ffederationmetadata%2F2007-06%2Ffederationmetadata.xml%3Fappid%3D81c874cd-140c-466e-a165-b65e9a846957&data=05%7C02%7CSamiwel.Thomas%40digital.homeoffice.gov.uk%7C49e7bc39704444e750bc08dc589c2735%7C90a6982e16354aa087a6d5d63c7bc66e%7C0%7C0%7C638482674916842356%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&sdata=l%2FEKioYR6d4Envi48sF9toh3CQ2yjkS5P4lQadEguTM%3D&reserved=0",
+    "metadataPath": "https://login.microsoftonline.com/f24d93ec-b291-4192-a08a-f182245945c2/federationmetadata/2007-06/federationmetadata.xml?appid=81c874cd-140c-466e-a165-b65e9a846957",
     "metadataPathType": "URL",
     "attributeMap": {
       "username": "username",
