@@ -1,13 +1,13 @@
 {
-    "deletionAllowed": true,
-    "isOneClick": false,  
-    "sourceIpValidation": false,
-    "fipsEndpointsEnabled": false,
-    "isMultiRegionTrail": false,
-    "uploadFilesTimeoutMinutes": 60,
-    "cognito": {
-      "domain": "cfidevforensics"
-    },
+  "deletionAllowed": true,
+  "isOneClick": false,
+  "sourceIpValidation": false,
+  "fipsEndpointsEnabled": false,
+  "isMultiRegionTrail": false,
+  "uploadFilesTimeoutMinutes": 60,
+  "cognito": {
+    "domain": "cfidevforensics"
+  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
