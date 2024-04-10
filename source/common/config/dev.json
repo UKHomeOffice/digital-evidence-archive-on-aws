@@ -1,13 +1,25 @@
 {
-    "deletionAllowed": true,
-    "isOneClick": false,  
-    "sourceIpValidation": false,
-    "fipsEndpointsEnabled": false,
-    "isMultiRegionTrail": false,
-    "uploadFilesTimeoutMinutes": 60,
-    "cognito": {
-      "domain": "cfidevforensics"
+  "deletionAllowed": true,
+  "isOneClick": false,
+  "sourceIpValidation": false,
+  "fipsEndpointsEnabled": false,
+  "isMultiRegionTrail": false,
+  "uploadFilesTimeoutMinutes": 60,
+  "cognito": {
+    "domain": "cfidevforensics"
+  },
+  "idpInfo": {
+    "metadataPath": "https://login.microsoftonline.com/f24d93ec-b291-4192-a08a-f182245945c2/federationmetadata/2007-06/federationmetadata.xml?appid=81c874cd-140c-466e-a165-b65e9a846957",
+    "metadataPathType": "URL",
+    "attributeMap": {
+      "username": "username",
+      "email": "email",
+      "firstName": "firstName",
+      "lastName": "lastName",
+      "deaRoleName": "DEARole"
     },
+    "defaultRole": "CaseWorker"
+  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
