@@ -66,6 +66,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           alink.rel = 'noopener';
           alink.style.display = 'none';
           window.open(downloadResponse.downloadUrl, '_blank');
+          window.focus();
           // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
           await sleep(100);
