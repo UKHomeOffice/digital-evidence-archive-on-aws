@@ -36,6 +36,7 @@ import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
+import { chunk } from 'cypress/types/lodash';
 
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
@@ -144,14 +145,20 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
 
     try {
-      console.log('Splitting file into chunks....');
+      console.log('Splitting file into chunks....', activeFileUpload.file.size, chunkSizeBytes);
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
+      console.log('total chunks', totalChunks);
       let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
+        console.log('chunk', i, 'of', totalChunks);
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
         const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
         const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
+
+        console.log('chunkBlob', chunkBlob);
+        console.log('arrayFromBlob', arrayFromBlob);
+        console.log('partHash', partHash);
 
         const uploadInput: UploadPartCommandInput = {
           Bucket: initiatedCaseFile.bucket,
