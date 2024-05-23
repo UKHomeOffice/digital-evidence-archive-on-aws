@@ -36,7 +36,6 @@ import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
-import { chunk } from 'cypress/types/lodash';
 
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
