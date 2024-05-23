@@ -117,19 +117,24 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
+    console.log('Initiating upload...');
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
+    console.log('Creating the client...', JSON.stringify(initiatedCaseFile.federationCredentials));
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
     });
 
+    console.log('Creating the interval...');
     const credentialsInterval = setInterval(async () => {
+      console.log('Interval fired, refresh credentials and client...');
       await refreshCredentials();
       const refreshRequest = await initiateUpload({
         ...activeFileUpload.upoadDto,
         uploadId: initiatedCaseFile.uploadId,
       });
+      console.log('Refreshed credentials...', JSON.stringify(refreshRequest.federationCredentials));
       federationS3Client = new S3Client({
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
@@ -139,6 +144,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
 
     try {
+      console.log('Splitting file into chunks....');
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
       let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
@@ -158,6 +164,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         };
         const uploadCommand = new UploadPartCommand(uploadInput);
 
+        console.log('Uplodading chunk');
         uploadPromises.push(federationS3Client.send(uploadCommand));
         promisesSize += chunkSizeBytes;
 
@@ -169,11 +176,16 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         }
       }
 
+      console.log('Waiting for all chunks to upload....');
       await Promise.all(uploadPromises);
+      console.log('All chunks uploaded', JSON.stringify(uploadPromises));
+    } catch (e) {
+      console.log('Something went wrong', e);
     } finally {
       clearInterval(credentialsInterval);
     }
 
+    console.log('Completing upload');
     await completeUpload({
       caseUlid: props.caseId,
       ulid: initiatedCaseFile.ulid,
