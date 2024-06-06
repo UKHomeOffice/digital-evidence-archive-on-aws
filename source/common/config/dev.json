@@ -9,8 +9,8 @@
     "domain": "cfidevforensics"
   },
   "idpInfo": {
-    "metadataPath": "https://login.microsoftonline.com/f24d93ec-b291-4192-a08a-f182245945c2/federationmetadata/2007-06/federationmetadata.xml?appid=81c874cd-140c-466e-a165-b65e9a846957",
-    "metadataPathType": "URL",
+    "metadataPath": "./EDDSAS-DEA-Dev.xml",
+    "metadataPathType": "FILE",
     "attributeMap": {
       "username": "name",
       "email": "name",
