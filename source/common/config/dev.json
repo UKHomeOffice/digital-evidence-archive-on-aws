@@ -9,7 +9,7 @@
     "domain": "cfidevforensics"
   },
   "idpInfo": {
-    "metadataPath": "./EDDSAS-DEA-Dev.xml",
+    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Dev.xml",
     "metadataPathType": "FILE",
     "attributeMap": {
       "username": "name",
