@@ -119,6 +119,7 @@ export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
   }
 
   const groups = (await getGroupNamesForUser(userId)).join(',');
+  console.log('debug-groups:', groups);
 
   event.response = {
     claimsOverrideDetails: {
