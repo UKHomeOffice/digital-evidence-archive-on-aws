@@ -18,7 +18,16 @@
       "lastName": "surname",
       "deaRoleName": "DEARole"
     },
-    "defaultRole": "CaseWorker"
+    "groupToDeaRoleRules": [
+      {
+        "filterValue": "5d8d02bb-cd25-461b-be13-680000776769",
+        "deaRoleName": "WorkingManager"
+      },
+      {
+        "filterValue": "eeb25b4a-8dc9-4d4c-bdb8-d7f5e6b15478",
+        "deaRoleName": "CaseWorker"
+      }
+    ]
   },
   "deaRoleTypes": [
     {
