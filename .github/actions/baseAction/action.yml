@@ -12,7 +12,7 @@ runs:
     - name: Use Node.js 18.x
       uses: actions/setup-node@v3
       with:
-        node-version: '18.20.0'
+        node-version: '20'
 
     - name: Cache Rush
       uses: actions/cache@v3
@@ -38,7 +38,7 @@ runs:
     - name: install pnpm
       uses: pnpm/action-setup@v2.2.4
       with:
-        version: 7.13.0
+        version: 8.x
     
     - name: Rush Update
       shell: bash
