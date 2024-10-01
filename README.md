@@ -563,6 +563,15 @@ Please note that default DEA limits are conservative, but you can increase the n
 
 DEA does not protect against uploading viruses (as they can be considered evidence in certain investigations), therefore we recommend setting up anti-virus and other security protections, such as crowdstrike to ensure your Criminal Justice devices stay secure. A common product is Crowdstrike.
 
+## Contributing via Pull Requests
+
+Before commiting any changes please ensure that git hooks are enabled.
+The `pre-commit` hook lives in the [.githooks](./githooks) directory. The hooks may be activated by running the following command.
+
+```
+git config core.hooksPath .githooks
+```
+
 ## Creating a PR from a Commit(s)
 
 OPTIONAL: run commit hooks locally

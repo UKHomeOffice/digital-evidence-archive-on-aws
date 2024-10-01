@@ -28,6 +28,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@v3.82.1
+        with:
+          extra_args: --only-verified                        
       - name: Install
         uses: ./.github/actions/baseAction
       - name: Rush Build
