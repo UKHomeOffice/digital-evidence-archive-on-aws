@@ -11,6 +11,7 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 import {
   Alert,
   Box,
@@ -119,9 +120,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
+    const MAX_CONCURRENT_REQUESTS = 100;
+
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
+      requestHandler: new NodeHttpHandler({
+        maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+      }),
     });
 
     const credentialsInterval = setInterval(async () => {
@@ -133,6 +139,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       federationS3Client = new S3Client({
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
+        useAccelerateEndpoint: true,
+        requestHandler: new NodeHttpHandler({
+          maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+        }),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
