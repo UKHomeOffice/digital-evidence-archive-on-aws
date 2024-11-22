@@ -11,7 +11,7 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
-import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import {
   Alert,
   Box,
