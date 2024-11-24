@@ -27,7 +27,6 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -124,7 +123,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
-      requestHandler: new NodeHttpHandler(),
     });
 
     const credentialsInterval = setInterval(async () => {
@@ -137,7 +135,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
         useAccelerateEndpoint: true,
-        requestHandler: new NodeHttpHandler(),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
