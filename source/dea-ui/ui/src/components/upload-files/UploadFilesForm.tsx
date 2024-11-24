@@ -27,6 +27,7 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
