@@ -27,7 +27,6 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -37,6 +36,7 @@ import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
