@@ -123,6 +123,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
+      useAccelerateEndpoint: true,
     });
 
     const credentialsInterval = setInterval(async () => {
@@ -194,7 +195,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const chunkSizeBytes = 300 * ONE_MB;
     // per file try/finally state to initiate uploads
     try {
-      const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
+      const contentType = selectedFile.type ? selectedFile.type : pro'text/plain';
       const activeFileUpload = {
         file: selectedFile,
         upoadDto: {
