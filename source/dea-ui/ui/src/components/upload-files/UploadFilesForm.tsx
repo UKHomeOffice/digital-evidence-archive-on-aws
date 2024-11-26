@@ -195,7 +195,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const chunkSizeBytes = 300 * ONE_MB;
     // per file try/finally state to initiate uploads
     try {
-      const contentType = selectedFile.type ? selectedFile.type : pro'text/plain';
+      const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
       const activeFileUpload = {
         file: selectedFile,
         upoadDto: {
