@@ -142,7 +142,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-      let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
@@ -161,7 +160,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         const uploadCommand = new UploadPartCommand(uploadInput);
 
         uploadPromises.push(federationS3Client.send(uploadCommand));
-        promisesSize += chunkSizeBytes;
       }
 
       await Promise.all(uploadPromises);
