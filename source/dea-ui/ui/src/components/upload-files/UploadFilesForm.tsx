@@ -162,13 +162,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
         uploadPromises.push(federationS3Client.send(uploadCommand));
         promisesSize += chunkSizeBytes;
-
-        // flush promises if we've got over 1GB queued
-        if (promisesSize > ONE_MB * 1000) {
-          await Promise.all(uploadPromises);
-          promisesSize = 0;
-          uploadPromises.length = 0;
-        }
       }
 
       await Promise.all(uploadPromises);
