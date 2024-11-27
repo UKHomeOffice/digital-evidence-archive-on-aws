@@ -37,7 +37,6 @@ import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
 
-
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
 interface FileUploadProgressRow {
@@ -164,8 +163,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         uploadPromises.push(federationS3Client.send(uploadCommand));
         promisesSize += chunkSizeBytes;
 
-        // flush promises if we've got over 500MB queued
-        if (promisesSize > ONE_MB * 500) {
+        // flush promises if we've got over 1GB queued
+        if (promisesSize > ONE_MB * 1000) {
           await Promise.all(uploadPromises);
           promisesSize = 0;
           uploadPromises.length = 0;
