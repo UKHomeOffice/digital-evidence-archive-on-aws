@@ -190,7 +190,7 @@ export class DeaUiConstruct extends NestedStack {
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://${deaConfig.cognitoDomain()}.${this.authSubdomain()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3.${
                   Aws.REGION
-                }.amazonaws.com https://cognito-identity.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
+                }.amazonaws.com https://*.s3-accelerate.amazonaws.com https://cognito-identity.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
