@@ -138,10 +138,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
-    const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
-
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
+      let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
@@ -158,14 +157,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
         };
         const uploadCommand = new UploadPartCommand(uploadInput);
-
-        uploadPromises.push(federationS3Client.send(uploadCommand));
+        await federationS3Client.send(uploadCommand);
       }
-
-      await Promise.all(uploadPromises);
     } finally {
       clearInterval(credentialsInterval);
     }
+
+    // @ts-ignore
+    delete uploadPromises;
 
     await completeUpload({
       caseUlid: props.caseId,
@@ -182,7 +181,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // Maximum number of parts per upload	10,000
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     //const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-    const chunkSizeBytes = 300 * ONE_MB;
+    const chunkSizeBytes = 100 * ONE_MB;
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
