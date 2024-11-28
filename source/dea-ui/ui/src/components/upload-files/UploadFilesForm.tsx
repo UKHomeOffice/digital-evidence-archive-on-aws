@@ -118,7 +118,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       !initiatedCaseFile ||
       !initiatedCaseFile.uploadId ||
       !initiatedCaseFile.bucket ||
-      !initiatedCaseFile.region
+      !initiatedCaseFile.region ||
+      !initiatedCaseFile.federationCredentials
     ) {
       throw new Error('Invalid upload parameters');
     }
@@ -134,8 +135,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       formData.append('key', `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`);
 
       try {
-        const uploadUrl = `${initiatedCaseFile.bucket}/${initiatedCaseFile.uploadId}/part/${i + 1}`; // Simulated URL for each part upload
-        await axios.put(uploadUrl, chunkBlob, {
+        // Assuming the upload URL is part of initiated upload response
+        // Use appropriate method to get the upload URL based on your implementation
+        await axios.put(initiatedCaseFile.bucket, chunkBlob, {
           headers: {
             'Content-Type': 'application/octet-stream',
           },
