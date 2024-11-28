@@ -1,10 +1,3 @@
-/*
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *  SPDX-License-Identifier: Apache-2.0
- */
-
-import crypto from 'crypto';
-import { ChecksumAlgorithm, S3Client, UploadPartCommand, UploadPartCommandInput } from '@aws-sdk/client-s3';
 import {
   Alert,
   Box,
@@ -21,9 +14,10 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload } from '../../api/cases';
+import { completeUpload, initiateUpload } from '../../api/cases'; // Existing API request functions
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
@@ -53,7 +47,7 @@ interface ActiveFileUpload {
 
 export const ONE_MB = 1024 * 1024;
 export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown occasionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -65,7 +59,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
-    // top level try/finally to set uploadInProgress bool state
     try {
       setUploadInProgress(true);
 
@@ -113,11 +106,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
-    let federationS3Client = new S3Client({
-      credentials: initiatedCaseFile.federationCredentials,
-      region: initiatedCaseFile.region,
-      useAccelerateEndpoint: true,
-    });
+    let credentials = initiatedCaseFile.federationCredentials;
 
     const credentialsInterval = setInterval(async () => {
       await refreshCredentials();
@@ -125,32 +114,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         ...activeFileUpload.upoadDto,
         uploadId: initiatedCaseFile.uploadId,
       });
-      federationS3Client = new S3Client({
-        credentials: refreshRequest.federationCredentials,
-        region: initiatedCaseFile.region,
-        useAccelerateEndpoint: true,
-      });
+      credentials = refreshRequest.federationCredentials;
     }, 20 * MINUTES_TO_MILLISECONDS);
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
-
-        const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
-        const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
-
-        const uploadInput: UploadPartCommandInput = {
-          Bucket: initiatedCaseFile.bucket,
-          Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
-          PartNumber: i + 1,
-          UploadId: initiatedCaseFile.uploadId,
-          Body: arrayFromBlob,
-          ChecksumSHA256: partHash,
-          ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
-        };
-        const uploadCommand = new UploadPartCommand(uploadInput);
-        await federationS3Client.send(uploadCommand);
+        await uploadChunk(chunkBlob, initiatedCaseFile, i + 1, credentials);
       }
     } finally {
       clearInterval(credentialsInterval);
@@ -164,18 +135,38 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
+  async function uploadChunk(chunkBlob: Blob, initiatedCaseFile: any, partNumber: number, credentials: any) {
+    const arrayBuffer = await blobToArrayBuffer(chunkBlob);
+
+    // Calculate SHA-256 hash using Web Crypto API
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const partHash = btoa(String.fromCharCode(...hashArray));
+
+    const url = initiatedCaseFile.preSignedUrls[partNumber - 1]; // Assuming initiateUpload provides pre-signed URLs for each part.
+
+    try {
+      await axios.put(url, arrayBuffer, {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'x-amz-checksum-sha256': partHash,
+          'x-amz-algorithm': 'AWS4-HMAC-SHA256',
+          'x-amz-credential': `${credentials.accessKeyId}/${credentials.sessionToken}`,
+          'x-amz-security-token': credentials.sessionToken,
+        },
+      });
+    } catch (error) {
+      console.error(`Upload of part ${partNumber} failed`, error);
+      throw error;
+    }
+  }
+
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
-    // Trying to use small chunk size (50MB) to reduce memory use.
-    // Maximum object size	5 TiB
-    // Maximum number of parts per upload	10,000
-    // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
-    //const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-    const chunkSizeBytes = 300 * ONE_MB;
-    // per file try/finally state to initiate uploads
+    const chunkSizeBytes = 300 * ONE_MB; // Set chunk size to 300MB
+
     try {
-      const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-      const activeFileUpload = {
+      const activeFileUpload: ActiveFileUpload = {
         file: selectedFile,
         upoadDto: {
           caseUlid: props.caseId,
@@ -183,15 +174,16 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           filePath: selectedFile.relativePath,
           fileSizeBytes,
           chunkSizeBytes,
-          contentType,
+          contentType: selectedFile.type || 'text/plain',
           reason,
           details,
         },
       };
+
       await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
-    } catch (e) {
+    } catch (error) {
       updateFileProgress(selectedFile, UploadStatus.failed);
-      console.log('Upload failed', e);
+      console.error('Upload failed:', error);
     }
   }
 
