@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import {
   Alert,
   Box,
@@ -133,6 +138,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
+
+        // Add the console.log statement here to debug the parameters used for each part upload.
+        console.log('Upload Part Params:', {
+          Bucket: initiatedCaseFile.bucket,
+          Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
+          PartNumber: i + 1,
+          UploadId: initiatedCaseFile.uploadId,
+        });
+
         console.log(`Uploading chunk ${i + 1}/${totalChunks} for file:`, activeFileUpload.file.name);
         await uploadChunk(chunkBlob, initiatedCaseFile, i + 1, credentials);
       }
