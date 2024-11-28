@@ -4,13 +4,7 @@
  */
 
 import crypto from 'crypto';
-import {
-  ChecksumAlgorithm,
-  S3Client,
-  UploadPartCommand,
-  UploadPartCommandInput,
-  UploadPartCommandOutput,
-} from '@aws-sdk/client-s3';
+import { ChecksumAlgorithm, S3Client, UploadPartCommand, UploadPartCommandInput } from '@aws-sdk/client-s3';
 import {
   Alert,
   Box,
@@ -140,7 +134,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-      let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
@@ -162,9 +155,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     } finally {
       clearInterval(credentialsInterval);
     }
-
-    // @ts-ignore
-    delete uploadPromises;
 
     await completeUpload({
       caseUlid: props.caseId,
