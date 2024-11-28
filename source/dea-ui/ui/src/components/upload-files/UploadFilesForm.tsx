@@ -24,13 +24,10 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
-import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
-
-const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
 interface FileUploadProgressRow {
   fileName: string;
@@ -47,11 +44,9 @@ enum UploadStatus {
 
 interface ActiveFileUpload {
   file: FileWithPath;
-  upoadDto: InitiateUploadForm;
+  uploadDto: InitiateUploadForm;
 }
 
-export const ONE_MB = 1024 * 1024;
-export const ONE_GB = ONE_MB * 1024;
 const MAX_PARALLEL_UPLOADS = 6;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
@@ -80,148 +75,82 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       let position = 0;
       while (position < selectedFiles.length) {
         const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
-        console.log(`Uploading batch starting from position ${position}:`, itemsForBatch);
         await Promise.all(itemsForBatch.map((item) => uploadFile(item)));
         position += MAX_PARALLEL_UPLOADS;
       }
 
       setSelectedFiles([]);
-    } catch (error) {
-      console.error('Error during file upload submission:', error);
     } finally {
       setUploadInProgress(false);
     }
   }
 
-  async function blobToArrayBuffer(blob: Blob) {
-    console.log('Converting blob to ArrayBuffer...');
-    if ('arrayBuffer' in blob) {
-      return await blob.arrayBuffer();
-    }
-
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result && typeof reader.result !== 'string') {
-          resolve(reader.result);
-        }
-        reject(new Error('Failed to convert blob to ArrayBuffer.'));
-      };
-      reader.onerror = () => reject(new Error('Error reading blob.'));
-      reader.readAsArrayBuffer(blob);
-    });
-  }
-
-  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
-    console.log('Initiating upload for file:', activeFileUpload.file.name);
-    const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
-
-    let credentials = initiatedCaseFile.federationCredentials;
-    console.log('Upload initiated. Case details:', initiatedCaseFile);
-
-    const credentialsInterval = setInterval(async () => {
-      try {
-        console.log('Refreshing credentials...');
-        await refreshCredentials();
-        const refreshRequest = await initiateUpload({
-          ...activeFileUpload.upoadDto,
-          uploadId: initiatedCaseFile.uploadId,
-        });
-        credentials = refreshRequest.federationCredentials;
-        console.log('Credentials refreshed successfully.');
-      } catch (error) {
-        console.error('Error refreshing credentials:', error);
-      }
-    }, 20 * MINUTES_TO_MILLISECONDS);
-
-    try {
-      const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-      for (let i = 0; i < totalChunks; i++) {
-        const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
-
-        // Add the console.log statement here to debug the parameters used for each part upload.
-        console.log('Upload Part Params:', {
-          Bucket: initiatedCaseFile.bucket,
-          Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
-          PartNumber: i + 1,
-          UploadId: initiatedCaseFile.uploadId,
-        });
-
-        console.log(`Uploading chunk ${i + 1}/${totalChunks} for file:`, activeFileUpload.file.name);
-        await uploadChunk(chunkBlob, initiatedCaseFile, i + 1, credentials);
-      }
-    } catch (error) {
-      console.error('Error during file part upload:', error);
-    } finally {
-      clearInterval(credentialsInterval);
-    }
-
-    try {
-      console.log('Completing upload for file:', activeFileUpload.file.name);
-      await completeUpload({
-        caseUlid: props.caseId,
-        ulid: initiatedCaseFile.ulid,
-        uploadId: initiatedCaseFile.uploadId,
-      });
-      updateFileProgress(activeFileUpload.file, UploadStatus.complete);
-    } catch (error) {
-      console.error('Error completing upload:', error);
-    }
-  }
-
-  async function uploadChunk(chunkBlob: Blob, initiatedCaseFile: any, partNumber: number, credentials: any) {
-    const arrayBuffer = await blobToArrayBuffer(chunkBlob);
-    console.log(`Calculated ArrayBuffer for part ${partNumber}`);
-
-    // Calculate SHA-256 hash using Web Crypto API
-    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const partHash = btoa(String.fromCharCode(...hashArray));
-
-    const url = initiatedCaseFile.preSignedUrls[partNumber - 1];
-    console.log(`Uploading part ${partNumber} to URL:`, url);
-
-    try {
-      await axios.put(url, arrayBuffer, {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'x-amz-checksum-sha256': partHash,
-          'x-amz-algorithm': 'AWS4-HMAC-SHA256',
-          'x-amz-credential': `${credentials.accessKeyId}/${credentials.sessionToken}`,
-          'x-amz-security-token': credentials.sessionToken,
-        },
-      });
-      console.log(`Successfully uploaded part ${partNumber}`);
-    } catch (error) {
-      console.error(`Upload of part ${partNumber} failed`, error);
-      throw error;
-    }
-  }
-
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
-    const chunkSizeBytes = 300 * ONE_MB;
+    const chunkSizeBytes = 300 * 1024 * 1024; // 300MB
 
     try {
-      const activeFileUpload: ActiveFileUpload = {
+      const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
+      const activeFileUpload = {
         file: selectedFile,
-        upoadDto: {
+        uploadDto: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
           filePath: selectedFile.relativePath,
           fileSizeBytes,
           chunkSizeBytes,
-          contentType: selectedFile.type || 'text/plain',
+          contentType,
           reason,
           details,
         },
       };
-      console.log('Uploading file:', selectedFile.name);
       await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
-    } catch (error) {
+    } catch (e) {
       updateFileProgress(selectedFile, UploadStatus.failed);
-      console.error('Upload failed for file:', selectedFile.name, error);
+      console.log('Upload failed', e);
     }
+  }
+
+  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
+    const initiatedCaseFile = await initiateUpload(activeFileUpload.uploadDto);
+
+    if (
+      !initiatedCaseFile ||
+      !initiatedCaseFile.uploadId ||
+      !initiatedCaseFile.bucket ||
+      !initiatedCaseFile.region
+    ) {
+      throw new Error('Invalid upload parameters');
+    }
+
+    const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
+    for (let i = 0; i < totalChunks; i++) {
+      const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
+      const formData = new FormData();
+      formData.append('file', chunkBlob);
+      formData.append('partNumber', (i + 1).toString());
+      formData.append('uploadId', initiatedCaseFile.uploadId);
+      formData.append('bucket', initiatedCaseFile.bucket);
+      formData.append('key', `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`);
+
+      try {
+        const uploadUrl = `${initiatedCaseFile.bucket}/${initiatedCaseFile.uploadId}/part/${i + 1}`; // Simulated URL for each part upload
+        await axios.put(uploadUrl, chunkBlob, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+          },
+        });
+      } catch (error) {
+        throw new Error(`Failed to upload part ${i + 1}: ${error}`);
+      }
+    }
+
+    await completeUpload({
+      caseUlid: props.caseId,
+      ulid: initiatedCaseFile.ulid,
+      uploadId: initiatedCaseFile.uploadId,
+    });
+    updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
   function updateFileProgress(selectedFile: FileWithPath, status: UploadStatus) {
@@ -267,7 +196,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="check" variant="success" />
-              <span>{uploadProgress.status}</span>
+              <span> {uploadProgress.status}</span>
             </SpaceBetween>
           </Box>
         );
