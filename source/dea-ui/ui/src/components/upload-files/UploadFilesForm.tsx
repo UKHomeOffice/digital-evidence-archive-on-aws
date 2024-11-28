@@ -59,7 +59,7 @@ interface ActiveFileUpload {
 
 export const ONE_MB = 1024 * 1024;
 export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_UPLOADS = 10; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -182,7 +182,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // Maximum number of parts per upload	10,000
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     //const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-    const chunkSizeBytes = 300 * ONE_MB;
+    const chunkSizeBytes = 500 * ONE_MB;
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
