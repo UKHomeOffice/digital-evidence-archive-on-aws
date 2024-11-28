@@ -17,7 +17,7 @@ import {
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload } from '../../api/cases'; // Existing API request functions
+import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
@@ -47,7 +47,7 @@ interface ActiveFileUpload {
 
 export const ONE_MB = 1024 * 1024;
 export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown occasionally.
+const MAX_PARALLEL_UPLOADS = 6;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -75,17 +75,21 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       let position = 0;
       while (position < selectedFiles.length) {
         const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
+        console.log(`Uploading batch starting from position ${position}:`, itemsForBatch);
         await Promise.all(itemsForBatch.map((item) => uploadFile(item)));
         position += MAX_PARALLEL_UPLOADS;
       }
 
       setSelectedFiles([]);
+    } catch (error) {
+      console.error('Error during file upload submission:', error);
     } finally {
       setUploadInProgress(false);
     }
   }
 
   async function blobToArrayBuffer(blob: Blob) {
+    console.log('Converting blob to ArrayBuffer...');
     if ('arrayBuffer' in blob) {
       return await blob.arrayBuffer();
     }
@@ -96,54 +100,72 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         if (reader.result && typeof reader.result !== 'string') {
           resolve(reader.result);
         }
-        reject();
+        reject(new Error('Failed to convert blob to ArrayBuffer.'));
       };
-      reader.onerror = () => reject();
+      reader.onerror = () => reject(new Error('Error reading blob.'));
       reader.readAsArrayBuffer(blob);
     });
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
+    console.log('Initiating upload for file:', activeFileUpload.file.name);
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
     let credentials = initiatedCaseFile.federationCredentials;
+    console.log('Upload initiated. Case details:', initiatedCaseFile);
 
     const credentialsInterval = setInterval(async () => {
-      await refreshCredentials();
-      const refreshRequest = await initiateUpload({
-        ...activeFileUpload.upoadDto,
-        uploadId: initiatedCaseFile.uploadId,
-      });
-      credentials = refreshRequest.federationCredentials;
+      try {
+        console.log('Refreshing credentials...');
+        await refreshCredentials();
+        const refreshRequest = await initiateUpload({
+          ...activeFileUpload.upoadDto,
+          uploadId: initiatedCaseFile.uploadId,
+        });
+        credentials = refreshRequest.federationCredentials;
+        console.log('Credentials refreshed successfully.');
+      } catch (error) {
+        console.error('Error refreshing credentials:', error);
+      }
     }, 20 * MINUTES_TO_MILLISECONDS);
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
+        console.log(`Uploading chunk ${i + 1}/${totalChunks} for file:`, activeFileUpload.file.name);
         await uploadChunk(chunkBlob, initiatedCaseFile, i + 1, credentials);
       }
+    } catch (error) {
+      console.error('Error during file part upload:', error);
     } finally {
       clearInterval(credentialsInterval);
     }
 
-    await completeUpload({
-      caseUlid: props.caseId,
-      ulid: initiatedCaseFile.ulid,
-      uploadId: initiatedCaseFile.uploadId,
-    });
-    updateFileProgress(activeFileUpload.file, UploadStatus.complete);
+    try {
+      console.log('Completing upload for file:', activeFileUpload.file.name);
+      await completeUpload({
+        caseUlid: props.caseId,
+        ulid: initiatedCaseFile.ulid,
+        uploadId: initiatedCaseFile.uploadId,
+      });
+      updateFileProgress(activeFileUpload.file, UploadStatus.complete);
+    } catch (error) {
+      console.error('Error completing upload:', error);
+    }
   }
 
   async function uploadChunk(chunkBlob: Blob, initiatedCaseFile: any, partNumber: number, credentials: any) {
     const arrayBuffer = await blobToArrayBuffer(chunkBlob);
+    console.log(`Calculated ArrayBuffer for part ${partNumber}`);
 
     // Calculate SHA-256 hash using Web Crypto API
     const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const partHash = btoa(String.fromCharCode(...hashArray));
 
-    const url = initiatedCaseFile.preSignedUrls[partNumber - 1]; // Assuming initiateUpload provides pre-signed URLs for each part.
+    const url = initiatedCaseFile.preSignedUrls[partNumber - 1];
+    console.log(`Uploading part ${partNumber} to URL:`, url);
 
     try {
       await axios.put(url, arrayBuffer, {
@@ -155,6 +177,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           'x-amz-security-token': credentials.sessionToken,
         },
       });
+      console.log(`Successfully uploaded part ${partNumber}`);
     } catch (error) {
       console.error(`Upload of part ${partNumber} failed`, error);
       throw error;
@@ -163,7 +186,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
-    const chunkSizeBytes = 300 * ONE_MB; // Set chunk size to 300MB
+    const chunkSizeBytes = 300 * ONE_MB;
 
     try {
       const activeFileUpload: ActiveFileUpload = {
@@ -179,11 +202,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           details,
         },
       };
-
+      console.log('Uploading file:', selectedFile.name);
       await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
     } catch (error) {
       updateFileProgress(selectedFile, UploadStatus.failed);
-      console.error('Upload failed:', error);
+      console.error('Upload failed for file:', selectedFile.name, error);
     }
   }
 
@@ -230,7 +253,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="check" variant="success" />
-              <span> {uploadProgress.status}</span>
+              <span>{uploadProgress.status}</span>
             </SpaceBetween>
           </Box>
         );
