@@ -59,7 +59,7 @@ interface ActiveFileUpload {
 
 export const ONE_MB = 1024 * 1024;
 export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 10; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
