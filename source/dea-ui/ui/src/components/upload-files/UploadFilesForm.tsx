@@ -87,7 +87,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
-    const chunkSizeBytes = 50 * 1024 * 1024; // 50MB
+    const chunkSizeBytes = 10 * 1024 * 1024; // 10MB
 
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
