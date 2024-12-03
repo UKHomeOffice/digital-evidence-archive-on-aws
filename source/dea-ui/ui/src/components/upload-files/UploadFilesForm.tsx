@@ -117,6 +117,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
       useAccelerateEndpoint: true,
+      requestHandler: {
+        requestTimeout: 3000,
+        httpsAgent: { maxSockets: 50 },
+      },
     });
 
     const credentialsInterval = setInterval(async () => {
@@ -129,6 +133,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
         useAccelerateEndpoint: true,
+        requestHandler: {
+          requestTimeout: 3000,
+          httpsAgent: { maxSockets: 50 },
+        },
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
