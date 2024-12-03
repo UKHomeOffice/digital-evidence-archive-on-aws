@@ -4,7 +4,6 @@
  */
 
 import crypto from 'crypto';
-import { Agent } from 'https';
 import { ChecksumAlgorithm, UploadPartCommand, UploadPartCommandInput, S3 } from '@aws-sdk/client-s3';
 import {
   Alert,
@@ -22,7 +21,7 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { FetchHttpHandler } from '@smithy/fetch-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -119,11 +118,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
       useAccelerateEndpoint: true,
-      requestHandler: new NodeHttpHandler({
-        httpsAgent: new Agent({
-          keepAlive: true,
-          maxSockets: 50,
-        }),
+      requestHandler: new FetchHttpHandler({
+        keepAlive: true,
       }),
     });
 
@@ -147,14 +143,13 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
         useAccelerateEndpoint: true,
-        requestHandler: new NodeHttpHandler({
-          httpsAgent: new Agent({
-            keepAlive: true,
-            maxSockets: 50,
-          }),
+        requestHandler: new FetchHttpHandler({
+          keepAlive: true,
         }),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
+
+    const promises = [];
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
@@ -174,8 +169,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
         };
         const uploadCommand = new UploadPartCommand(uploadInput);
-        await federationS3Client.send(uploadCommand);
+        promises.push(federationS3Client.send(uploadCommand));
       }
+      await Promise.all(promises);
     } finally {
       clearInterval(credentialsInterval);
     }

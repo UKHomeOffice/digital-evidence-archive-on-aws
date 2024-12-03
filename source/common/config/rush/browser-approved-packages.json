@@ -303,6 +303,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@smithy/fetch-http-handler",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@smithy/node-http-handler",
       "allowedCategories": [ "production" ]
     },
