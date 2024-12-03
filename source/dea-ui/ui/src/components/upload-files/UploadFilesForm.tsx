@@ -4,7 +4,8 @@
  */
 
 import crypto from 'crypto';
-import { ChecksumAlgorithm, S3Client, UploadPartCommand, UploadPartCommandInput } from '@aws-sdk/client-s3';
+import { Agent } from 'https';
+import { ChecksumAlgorithm, UploadPartCommand, UploadPartCommandInput, S3 } from '@aws-sdk/client-s3';
 import {
   Alert,
   Box,
@@ -21,6 +22,7 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -113,15 +115,27 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
-    let federationS3Client = new S3Client({
+    let federationS3Client = new S3({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
       useAccelerateEndpoint: true,
-      requestHandler: {
-        requestTimeout: 3000,
-        httpsAgent: { maxSockets: 50 },
-      },
+      requestHandler: new NodeHttpHandler({
+        httpsAgent: new Agent({
+          keepAlive: true,
+          maxSockets: 50,
+        }),
+      }),
     });
+
+    // let federationS3Client = new S3Client({
+    //   credentials: initiatedCaseFile.federationCredentials,
+    //   region: initiatedCaseFile.region,
+    //   useAccelerateEndpoint: true,
+    //   requestHandler: {
+    //     requestTimeout: 3000,
+    //     httpsAgent: { maxSockets: 50 },
+    //   },
+    // });
 
     const credentialsInterval = setInterval(async () => {
       await refreshCredentials();
@@ -129,14 +143,16 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         ...activeFileUpload.upoadDto,
         uploadId: initiatedCaseFile.uploadId,
       });
-      federationS3Client = new S3Client({
+      federationS3Client = new S3({
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
         useAccelerateEndpoint: true,
-        requestHandler: {
-          requestTimeout: 3000,
-          httpsAgent: { maxSockets: 50 },
-        },
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new Agent({
+            keepAlive: true,
+            maxSockets: 50,
+          }),
+        }),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
