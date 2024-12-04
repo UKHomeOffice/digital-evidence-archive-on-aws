@@ -5,7 +5,6 @@
 
 import { fail } from 'assert';
 import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aws-sdk/client-athena';
-import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import {
   STSClient,
   STSClientResolvedConfig,
@@ -31,7 +30,6 @@ import {
 let caseId = '';
 let fileId = '';
 let athenaMock;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 describe('get case file audit', () => {
@@ -39,11 +37,11 @@ describe('get case file audit', () => {
 
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: 'hi',
-      VersionId: 'hello',
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: 'hi',
+    //   VersionId: 'hello',
+    // });
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({

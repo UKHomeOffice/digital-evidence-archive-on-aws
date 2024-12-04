@@ -196,6 +196,7 @@ export class DeaBackendConstruct extends Construct {
     const datasetsBucket = new Bucket(this, 'S3DatasetsBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       bucketKeyEnabled: true,
+      transferAcceleration: true,
       encryption: BucketEncryption.KMS,
       encryptionKey: key,
       enforceSSL: true,

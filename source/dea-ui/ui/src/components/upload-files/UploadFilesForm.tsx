@@ -4,13 +4,8 @@
  */
 
 import crypto from 'crypto';
-import {
-  ChecksumAlgorithm,
-  S3Client,
-  UploadPartCommand,
-  UploadPartCommandInput,
-  UploadPartCommandOutput,
-} from '@aws-sdk/client-s3';
+import { ChecksumAlgorithm, UploadPartCommand, UploadPartCommandInput, S3 } from '@aws-sdk/client-s3';
+import { XhrHttpHandler } from '@aws-sdk/xhr-http-handler';
 import {
   Alert,
   Box,
@@ -59,7 +54,7 @@ interface ActiveFileUpload {
 
 export const ONE_MB = 1024 * 1024;
 export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -119,10 +114,24 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
-    let federationS3Client = new S3Client({
+    let federationS3Client = new S3({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
+      useAccelerateEndpoint: true,
+      requestHandler: new XhrHttpHandler({
+        requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
+      }),
     });
+
+    // let federationS3Client = new S3Client({
+    //   credentials: initiatedCaseFile.federationCredentials,
+    //   region: initiatedCaseFile.region,
+    //   useAccelerateEndpoint: true,
+    //   requestHandler: {
+    //     requestTimeout: 3000,
+    //     httpsAgent: { maxSockets: 50 },
+    //   },
+    // });
 
     const credentialsInterval = setInterval(async () => {
       await refreshCredentials();
@@ -130,17 +139,20 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         ...activeFileUpload.upoadDto,
         uploadId: initiatedCaseFile.uploadId,
       });
-      federationS3Client = new S3Client({
+      federationS3Client = new S3({
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
+        useAccelerateEndpoint: true,
+        requestHandler: new XhrHttpHandler({
+          requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
+        }),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);
 
-    const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
+    const promises = [];
 
     try {
       const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-      let promisesSize = 0;
       for (let i = 0; i < totalChunks; i++) {
         const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
@@ -157,19 +169,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
         };
         const uploadCommand = new UploadPartCommand(uploadInput);
-
-        uploadPromises.push(federationS3Client.send(uploadCommand));
-        promisesSize += chunkSizeBytes;
-
-        // flush promises if we've got over 500MB queued
-        if (promisesSize > ONE_MB * 500) {
-          await Promise.all(uploadPromises);
-          promisesSize = 0;
-          uploadPromises.length = 0;
-        }
+        promises.push(federationS3Client.send(uploadCommand));
       }
-
-      await Promise.all(uploadPromises);
+      await Promise.all(promises);
     } finally {
       clearInterval(credentialsInterval);
     }
@@ -188,7 +190,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // Maximum object size	5 TiB
     // Maximum number of parts per upload	10,000
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
-    const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+    //const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+    const chunkSizeBytes = 300 * ONE_MB;
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
