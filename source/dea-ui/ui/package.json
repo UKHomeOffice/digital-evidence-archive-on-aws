@@ -57,6 +57,7 @@
     "@aws-sdk/client-cognito-identity-provider": "~3.474.0",
     "@aws-sdk/client-s3": "~3.703.0",
     "@smithy/fetch-http-handler": "^4.1.1",
+    "@aws-sdk/xhr-http-handler": "^3.696.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
     "@cloudscape-design/component-toolkit": "~1.0.0-beta.25",

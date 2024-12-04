@@ -155,6 +155,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/xhr-http-handler",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/dea-app",
       "allowedCategories": [ "production" ]
     },

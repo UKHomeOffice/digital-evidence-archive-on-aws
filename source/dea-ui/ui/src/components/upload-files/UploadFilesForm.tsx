@@ -5,6 +5,7 @@
 
 import crypto from 'crypto';
 import { ChecksumAlgorithm, UploadPartCommand, UploadPartCommandInput, S3 } from '@aws-sdk/client-s3';
+import { XhrHttpHandler } from '@aws-sdk/xhr-http-handler';
 import {
   Alert,
   Box,
@@ -21,7 +22,6 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import { FetchHttpHandler } from '@smithy/fetch-http-handler';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -118,8 +118,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
       useAccelerateEndpoint: true,
-      requestHandler: new FetchHttpHandler({
-        keepAlive: true,
+      requestHandler: new XhrHttpHandler({
+        requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
       }),
     });
 
@@ -143,8 +143,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
         useAccelerateEndpoint: true,
-        requestHandler: new FetchHttpHandler({
-          keepAlive: true,
+        requestHandler: new XhrHttpHandler({
+          requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
         }),
       });
     }, 20 * MINUTES_TO_MILLISECONDS);

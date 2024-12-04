@@ -422,6 +422,7 @@ importers:
       '@aws-sdk/client-cognito-identity': ~3.474.0
       '@aws-sdk/client-cognito-identity-provider': ~3.474.0
       '@aws-sdk/client-s3': ~3.703.0
+      '@aws-sdk/xhr-http-handler': ^3.696.0
       '@aws/dea-app': workspace:*
       '@babel/core': ~7.23.2
       '@babel/preset-env': ~7.23.2
@@ -499,6 +500,7 @@ importers:
       '@aws-sdk/client-cognito-identity': 3.474.0
       '@aws-sdk/client-cognito-identity-provider': 3.474.0
       '@aws-sdk/client-s3': 3.703.0
+      '@aws-sdk/xhr-http-handler': 3.696.0
       '@aws/dea-app': link:../../dea-app
       '@cloudscape-design/collection-hooks': 1.0.31_react@17.0.2
       '@cloudscape-design/component-toolkit': 1.0.0-beta.30
@@ -2501,6 +2503,17 @@ packages:
     resolution: {integrity: sha512-UvFa/vR+e19XookZF8RzFZBrw2EUkQWxiBW0yYQAhvk3C+QVGl0H3ouca8LDBlBfQKXwmW3huo/59H8rwb1wJw==}
     dependencies:
       tslib: 2.6.2
+
+  /@aws-sdk/xhr-http-handler/3.696.0:
+    resolution: {integrity: sha512-NFm9PUXgzHt7bMCHr9bLexUes7nr4fMfGuDonGKzuIt2fyA2PWRa5pXfFsIpwmu7Kb/ts58DuPMNr+9WGrcQuA==}
+    dependencies:
+      '@aws-sdk/types': 3.696.0
+      '@smithy/protocol-http': 4.1.7
+      '@smithy/querystring-builder': 3.0.10
+      '@smithy/types': 3.7.1
+      events: 3.3.0
+      tslib: 2.6.2
+    dev: false
 
   /@aws-sdk/xml-builder/3.696.0:
     resolution: {integrity: sha512-dn1mX+EeqivoLYnY7p2qLrir0waPnCgS/0YdRCAVU2x14FgfUYCH6Im3w3oi2dMwhxfKY5lYVB5NKvZu7uI9lQ==}
@@ -9096,6 +9109,11 @@ packages:
   /events/1.1.1:
     resolution: {integrity: sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==}
     engines: {node: '>=0.4.x'}
+    dev: false
+
+  /events/3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
     dev: false
 
   /execa/4.1.0:
