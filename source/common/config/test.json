@@ -8,6 +8,27 @@
     "cognito": {
       "domain": "cfitestforensics"
     },
+    "idpInfo": {
+      "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Test.xml",
+      "metadataPathType": "FILE",
+      "attributeMap": {
+        "username": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+        "email": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+        "firstName": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
+        "lastName": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname",
+        "groups": "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups"
+      },
+      "groupToDeaRoleRules": [
+        {
+          "filterValue": "ff4f3ee0-65c7-4609-8649-d50866763c25",
+          "deaRoleName": "WorkingManager"
+        },
+        {
+          "filterValue": "5af1800a-1e56-40e7-a929-caee941e0250",
+          "deaRoleName": "CaseWorker"
+        }
+      ]
+    },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
