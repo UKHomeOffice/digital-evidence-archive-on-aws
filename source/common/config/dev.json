@@ -9,7 +9,7 @@
     "domain": "cfidevforensics"
   },
   "idpInfo": {
-    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Dev.xml",
+    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Dev-Live.xml",
     "metadataPathType": "FILE",
     "attributeMap": {
       "username": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
@@ -20,11 +20,11 @@
     },
     "groupToDeaRoleRules": [
       {
-        "filterValue": "5d8d02bb-cd25-461b-be13-680000776769",
+        "filterValue": "781154d8-6961-4f83-b867-2a81c615c8cd",
         "deaRoleName": "WorkingManager"
       },
       {
-        "filterValue": "eeb25b4a-8dc9-4d4c-bdb8-d7f5e6b15478",
+        "filterValue": "efc500bf-635c-4bf9-a8b8-6e5e9339e31a",
         "deaRoleName": "CaseWorker"
       }
     ]
