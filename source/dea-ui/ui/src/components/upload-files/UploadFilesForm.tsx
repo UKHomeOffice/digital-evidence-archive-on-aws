@@ -3,9 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import crypto from 'crypto';
-import { ChecksumAlgorithm, UploadPartCommand, UploadPartCommandInput, S3 } from '@aws-sdk/client-s3';
-import { XhrHttpHandler } from '@aws-sdk/xhr-http-handler';
+import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import {
   Alert,
   Box,
@@ -22,17 +20,15 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
+import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
-import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
-
-const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
 interface FileUploadProgressRow {
   fileName: string;
@@ -47,14 +43,25 @@ enum UploadStatus {
   failed = 'Upload failed',
 }
 
+interface UploadDetails {
+  caseUlid: string;
+  fileName: string;
+  filePath: string;
+  fileSizeBytes: number;
+  chunkSizeBytes: number;
+  contentType: string;
+  reason: string;
+  details: string;
+}
+
 interface ActiveFileUpload {
   file: FileWithPath;
-  upoadDto: InitiateUploadForm;
+  caseFileUploadDetails: UploadDetails;
 }
 
 export const ONE_MB = 1024 * 1024;
-export const ONE_GB = ONE_MB * 1024;
-const MAX_PARALLEL_UPLOADS = 6; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_PART_UPLOADS = 10;
+const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -93,111 +100,77 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }
   }
 
-  async function blobToArrayBuffer(blob: Blob) {
-    if ('arrayBuffer' in blob) {
-      return await blob.arrayBuffer();
-    }
+  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
+    const chunkSizeBytes = activeFileUpload.caseFileUploadDetails.chunkSizeBytes;
+    const totalChunks = Math.ceil(activeFileUpload.caseFileUploadDetails.fileSizeBytes / chunkSizeBytes);
+    let uploadId: string | undefined = undefined;
+    const hash = cryptoJS.algo.SHA256.create();
 
-    return new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result && typeof reader.result !== 'string') {
-          resolve(reader.result);
-        }
-        reject();
+    // The range start and end is a sliding window over the file chunks.
+    // The window size is going to be the max parallel parts uploads, but the starting index will change each time
+    // around this loop.
+    for (let rangeStart = 1; rangeStart <= totalChunks; rangeStart += MAX_PARALLEL_PART_UPLOADS) {
+      const rangeEnd = rangeStart + (MAX_PARALLEL_PART_UPLOADS - 1);
+      const uploadDto: InitiateCaseFileUploadDTO = {
+        ...activeFileUpload.caseFileUploadDetails,
+        // range is inclusive
+        partRangeStart: rangeStart,
+        partRangeEnd: Math.min(rangeEnd, totalChunks),
+        uploadId,
       };
-      reader.onerror = () => reject();
-      reader.readAsArrayBuffer(blob);
-    });
-  }
 
-  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
-    const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
+      const initiatedCaseFile = await initiateUpload(uploadDto);
+      uploadId = initiatedCaseFile.uploadId;
 
-    let federationS3Client = new S3({
-      credentials: initiatedCaseFile.federationCredentials,
-      region: initiatedCaseFile.region,
-      useAccelerateEndpoint: true,
-      requestHandler: new XhrHttpHandler({
-        requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
-      }),
-    });
-
-    // let federationS3Client = new S3Client({
-    //   credentials: initiatedCaseFile.federationCredentials,
-    //   region: initiatedCaseFile.region,
-    //   useAccelerateEndpoint: true,
-    //   requestHandler: {
-    //     requestTimeout: 3000,
-    //     httpsAgent: { maxSockets: 50 },
-    //   },
-    // });
-
-    const credentialsInterval = setInterval(async () => {
-      await refreshCredentials();
-      const refreshRequest = await initiateUpload({
-        ...activeFileUpload.upoadDto,
-        uploadId: initiatedCaseFile.uploadId,
-      });
-      federationS3Client = new S3({
-        credentials: refreshRequest.federationCredentials,
-        region: initiatedCaseFile.region,
-        useAccelerateEndpoint: true,
-        requestHandler: new XhrHttpHandler({
-          requestTimeout: 20 * MINUTES_TO_MILLISECONDS, // 20 minutes in millis
-        }),
-      });
-    }, 20 * MINUTES_TO_MILLISECONDS);
-
-    const promises = [];
-
-    try {
-      const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-      for (let i = 0; i < totalChunks; i++) {
-        const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
-
-        const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
-        const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
-
-        const uploadInput: UploadPartCommandInput = {
-          Bucket: initiatedCaseFile.bucket,
-          Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
-          PartNumber: i + 1,
-          UploadId: initiatedCaseFile.uploadId,
-          Body: arrayFromBlob,
-          ChecksumSHA256: partHash,
-          ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
-        };
-        const uploadCommand = new UploadPartCommand(uploadInput);
-        promises.push(federationS3Client.send(uploadCommand));
+      if (!initiatedCaseFile.presignedUrls) {
+        throw new Error('No presigned urls provided');
       }
-      await Promise.all(promises);
-    } finally {
-      clearInterval(credentialsInterval);
-    }
 
-    await completeUpload({
-      caseUlid: props.caseId,
-      ulid: initiatedCaseFile.ulid,
-      uploadId: initiatedCaseFile.uploadId,
-    });
+      const uploadPromises: Promise<Response>[] = [];
+      const chunkBatchOffset = rangeStart - 1; //minus one because the range starts with 1
+      for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
+        const url = initiatedCaseFile.presignedUrls[index];
+        const start = (chunkBatchOffset + index) * chunkSizeBytes;
+        const end = (chunkBatchOffset + index + 1) * chunkSizeBytes;
+        const totalIndex = rangeStart + index;
+        let filePartPointer: Blob;
+        if (totalIndex === totalChunks) {
+          filePartPointer = activeFileUpload.file.slice(start);
+        } else {
+          filePartPointer = activeFileUpload.file.slice(start, end);
+        }
+        const loadedFilePart = await readFileSlice(filePartPointer);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
+        hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
+        uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
+      }
+      await Promise.all(uploadPromises);
+      await refreshCredentials();
+
+      if (rangeEnd >= totalChunks) {
+        await completeUpload({
+          caseUlid: props.caseId,
+          ulid: initiatedCaseFile.ulid,
+          uploadId,
+          sha256Hash: hash.finalize().toString(),
+        });
+      }
+    }
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
     // Trying to use small chunk size (50MB) to reduce memory use.
-    // Maximum object size	5 TiB
-    // Maximum number of parts per upload	10,000
-    // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
-    //const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-    const chunkSizeBytes = 300 * ONE_MB;
+    // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
+    const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-      const activeFileUpload = {
+      const activeFileUpload: ActiveFileUpload = {
         file: selectedFile,
-        upoadDto: {
+        caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
           filePath: selectedFile.relativePath,
@@ -208,7 +181,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           details,
         },
       };
-      await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
+      await uploadFilePartsAndComplete(activeFileUpload);
     } catch (e) {
       updateFileProgress(selectedFile, UploadStatus.failed);
       console.log('Upload failed', e);
@@ -228,6 +201,19 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         fileToUpdateStatus.status = status;
       }
       return newList;
+    });
+  }
+
+  async function readFileSlice(blob: Blob): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // reader.result is of type <string | ArrayBuffer | null>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
+        resolve(new Uint8Array(reader.result as any));
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
     });
   }
 
@@ -277,7 +263,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   function onDoneHandler() {
-    return router.push(`/case-detail?caseId=${props.caseId}`);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   function validateFields(): boolean {
@@ -387,7 +374,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           variant="embedded"
           columnDefinitions={[
             {
-              id: 'fileName',
+              id: 'name',
               header: commonTableLabels.nameHeader,
               cell: (e) => e.fileName,
               width: 170,
@@ -395,7 +382,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               sortingField: 'fileName',
             },
             {
-              id: 'fileSizeBytes',
+              id: 'size',
               header: commonTableLabels.fileSizeHeader,
               cell: (e) => formatFileSize(e.fileSizeBytes),
               width: 170,

@@ -160,6 +160,8 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
+  // TODO Generate Pre-Signed URLs
+
   return {
     ...caseFile,
     bucket: datasetsProvider.bucketName,
@@ -170,6 +172,7 @@ export const getTemporaryCredentialsForUpload = async (
       secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
       sessionToken: federationTokenResponse.Credentials.SessionToken,
     },
+    presignedUrls: [],
   };
 };
 
