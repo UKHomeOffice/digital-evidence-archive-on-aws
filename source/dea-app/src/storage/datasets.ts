@@ -111,7 +111,6 @@ export const createCaseFileUpload = async (
         ServerSideEncryption: 'aws:kms',
         ContentType: caseFile.contentType,
         StorageClass: 'INTELLIGENT_TIERING',
-        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
       })
     );
   } catch (error) {
@@ -140,7 +139,6 @@ async function getUploadPresignedUrlPromise(
     Key: s3Key,
     UploadId: uploadId,
     PartNumber: partNumber,
-    ChecksumAlgorithm: 'SHA256',
   });
   return getSignedUrl(presignedUrlClient, uploadPartCommand, {
     expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,

@@ -20,7 +20,6 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -104,7 +103,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const chunkSizeBytes = activeFileUpload.caseFileUploadDetails.chunkSizeBytes;
     const totalChunks = Math.ceil(activeFileUpload.caseFileUploadDetails.fileSizeBytes / chunkSizeBytes);
     let uploadId: string | undefined = undefined;
-    const hash = cryptoJS.algo.SHA256.create();
 
     // The range start and end is a sliding window over the file chunks.
     // The window size is going to be the max parallel parts uploads, but the starting index will change each time
@@ -140,9 +138,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           filePartPointer = activeFileUpload.file.slice(start, end);
         }
         const loadedFilePart = await readFileSlice(filePartPointer);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
-        hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
         uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
       }
       await Promise.all(uploadPromises);
@@ -153,7 +148,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           caseUlid: props.caseId,
           ulid: initiatedCaseFile.ulid,
           uploadId,
-          sha256Hash: hash.finalize().toString(),
         });
       }
     }
