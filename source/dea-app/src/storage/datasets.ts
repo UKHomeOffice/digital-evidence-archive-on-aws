@@ -5,7 +5,6 @@
 
 import {
   AbortMultipartUploadCommand,
-  ChecksumAlgorithm,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
