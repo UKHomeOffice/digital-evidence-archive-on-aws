@@ -140,6 +140,7 @@ async function getUploadPresignedUrlPromise(
     Key: s3Key,
     UploadId: uploadId,
     PartNumber: partNumber,
+    ChecksumAlgorithm: 'SHA256',
   });
   return getSignedUrl(presignedUrlClient, uploadPartCommand, {
     expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,
