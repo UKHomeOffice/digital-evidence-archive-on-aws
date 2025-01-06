@@ -27,8 +27,8 @@ import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../com
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
-import { UploadFilesProps } from './UploadFilesBody';
 import { Uploader } from './Uploader';
+import { UploadFilesProps } from './UploadFilesBody';
 
 interface FileUploadProgressRow {
   fileName: string;
@@ -145,6 +145,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             caseUlid: props.caseId,
             ulid: initiatedCaseFile.ulid,
             uploadId,
+          }).catch((e) => {
+            console.log(e);
           });
           updateFileProgress(activeFileUpload.file, UploadStatus.complete);
         }
@@ -208,19 +210,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         fileToUpdateStatus.status = status;
       }
       return newList;
-    });
-  }
-
-  async function readFileSlice(blob: Blob): Promise<Uint8Array> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // reader.result is of type <string | ArrayBuffer | null>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
-        resolve(new Uint8Array(reader.result as any));
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(blob);
     });
   }
 
