@@ -198,6 +198,12 @@ export class Uploader {
         total: total,
         percentage: percentage,
       });
+
+      if (event.type === 'uploaded') {
+        if (sent === total) {
+          void this.complete();
+        }
+      }
     }
   }
 
