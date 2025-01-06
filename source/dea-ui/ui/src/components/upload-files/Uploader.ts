@@ -92,7 +92,8 @@ export class Uploader {
 
     if (!this.parts.length) {
       if (!activeConnections) {
-        void this.complete();
+        console.log('No more parts. Calling complete function.');
+        this.complete().catch((e) => console.log(e));
       }
 
       return;
