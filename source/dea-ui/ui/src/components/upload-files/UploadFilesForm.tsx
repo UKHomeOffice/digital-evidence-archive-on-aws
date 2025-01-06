@@ -27,7 +27,7 @@ import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../com
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
-import { Uploader } from './Uploader';
+import { Uploader, UploaderCompleteEvent } from './Uploader';
 import { UploadFilesProps } from './UploadFilesBody';
 
 interface FileUploadProgressRow {
@@ -134,7 +134,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       console.log(p);
     };
 
-    const handleComplete = () => {
+    const handleComplete = (e: UploaderCompleteEvent) => {
+      console.log(`Completing upload ${e.uploadId}, uploaded ${e.parts.length} parts.`);
       completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
@@ -142,6 +143,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       }).catch((e) => {
         console.log(e);
       });
+      console.log('Updating file upload status...');
       updateFileProgress(activeFileUpload.file, UploadStatus.complete);
     };
 

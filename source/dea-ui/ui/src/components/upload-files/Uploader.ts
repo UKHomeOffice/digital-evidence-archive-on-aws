@@ -13,6 +13,12 @@ export interface UploaderFilePart {
   PartNumber: number;
 }
 
+export interface UploaderCompleteEvent {
+  uploadId: string;
+  fileKey: string;
+  parts: Array<UploaderUploadedPart>;
+}
+
 export interface UploaderOptions {
   parts: UploaderFilePart[];
   file: File;
@@ -23,7 +29,7 @@ export interface UploaderOptions {
   timeout?: number;
   onProgressFn: (payload: any) => void;
   onErrorFn: (payload: any) => void;
-  onCompleteFn: (payload: any) => void;
+  onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
 
 // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
@@ -38,7 +44,7 @@ export class Uploader {
 
   private readonly onProgressFn: (payload: any) => void;
   private readonly onErrorFn: (payload: any) => void;
-  private readonly onCompleteFn: (payload: any) => void;
+  private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
 
   private uploadedSize: number;
   private readonly progressCache: any;
@@ -137,13 +143,11 @@ export class Uploader {
     }
 
     try {
-      if (this.onCompleteFn) {
-        this.onCompleteFn({
-          uploadId: this.uploadId,
-          fileKey: this.fileKey,
-          parts: this.uploadedParts,
-        });
-      }
+      this.onCompleteFn({
+        uploadId: this.uploadId,
+        fileKey: this.fileKey,
+        parts: this.uploadedParts,
+      });
     } catch (error) {
       this.onErrorFn(error);
     }
