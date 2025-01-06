@@ -95,9 +95,6 @@ export class Uploader {
       console.log(`Active connections remining: ${activeConnections}`);
       if (activeConnections === 0) {
         void this.complete();
-      } else {
-        // Repeat until active connections is zero so that complete gets called.
-        this.sendNext();
       }
 
       return;
