@@ -105,68 +105,61 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const totalChunks = Math.ceil(activeFileUpload.caseFileUploadDetails.fileSizeBytes / chunkSizeBytes);
     let uploadId: string | undefined = undefined;
 
-    // The range start and end is a sliding window over the file chunks.
-    // The window size is going to be the max parallel parts uploads, but the starting index will change each time
-    // around this loop.
-    for (let rangeStart = 1; rangeStart <= totalChunks; rangeStart += MAX_PARALLEL_PART_UPLOADS) {
-      const rangeEnd = rangeStart + (MAX_PARALLEL_PART_UPLOADS - 1);
-      const uploadDto: InitiateCaseFileUploadDTO = {
-        ...activeFileUpload.caseFileUploadDetails,
-        // range is inclusive
-        partRangeStart: rangeStart,
-        partRangeEnd: Math.min(rangeEnd, totalChunks),
-        uploadId,
-      };
+    const uploadDto: InitiateCaseFileUploadDTO = {
+      ...activeFileUpload.caseFileUploadDetails,
+      // range is inclusive
+      partRangeStart: 1,
+      partRangeEnd: totalChunks,
+      uploadId,
+    };
 
-      const initiatedCaseFile = await initiateUpload(uploadDto);
-      uploadId = initiatedCaseFile.uploadId;
+    const initiatedCaseFile = await initiateUpload(uploadDto);
+    uploadId = initiatedCaseFile.uploadId;
 
-      if (!initiatedCaseFile.presignedUrls) {
-        throw new Error('No presigned urls provided');
-      }
-
-      const parts = initiatedCaseFile.presignedUrls.map((preSignedUrl, index) => ({
-        signedUrl: preSignedUrl,
-        PartNumber: index + 1,
-      }));
-
-      const handleError = (e: Error) => {
-        updateFileProgress(activeFileUpload.file, UploadStatus.failed);
-        console.log('Upload failed', e);
-      };
-
-      const handleProgress = (p: any) => {
-        console.log(p);
-      };
-
-      const handleComplete = () => {
-        if (rangeEnd >= totalChunks) {
-          completeUpload({
-            caseUlid: props.caseId,
-            ulid: initiatedCaseFile.ulid,
-            uploadId,
-          }).catch((e) => {
-            console.log(e);
-          });
-          updateFileProgress(activeFileUpload.file, UploadStatus.complete);
-        }
-      };
-
-      const axiosUploader = new Uploader({
-        parts,
-        chunkSize: chunkSizeBytes,
-        uploadId: uploadId,
-        fileKey: initiatedCaseFile.fileS3Key,
-        file: activeFileUpload.file,
-        onProgressFn: handleProgress,
-        onErrorFn: handleError,
-        onCompleteFn: handleComplete,
-      });
-
-      await axiosUploader.start();
-
-      await refreshCredentials();
+    if (!initiatedCaseFile.presignedUrls) {
+      throw new Error('No presigned urls provided');
     }
+
+    const parts = initiatedCaseFile.presignedUrls.map((preSignedUrl, index) => ({
+      signedUrl: preSignedUrl,
+      PartNumber: index + 1,
+    }));
+
+    const handleError = (e: Error) => {
+      updateFileProgress(activeFileUpload.file, UploadStatus.failed);
+      console.log('Upload failed', e);
+    };
+
+    const handleProgress = (p: any) => {
+      console.log(p);
+    };
+
+    const handleComplete = () => {
+      completeUpload({
+        caseUlid: props.caseId,
+        ulid: initiatedCaseFile.ulid,
+        uploadId,
+      }).catch((e) => {
+        console.log(e);
+      });
+      updateFileProgress(activeFileUpload.file, UploadStatus.complete);
+    };
+
+    const axiosUploader = new Uploader({
+      parts,
+      chunkSize: chunkSizeBytes,
+      uploadId: uploadId,
+      fileKey: initiatedCaseFile.fileS3Key,
+      file: activeFileUpload.file,
+      threads: MAX_PARALLEL_PART_UPLOADS,
+      onProgressFn: handleProgress,
+      onErrorFn: handleError,
+      onCompleteFn: handleComplete,
+    });
+
+    await axiosUploader.start();
+
+    await refreshCredentials();
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
