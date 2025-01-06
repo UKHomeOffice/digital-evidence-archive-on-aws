@@ -86,7 +86,7 @@ export class Uploader {
 
     if (!this.parts.length) {
       if (!activeConnections) {
-        this.complete();
+        void this.complete();
       }
 
       return;
@@ -113,13 +113,13 @@ export class Uploader {
             console.log(
               `Part#${part.PartNumber} failed to upload, backing off ${2 ** retry * 100} before retrying...`
             );
-            wait(2 ** retry * 100).then(() => {
+            void wait(2 ** retry * 100).then(() => {
               this.parts.push(part);
               this.sendNext(retry);
             });
           } else {
             console.log(`Part#${part.PartNumber} failed to upload, giving up`);
-            this.complete(error);
+            void this.complete(error);
           }
         });
     }
@@ -149,7 +149,7 @@ export class Uploader {
     }
   }
 
-  sendChunk(chunk: Blob, part: UploaderFilePart, sendChunkStarted: Function): Promise<void> {
+  sendChunk(chunk: Blob, part: UploaderFilePart, sendChunkStarted: () => void): Promise<void> {
     return new Promise((resolve, reject) => {
       this.upload(chunk, part, sendChunkStarted)
         .then((status) => {
@@ -195,7 +195,7 @@ export class Uploader {
     }
   }
 
-  upload(file: Blob, part: UploaderFilePart, sendChunkStarted: Function) {
+  upload(file: Blob, part: UploaderFilePart, sendChunkStarted: () => void) {
     // uploading each part with its pre-signed URL
     return new Promise((resolve, reject) => {
       const throwXHRError = (error: any, part: UploaderFilePart, abortFx?: any) => {
@@ -204,7 +204,9 @@ export class Uploader {
         window.removeEventListener('offline', abortFx);
       };
       if (this.uploadId && this.fileKey) {
-        if (!window.navigator.onLine) reject(new Error('System is offline'));
+        if (!window.navigator.onLine) {
+          reject(new Error('System is offline'));
+        }
 
         const xhr = (this.activeConnections[part.PartNumber - 1] = new XMLHttpRequest());
         xhr.timeout = this.timeout;
