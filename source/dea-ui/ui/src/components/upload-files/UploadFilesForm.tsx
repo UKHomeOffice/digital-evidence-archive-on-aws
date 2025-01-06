@@ -130,7 +130,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         PartNumber: index + 1,
       }));
 
-      const handleError = (e: any) => {
+      const handleError = (e: Error) => {
         updateFileProgress(activeFileUpload.file, UploadStatus.failed);
         console.log('Upload failed', e);
       };
