@@ -28,6 +28,7 @@ import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
+import { Uploader } from './Uploader';
 
 interface FileUploadProgressRow {
   fileName: string;
@@ -124,34 +125,46 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         throw new Error('No presigned urls provided');
       }
 
-      const uploadPromises: Promise<Response>[] = [];
-      const chunkBatchOffset = rangeStart - 1; //minus one because the range starts with 1
-      for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
-        const url = initiatedCaseFile.presignedUrls[index];
-        const start = (chunkBatchOffset + index) * chunkSizeBytes;
-        const end = (chunkBatchOffset + index + 1) * chunkSizeBytes;
-        const totalIndex = rangeStart + index;
-        let filePartPointer: Blob;
-        if (totalIndex === totalChunks) {
-          filePartPointer = activeFileUpload.file.slice(start);
-        } else {
-          filePartPointer = activeFileUpload.file.slice(start, end);
-        }
-        const loadedFilePart = await readFileSlice(filePartPointer);
-        uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
-      }
-      await Promise.all(uploadPromises);
-      await refreshCredentials();
+      const parts = initiatedCaseFile.presignedUrls.map((preSignedUrl, index) => ({
+        signedUrl: preSignedUrl,
+        PartNumber: index + 1,
+      }));
 
-      if (rangeEnd >= totalChunks) {
-        await completeUpload({
-          caseUlid: props.caseId,
-          ulid: initiatedCaseFile.ulid,
-          uploadId,
-        });
-      }
+      const handleError = (e: any) => {
+        updateFileProgress(activeFileUpload.file, UploadStatus.failed);
+        console.log('Upload failed', e);
+      };
+
+      const handleProgress = (p: any) => {
+        console.log(p);
+      };
+
+      const handleComplete = () => {
+        if (rangeEnd >= totalChunks) {
+          completeUpload({
+            caseUlid: props.caseId,
+            ulid: initiatedCaseFile.ulid,
+            uploadId,
+          });
+          updateFileProgress(activeFileUpload.file, UploadStatus.complete);
+        }
+      };
+
+      const axiosUploader = new Uploader({
+        parts,
+        chunkSize: chunkSizeBytes,
+        uploadId: uploadId,
+        fileKey: initiatedCaseFile.fileS3Key,
+        file: activeFileUpload.file,
+        onProgressFn: handleProgress,
+        onErrorFn: handleError,
+        onCompleteFn: handleComplete,
+      });
+
+      await axiosUploader.start();
+
+      await refreshCredentials();
     }
-    updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
