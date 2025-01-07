@@ -7,7 +7,6 @@
   "cognito": {
     "domain": "cfisandbox"
   },
-  "deaAllowedOrigins": "'*'",
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
