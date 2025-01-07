@@ -8,7 +8,6 @@
     "domain": "cfisandbox"
   },
   "deaAllowedOrigins": "*",
-  "deaAllowedOriginsList": ["*"],
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
