@@ -7,10 +7,6 @@
   "cognito": {
     "domain": "cfisandbox"
   },
-  "deaAllowedOrigins": "https://localhost:3001",
-  "preflightOptions": {
-    "allowOrigins": ["*"]
-  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
@@ -450,5 +446,6 @@
         }
       ]
     }
-  ]
+  ],
+  "deaAllowedOrigins": "https://localhost:3001"
 }
