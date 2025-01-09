@@ -84,7 +84,7 @@ export class Uploader {
   }
 
   sendNext(retry = 0) {
-    const activeConnections = Object.keys(this.activeConnections).length;
+    const activeConnections = Object.values(this.activeConnections).filter(xhr => xhr.readyState !== XMLHttpRequest.DONE).length
 
     if (activeConnections >= this.threadsQuantity) {
       return;
@@ -93,7 +93,11 @@ export class Uploader {
     if (!this.parts.length) {
       console.log('No more parts. Calling complete function.');
       console.log(`Active connections remining: ${activeConnections}`);
-      if (activeConnections === 0) {
+      if (activeConnections > 0 ) {
+        setTimeout(() => {
+          this.sendNext();
+        }, 1000);
+      } else if (activeConnections === 0) {
         void this.complete();
       }
 
