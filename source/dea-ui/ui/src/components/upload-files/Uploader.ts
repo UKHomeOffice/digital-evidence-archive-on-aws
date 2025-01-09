@@ -38,7 +38,7 @@ export class Uploader {
   private readonly chunkSize: number;
   private readonly threadsQuantity: number;
   private readonly timeout: number;
-  private readonly activeConnections: any;
+  private readonly activeConnections: { [k: number]: XMLHttpRequest };
   private readonly file: File;
   private aborted: boolean;
 
@@ -84,7 +84,7 @@ export class Uploader {
   }
 
   sendNext(retry = 0) {
-    const activeConnections = Object.values(this.activeConnections).filter(xhr => xhr.readyState !== XMLHttpRequest.DONE).length
+    const activeConnections = Object.values(this.activeConnections).filter(xhr => xhr.readyState !== XMLHttpRequest.DONE).length;
 
     if (activeConnections >= this.threadsQuantity) {
       return;
