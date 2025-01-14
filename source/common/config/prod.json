@@ -8,6 +8,27 @@
   "cognito": {
     "domain": "cfiprodforensics"
   },
+  "idpInfo": {
+    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Prod.xml",
+    "metadataPathType": "FILE",
+    "attributeMap": {
+      "username": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+      "email": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+      "firstName": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
+      "lastName": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname",
+      "groups": "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups"
+    },
+    "groupToDeaRoleRules": [
+      {
+        "filterValue": "5eee34d7-c8cc-4868-9259-a1e7914629f2",
+        "deaRoleName": "WorkingManager"
+      },
+      {
+        "filterValue": "ca66d87c-e260-4963-997d-7092b0138b6e",
+        "deaRoleName": "CaseWorker"
+      }
+    ]
+  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
