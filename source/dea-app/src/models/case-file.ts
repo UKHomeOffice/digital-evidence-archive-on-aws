@@ -38,6 +38,7 @@ export type DeaCaseFileUpload = DeaCaseFile & {
   readonly federationCredentials: Credentials;
   readonly bucket: string;
   readonly region: string;
+  readonly presignedUrls: string[];
 };
 
 export interface DeaCaseFileResult {
@@ -136,8 +137,11 @@ export interface InitiateCaseFileUploadDTO {
   readonly filePath: string;
   readonly contentType: string;
   readonly fileSizeBytes: number;
-  readonly details?: string;
-  readonly reason?: string;
+  readonly details: string;
+  readonly reason: string;
+  readonly chunkSizeBytes: number;
+  readonly partRangeStart: number;
+  readonly partRangeEnd: number;
   readonly uploadId?: string;
 }
 

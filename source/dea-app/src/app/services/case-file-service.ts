@@ -61,7 +61,15 @@ export const initiateCaseFileUpload = async (
       }
     }
 
-    return getTemporaryCredentialsForUpload(caseFile, uploadId, userUlid, sourceIp, datasetsProvider);
+    return getTemporaryCredentialsForUpload(
+      caseFile,
+      uploadId,
+      userUlid,
+      sourceIp,
+      uploadDTO.partRangeStart,
+      uploadDTO.partRangeEnd,
+      datasetsProvider
+    );
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
