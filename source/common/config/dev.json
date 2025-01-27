@@ -9,7 +9,7 @@
     "domain": "cfidevforensics"
   },
   "idpInfo": {
-    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Dev-Live.xml",
+    "metadataPath": "/home/runner/work/digital-evidence-archive-on-aws/digital-evidence-archive-on-aws/source/common/config/EDDSAS-DEA-Dev.xml",
     "metadataPathType": "FILE",
     "attributeMap": {
       "username": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
