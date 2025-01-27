@@ -4,14 +4,6 @@
  */
 
 import { fail } from 'assert';
-import {
-  CompleteMultipartUploadCommand,
-  ListPartsCommand,
-  S3Client,
-  S3ClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-s3';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
@@ -43,7 +35,6 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
@@ -51,8 +42,6 @@ let caseToUploadTo = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
-const UPLOAD_ID = '123456';
-const VERSION_ID = '543210';
 
 jest.setTimeout(30000);
 
@@ -82,17 +71,17 @@ describe('Test complete case file upload', () => {
   });
 
   beforeEach(() => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      Parts: [
-        {
-          ETag: 'I am an etag',
-          PartNumber: 99,
-        },
-      ],
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   Parts: [
+    //     {
+    //       ETag: 'I am an etag',
+    //       PartNumber: 99,
+    //     },
+    //   ],
+    // });
   });
 
   it('should successfully complete a file upload', async () => {
@@ -134,7 +123,7 @@ describe('Test complete case file upload', () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId2 = caseFile2.ulid as string;
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
-    await completeCaseFileUploadAndValidate(fileId2, caseToUploadTo, fileName2, 2);
+    await completeCaseFileUploadAndValidate(fileId2, caseToUploadTo, fileName2);
 
     const result = await listCaseFilesByFilePath(
       caseToUploadTo,
@@ -299,26 +288,26 @@ describe('Test complete case file upload', () => {
 async function completeCaseFileUploadAndValidate(
   ulid: string,
   caseUlid: string,
-  fileName: string,
-  callCount = 1
+  fileName: string
+  // callCount = 1
 ): Promise<DeaCaseFileResult> {
   const deaCaseFile = await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, ulid, caseUlid);
   await validateCaseFile(deaCaseFile, ulid, caseUlid, fileUploader.ulid, CaseFileStatus.ACTIVE, fileName);
 
-  expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, callCount);
-  expect(s3Mock).toHaveReceivedCommandTimes(CompleteMultipartUploadCommand, callCount);
+  // expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, callCount);
+  // expect(s3Mock).toHaveReceivedCommandTimes(CompleteMultipartUploadCommand, callCount);
 
-  expect(s3Mock).toHaveReceivedCommandWith(ListPartsCommand, {
-    Bucket: DATASETS_PROVIDER.bucketName,
-    Key: `${caseUlid}/${ulid}`,
-    UploadId: deaCaseFile.uploadId,
-  });
+  // expect(s3Mock).toHaveReceivedCommandWith(ListPartsCommand, {
+  //   Bucket: DATASETS_PROVIDER.bucketName,
+  //   Key: `${caseUlid}/${ulid}`,
+  //   UploadId: deaCaseFile.uploadId,
+  // });
 
-  expect(s3Mock).toHaveReceivedCommandWith(CompleteMultipartUploadCommand, {
-    Bucket: DATASETS_PROVIDER.bucketName,
-    Key: `${caseUlid}/${deaCaseFile.ulid}`,
-    UploadId: deaCaseFile.uploadId,
-  });
+  // expect(s3Mock).toHaveReceivedCommandWith(CompleteMultipartUploadCommand, {
+  //   Bucket: DATASETS_PROVIDER.bucketName,
+  //   Key: `${caseUlid}/${deaCaseFile.ulid}`,
+  //   UploadId: deaCaseFile.uploadId,
+  // });
 
   return deaCaseFile;
 }

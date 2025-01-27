@@ -21,6 +21,7 @@ import {
   RestoreObjectCommand,
   S3Client,
   StorageClass,
+  UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import {
   CreateJobCommand,
@@ -73,7 +74,7 @@ const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() 
 const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
 
 export const defaultDatasetsProvider = {
-  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
+  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent(), useAccelerateEndpoint: true }),
   region: region,
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   s3BatchDeleteCaseFileLambdaArn: getRequiredEnv(
@@ -127,11 +128,31 @@ export const createCaseFileUpload = async (
   return response.UploadId;
 };
 
+async function getUploadPresignedUrlPromise(
+  s3Key: string,
+  uploadId: string,
+  partNumber: number,
+  presignedUrlClient: S3Client,
+  datasetsProvider: DatasetsProvider
+): Promise<string> {
+  const uploadPartCommand = new UploadPartCommand({
+    Bucket: datasetsProvider.bucketName,
+    Key: s3Key,
+    UploadId: uploadId,
+    PartNumber: partNumber,
+  });
+  return getSignedUrl(presignedUrlClient, uploadPartCommand, {
+    expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,
+  });
+}
+
 export const getTemporaryCredentialsForUpload = async (
   caseFile: Readonly<DeaCaseFile>,
   uploadId: string,
   userUlid: string,
   sourceIp: string,
+  partsRangeStart: number,
+  partsRangeEnd: number,
   datasetsProvider: Readonly<DatasetsProvider>
 ): Promise<DeaCaseFileUpload> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
@@ -160,6 +181,15 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
+  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
+  const presignedUrlPromises: Promise<string>[] = [];
+  for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+    presignedUrlPromises.push(
+      getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+    );
+  }
+  const presignedUrls = await Promise.all(presignedUrlPromises);
+
   return {
     ...caseFile,
     bucket: datasetsProvider.bucketName,
@@ -170,6 +200,7 @@ export const getTemporaryCredentialsForUpload = async (
       secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
       sessionToken: federationTokenResponse.Credentials.SessionToken,
     },
+    presignedUrls,
   };
 };
 
@@ -556,6 +587,7 @@ async function getDownloadPresignedUrlClient(
       sessionToken: credentials.SessionToken,
       expiration: credentials.Expiration,
     },
+    useAccelerateEndpoint: true,
   });
 }
 

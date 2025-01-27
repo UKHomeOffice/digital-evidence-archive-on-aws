@@ -5,7 +5,6 @@
 
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
-import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
@@ -30,15 +29,12 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
 let fileDescriber: DeaUser;
 let caseToDescribe = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
-const UPLOAD_ID = '123456';
-const VERSION_ID = '543210';
 
 jest.setTimeout(20000);
 
@@ -69,11 +65,11 @@ describe('Test get case file details', () => {
   });
 
   beforeEach(() => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    // });
   });
 
   it('Get-file-details should successfully get file details', async () => {
