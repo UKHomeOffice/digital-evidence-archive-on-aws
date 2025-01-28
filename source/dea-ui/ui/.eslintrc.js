@@ -12,6 +12,7 @@ module.exports = {
   plugins: ['testing-library', '@typescript-eslint', 'security', 'import'],
   parser: '@typescript-eslint/parser',
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/consistent-type-assertions': [
       'warn',
       {

@@ -5,13 +5,6 @@
 
 import { fail } from 'assert';
 import {
-  S3Client,
-  S3ClientResolvedConfig,
-  ServiceInputTypes as S3Input,
-  ServiceOutputTypes as S3Output,
-} from '@aws-sdk/client-s3';
-import {
-  S3ControlClient,
   S3ControlClientResolvedConfig,
   ServiceInputTypes as S3ControlInput,
   ServiceOutputTypes as S3ControlOutput,
@@ -55,13 +48,9 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
-let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
-
-const ETAG = 'hehe';
-const VERSION_ID = 'haha';
 
 describe('S3 batch job status change handler', () => {
   beforeAll(async () => {
@@ -98,20 +87,20 @@ describe('S3 batch job status change handler', () => {
 
   beforeEach(() => {
     // reset mock so that each test can validate its own set of mock calls
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: 'lol',
-      VersionId: VERSION_ID,
-      ETag: ETAG,
-      Parts: [
-        {
-          ETag: 'I am an etag',
-          PartNumber: 99,
-        },
-      ],
-    });
-
-    s3ControlMock = mockClient(S3ControlClient);
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: 'lol',
+    //   VersionId: VERSION_ID,
+    //   ETag: ETAG,
+    //   Parts: [
+    //     {
+    //       ETag: 'I am an etag',
+    //       PartNumber: 99,
+    //     },
+    //   ],
+    // });
+    //
+    // s3ControlMock = mockClient(S3ControlClient);
   });
 
   it('should successfully update case and delete job when completed with no failures', async () => {
