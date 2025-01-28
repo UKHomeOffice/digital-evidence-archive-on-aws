@@ -5,7 +5,6 @@
 
 import { fail } from 'assert';
 import {
-  S3ControlClient,
   S3ControlClientResolvedConfig,
   ServiceInputTypes as S3ControlInput,
   ServiceOutputTypes as S3ControlOutput,
@@ -103,8 +102,7 @@ describe('S3 batch job status change handler', () => {
     //     },
     //   ],
     // });
-
-    s3ControlMock = mockClient(S3ControlClient);
+    // s3ControlMock = mockClient(S3ControlClient);
   });
 
   it('should successfully update case and delete job when completed with no failures', async () => {
