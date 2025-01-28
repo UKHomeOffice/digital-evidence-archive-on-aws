@@ -4,12 +4,7 @@
  */
 
 import { fail } from 'assert';
-import {
-  S3Client,
-  ServiceInputTypes as S3Input,
-  ServiceOutputTypes as S3Output,
-  S3ClientResolvedConfig,
-} from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import {
