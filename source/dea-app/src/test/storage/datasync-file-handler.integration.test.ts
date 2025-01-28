@@ -4,10 +4,7 @@
  */
 
 import fs from 'fs';
-import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import { S3EventRecord, S3Event } from 'aws-lambda';
-import { mockClient } from 'aws-sdk-client-mock';
 import { createDataVault } from '../../app/resources/create-data-vault';
 import { createDataVaultExecution } from '../../app/resources/create-data-vault-execution';
 import { createDataVaultTask } from '../../app/resources/create-data-vault-task';
@@ -31,8 +28,7 @@ const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
 
 describe('datasync event handler', () => {
   const region = testEnv.awsRegion;
-
-  const mockS3Client = mockClient(S3Client);
+  // const mockS3Client = mockClient(S3Client);
 
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('datasyncEventHandlerTest');
@@ -68,11 +64,11 @@ describe('datasync event handler', () => {
       'utf-8'
     );
 
-    const sdkStream = sdkStreamMixin(fs.createReadStream('filtered_data.json'));
+    // const sdkStream = sdkStreamMixin(fs.createReadStream('filtered_data.json'));
 
-    mockS3Client.on(GetObjectCommand).resolves({
-      Body: sdkStream,
-    });
+    // mockS3Client.on(GetObjectCommand).resolves({
+    //   Body: sdkStream,
+    // });
 
     // Get Object information to mock HeadObjectCommand
     const locationDetails = await describeDatasyncLocation(deaTask.destinationLocationArn, dataSyncProvider);
@@ -80,9 +76,9 @@ describe('datasync event handler', () => {
       throw new Error('Could not find location details');
     }
 
-    mockS3Client.on(HeadObjectCommand).resolves({
-      VersionId: 'testVersion',
-    });
+    // mockS3Client.on(HeadObjectCommand).resolves({
+    //   VersionId: 'testVersion',
+    // });
 
     // Create Valid Task Report Location
     const reportKey = `Detailed-Reports/${deaTask.taskId}/${deaExecution.executionId}/${deaExecution.executionId}.files-verified-v1-00001-00000000000000000.json`;
