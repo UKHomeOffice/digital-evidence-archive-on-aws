@@ -150,7 +150,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     };
 
     const handleComplete = (e: UploaderCompleteEvent) => {
-      console.log(`Completing upload ${e.uploadId}, uploaded ${e.parts.length} parts.`);
+      console.log(`Completing upload ${e.uploadId}`);
       completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
@@ -158,7 +158,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       }).catch((e) => {
         console.log(e);
       });
-      console.log('Updating file upload status...');
       updateFileProgress(activeFileUpload.file, UploadStatus.complete);
     };
 
