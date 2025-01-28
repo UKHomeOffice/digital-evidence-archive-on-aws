@@ -32,7 +32,6 @@ export interface UploaderOptions {
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
 
-// original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
 export class Uploader {
   private parts: UploaderFilePart[];
   private readonly chunkSize: number;
@@ -52,6 +51,7 @@ export class Uploader {
   private readonly uploadId: string;
   private readonly fileKey: string;
 
+  // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
   constructor(options: UploaderOptions) {
     // this must be bigger than or equal to 5MB,
     // otherwise AWS will respond with:
@@ -76,103 +76,95 @@ export class Uploader {
   }
 
   async start() {
+    const startTime = performance.now();
     try {
-      this.sendNext();
+      await this.uploadLargeFile();
+      const endTime = performance.now(); // Record end time in milliseconds
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
+
+      console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
     } catch (error: any) {
+      const endTime = performance.now(); // Capture time if upload fails
+      const timeTaken = (endTime - startTime) / 1000;
+      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
+      console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
+
       await this.complete(error);
     }
   }
 
-  sendNext(retry = 0) {
-    const activeConnections = Object.values(this.activeConnections).filter(xhr => xhr.readyState !== XMLHttpRequest.DONE).length;
+  convertSecondsToMinutes(seconds: number): string {
+    const minutes = Math.floor(seconds / 60); // Get whole minutes
+    const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
 
-    if (activeConnections >= this.threadsQuantity) {
-      return;
+    // Format the output as "minutes:seconds"
+    return `${minutes}m ${remainingSeconds}s`;
+  }
+
+  async uploadLargeFile() {
+    // Wait for all parts to upload
+    const totalParts = Math.ceil(this.file.size / this.chunkSize);
+
+    // Step 2: Upload each part
+    const uploadPromises = [];
+
+    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+      const part = this.parts[partNumber - 1];
+      uploadPromises.push(this.uploadPart(this.file, partNumber, part));
     }
 
-    if (!this.parts.length) {
-      console.log('No more parts. Calling complete function.');
-      console.log(`Active connections remining: ${activeConnections}`);
-      if (activeConnections > 0 ) {
-        setTimeout(() => {
-          this.sendNext();
-        }, 1000);
-      } else if (activeConnections === 0) {
-        void this.complete();
-      }
-
-      return;
+    // Wait for all parts to upload
+    try {
+      await Promise.all(uploadPromises);
+      void this.complete();
+    } catch (error) {
+      console.error('Error uploading file parts:', error);
     }
+  }
 
-    const part = this.parts.pop();
-    if (this.file && part) {
-      const sentSize = (part.PartNumber - 1) * this.chunkSize;
-      const chunk = this.file.slice(sentSize, sentSize + this.chunkSize);
+  uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
+    console.log('Upload : Start...');
 
-      const sendChunkStarted = () => {
-        this.sendNext();
+    // uploading each part with its pre-signed URL
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', part.signedUrl, true);
+      xhr.setRequestHeader('Content-Type', file.type);
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          resolve();
+        } else {
+          reject(new Error(`Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
+        }
       };
 
-      this.sendChunk(chunk, part, sendChunkStarted)
-        .then(() => {
-          this.sendNext();
-        })
-        .catch((error) => {
-          if (retry <= 6) {
-            retry++;
-            const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
-            //exponential backoff retry before giving up
-            console.log(
-              `Part#${part.PartNumber} failed to upload, backing off ${2 ** retry * 100} before retrying...`
-            );
-            void wait(2 ** retry * 100).then(() => {
-              this.parts.push(part);
-              this.sendNext(retry);
-            });
-          } else {
-            console.log(`Part#${part.PartNumber} failed to upload, giving up`);
-            void this.complete(error);
-          }
-        });
-    }
-  }
+      xhr.onerror = () => reject(new Error(`Network error during part ${part.PartNumber} upload`));
 
-  async complete(error?: any) {
-    if (error && !this.aborted) {
-      this.onErrorFn(error);
-      return;
-    }
+      xhr.ontimeout = (error) => {
+        console.log('XHR Timedout.....', error, ':', part);
+        reject(new Error(`Timedout during part ${part.PartNumber} upload`));
+      };
+      xhr.onabort = () => {
+        reject(new Error(`User cancelled operation during part ${part.PartNumber} upload`));
+      };
 
-    if (error) {
-      this.onErrorFn(error);
-      return;
-    }
+      const progressListener = this.handleProgress.bind(this, part.PartNumber - 1);
+      xhr.upload.addEventListener('progress', progressListener);
+      xhr.addEventListener('error', progressListener);
+      xhr.addEventListener('abort', progressListener);
+      xhr.addEventListener('loadend', progressListener);
 
-    try {
-      this.onCompleteFn({
-        uploadId: this.uploadId,
-        fileKey: this.fileKey,
-        parts: this.uploadedParts,
-      });
-    } catch (error) {
-      this.onErrorFn(error);
-    }
-  }
+      const abortXHR = () => xhr.abort();
+      window.addEventListener('offline', abortXHR);
 
-  sendChunk(chunk: Blob, part: UploaderFilePart, sendChunkStarted: () => void): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.upload(chunk, part, sendChunkStarted)
-        .then((status) => {
-          if (status !== 200) {
-            reject(new Error('Failed chunk upload'));
-            return;
-          }
+      // Calculate the byte range for the part
+      const startByte = (partNumber - 1) * this.chunkSize;
+      const endByte = Math.min(startByte + this.chunkSize, file.size);
 
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
+      const partBlob = file.slice(startByte, endByte);
+      xhr.send(partBlob);
     });
   }
 
@@ -192,87 +184,40 @@ export class Uploader {
         .reduce((memo, id) => (memo += this.progressCache[id]), 0);
 
       const sent = Math.min(this.uploadedSize + inProgress, this.file.size);
-
       const total = this.file.size;
-
       const percentage = Math.round((sent / total) * 100);
 
       this.onProgressFn({
-        sent: sent,
+        fileName: this.file.name,
+        part: part,
+        // sent: sent,
         total: total,
         percentage: percentage,
       });
     }
   }
 
-  upload(file: Blob, part: UploaderFilePart, sendChunkStarted: () => void) {
-    // uploading each part with its pre-signed URL
-    return new Promise((resolve, reject) => {
-      const throwXHRError = (error: any, part: UploaderFilePart, abortFx?: any) => {
-        delete this.activeConnections[part.PartNumber - 1];
-        reject(error);
-        window.removeEventListener('offline', abortFx);
-      };
-      if (this.uploadId && this.fileKey) {
-        if (!window.navigator.onLine) {
-          reject(new Error('System is offline'));
-        }
+  async complete(error?: any) {
+    console.log('Completing...');
+    if (error && !this.aborted) {
+      console.log('Completing Error and not aborted...');
+      this.onErrorFn(error);
+      return;
+    }
+    if (error) {
+      console.log('Completing Error...');
+      this.onErrorFn(error);
+      return;
+    }
 
-        const xhr = (this.activeConnections[part.PartNumber - 1] = new XMLHttpRequest());
-        xhr.timeout = this.timeout;
-        sendChunkStarted();
-
-        const progressListener = this.handleProgress.bind(this, part.PartNumber - 1);
-
-        xhr.upload.addEventListener('progress', progressListener);
-
-        xhr.addEventListener('error', progressListener);
-        xhr.addEventListener('abort', progressListener);
-        xhr.addEventListener('loadend', progressListener);
-
-        xhr.open('PUT', part.signedUrl);
-        const abortXHR = () => xhr.abort();
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState === 4 && xhr.status === 200) {
-            const ETag = xhr.getResponseHeader('ETag');
-
-            if (ETag) {
-              const uploadedPart = {
-                PartNumber: part.PartNumber,
-                ETag: ETag.replaceAll('"', ''),
-              };
-
-              this.uploadedParts.push(uploadedPart);
-
-              resolve(xhr.status);
-              delete this.activeConnections[part.PartNumber - 1];
-              window.removeEventListener('offline', abortXHR);
-            }
-          }
-        };
-
-        xhr.onerror = (error) => {
-          throwXHRError(error, part, abortXHR);
-        };
-        xhr.ontimeout = (error) => {
-          throwXHRError(error, part, abortXHR);
-        };
-        xhr.onabort = () => {
-          throwXHRError(new Error('Upload canceled by user or system'), part);
-        };
-        window.addEventListener('offline', abortXHR);
-        xhr.send(file);
-      }
-    });
-  }
-
-  abort() {
-    Object.keys(this.activeConnections)
-      .map(Number)
-      .forEach((id) => {
-        this.activeConnections[id].abort();
+    try {
+      this.onCompleteFn({
+        uploadId: this.uploadId,
+        fileKey: this.fileKey,
+        parts: this.uploadedParts,
       });
-
-    this.aborted = true;
+    } catch (error) {
+      this.onErrorFn(error);
+    }
   }
 }

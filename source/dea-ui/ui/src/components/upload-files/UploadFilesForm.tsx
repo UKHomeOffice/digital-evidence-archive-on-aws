@@ -35,6 +35,7 @@ interface FileUploadProgressRow {
   status: UploadStatus;
   fileSizeBytes: number;
   relativePath: string;
+  uploadPercentage: string;
 }
 
 enum UploadStatus {
@@ -59,9 +60,10 @@ interface ActiveFileUpload {
   caseFileUploadDetails: UploadDetails;
 }
 
+export const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
 export const ONE_MB = 1024 * 1024;
 const MAX_PARALLEL_PART_UPLOADS = 10;
-const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
+const MAX_PARALLEL_UPLOADS = 2; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -84,6 +86,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           fileSizeBytes: Math.max(file.size, 1),
           status: UploadStatus.progress,
           relativePath: file.relativePath,
+          uploadPercentage: '0',
         })),
       ]);
 
@@ -131,11 +134,23 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     };
 
     const handleProgress = (p: any) => {
-      console.log(p);
+      // console.log(p);
+      setUploadedFiles((prevState) => {
+        // Map over the previous state to update the specific file's uploadPercentage
+        return prevState.map((file) => {
+          if (file.fileName === p['fileName']) {
+            return {
+              ...file,
+              uploadPercentage: p['percentage'], // Update the uploadPercentage
+            };
+          }
+          return file; // Return other files unchanged
+        });
+      });
     };
 
     const handleComplete = (e: UploaderCompleteEvent) => {
-      console.log(`Completing upload ${e.uploadId}, uploaded ${e.parts.length} parts.`);
+      console.log(`Completing upload ${e.uploadId}`);
       completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
@@ -143,7 +158,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       }).catch((e) => {
         console.log(e);
       });
-      console.log('Updating file upload status...');
       updateFileProgress(activeFileUpload.file, UploadStatus.complete);
     };
 
@@ -154,6 +168,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       fileKey: initiatedCaseFile.fileS3Key,
       file: activeFileUpload.file,
       threads: MAX_PARALLEL_PART_UPLOADS,
+      timeout: 300000,
       onProgressFn: handleProgress,
       onErrorFn: handleError,
       onCompleteFn: handleComplete,
@@ -167,8 +182,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
     // Trying to use small chunk size (50MB) to reduce memory use.
-    // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
-    const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+    // Maximum object size	5 TiB
+    // Maximum number of parts per upload	10,000
+    // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
+    const chunkSizeBytes = Math.max(selectedFile.size / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
@@ -201,6 +218,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           file.relativePath === selectedFile.relativePath &&
           file.status === UploadStatus.progress
       );
+
       if (fileToUpdateStatus) {
         fileToUpdateStatus.status = status;
       }
@@ -215,7 +233,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Spinner />
-              <span>{uploadProgress.status}</span>
+              <span>
+                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+              </span>
             </SpaceBetween>
           </Box>
         );
@@ -225,7 +245,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="status-negative" variant="error" />
-              <span>{uploadProgress.status}</span>
+              <span>{uploadProgress.status} </span>
             </SpaceBetween>
           </Box>
         );
