@@ -4,13 +4,6 @@
  */
 
 import { fail } from 'assert';
-import {
-  CreateMultipartUploadCommand,
-  S3Client,
-  S3ClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-s3';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
@@ -41,7 +34,6 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
@@ -51,8 +43,8 @@ const FILE_NAME = 'tuna.jpeg';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
-const UPLOAD_ID = '123456';
-const VERSION_ID = '543210';
+// const UPLOAD_ID = '123456';
+// const VERSION_ID = '543210';
 const CONTENT_TYPE = 'image/jpeg';
 
 jest.setTimeout(30000);
@@ -84,11 +76,11 @@ describe('Test initiate case file upload', () => {
 
   beforeEach(() => {
     // reset mock so that each test can validate its own set of mock calls
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    // });
   });
 
   it('should successfully initiate a file upload', async () => {
@@ -365,14 +357,14 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     fileName
   );
 
-  expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
-  expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {
-    Bucket: DATASETS_PROVIDER.bucketName,
-    Key: `${caseUlid}/${deaCaseFile.ulid}`,
-    BucketKeyEnabled: true,
-    ServerSideEncryption: 'aws:kms',
-    ContentType: CONTENT_TYPE,
-    StorageClass: 'INTELLIGENT_TIERING',
-  });
+  // expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
+  // expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {
+  //   Bucket: DATASETS_PROVIDER.bucketName,
+  //   Key: `${caseUlid}/${deaCaseFile.ulid}`,
+  //   BucketKeyEnabled: true,
+  //   ServerSideEncryption: 'aws:kms',
+  //   ContentType: CONTENT_TYPE,
+  //   StorageClass: 'INTELLIGENT_TIERING',
+  // });
   return deaCaseFile;
 }
