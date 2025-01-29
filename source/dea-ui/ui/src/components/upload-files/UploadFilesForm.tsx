@@ -75,6 +75,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
+    const startTime = performance.now();
     // top level try/finally to set uploadInProgress bool state
     try {
       setUploadInProgress(true);
@@ -100,7 +101,21 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       setSelectedFiles([]);
     } finally {
       setUploadInProgress(false);
+
+      const endTime = performance.now(); // Record end time in milliseconds
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const totalTimeInMinsSecs = convertSecondsToMinutes(timeTaken);
+
+      console.log(`All files uploaded successfully in ${totalTimeInMinsSecs}.`);
     }
+  }
+
+  function convertSecondsToMinutes(seconds: number): string {
+    const minutes = Math.floor(seconds / 60); // Get whole minutes
+    const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
+
+    // Format the output as "minutes:seconds"
+    return `${minutes}m ${remainingSeconds}s`;
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
