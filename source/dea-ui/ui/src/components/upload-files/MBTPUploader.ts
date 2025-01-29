@@ -164,7 +164,13 @@ export class MyUploader {
       const endByte = Math.min(startByte + this.chunkSize, file.size);
 
       const partBlob = file.slice(startByte, endByte);
-      xhr.send(partBlob);
+      try {
+        console.log(' XHR Data :', xhr);
+
+        xhr.send(partBlob);
+      } catch (error) {
+        this.onErrorFn(error);
+      }
     });
   }
 
