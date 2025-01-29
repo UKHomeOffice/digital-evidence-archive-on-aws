@@ -1,4 +1,6 @@
 {
+  "testStack": true,
+  "deaAllowedOrigins": "https://localhost:3001",
   "deletionAllowed": true,
   "isOneClick": false,
   "sourceIpValidation": false,
