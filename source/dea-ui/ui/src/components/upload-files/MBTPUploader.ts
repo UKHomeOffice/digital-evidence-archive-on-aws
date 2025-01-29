@@ -165,8 +165,6 @@ export class MyUploader {
 
       const partBlob = file.slice(startByte, endByte);
       try {
-        console.log(' XHR Data :', xhr);
-
         xhr.send(partBlob);
       } catch (error) {
         this.onErrorFn(error);
