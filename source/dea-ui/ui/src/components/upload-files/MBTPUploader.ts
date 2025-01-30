@@ -202,7 +202,6 @@ export class MyUploader {
   }
 
   async complete(error?: any) {
-    console.log('Completing...');
     if (error && !this.aborted) {
       console.log('Completing Error and not aborted...');
       this.onErrorFn(error);
