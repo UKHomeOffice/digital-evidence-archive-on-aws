@@ -104,13 +104,17 @@ export const validateInitiateUploadRequirements = async (
     repositoryProvider
   );
 
-  if (existingCaseFile) {
+  const doNotOverwriteExistingCase = false;
+
+  if (existingCaseFile && doNotOverwriteExistingCase) {
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
     // todo: add more protection to prevent creation of 2 files with same filePath+fileName
     if (existingCaseFile.status == CaseFileStatus.PENDING) {
       throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
     }
     throw new ValidationError('File already exists in the DB');
+  } else {
+    console.log('Overwritting exiting case....');
   }
 };
 
