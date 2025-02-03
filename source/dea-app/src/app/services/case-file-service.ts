@@ -45,11 +45,18 @@ export const initiateCaseFileUpload = async (
   try {
     let caseFile: DeaCaseFile | undefined;
     let uploadId = uploadDTO.uploadId;
+
+    console.log('case-file-service.initiateCaseFileUpload.....UploadId:', uploadId);
+
     if (!uploadId) {
+      console.log('case-file-service.initiateCaseFileUpload.....!UploadDTO:', uploadDTO);
+
       caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
 
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
     } else {
+      console.log('case-file-service.initiateCaseFileUpload.....UploadDTO:', uploadDTO);
+
       caseFile = await getCaseFileByFileLocation(
         uploadDTO.caseUlid,
         uploadDTO.filePath,

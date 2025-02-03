@@ -45,6 +45,7 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   }
   const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
+  console.log('DEAGatewayProxyHandler.initiateCaseFileUpload.....');
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     requestCaseFile,
     userUlid,
