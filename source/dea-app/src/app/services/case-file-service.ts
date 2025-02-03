@@ -149,7 +149,7 @@ export const validateCompleteCaseFileRequirements = async (
   );
 
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
-    throw new ValidationError('File is in incorrect state for upload');
+    throw new ValidationError('File ' + existingCaseFile.fileName + ' is in incorrect state for upload');
   }
 
   if (existingCaseFile.createdBy !== userUlid) {
