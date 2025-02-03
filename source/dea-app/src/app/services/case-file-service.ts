@@ -50,6 +50,16 @@ export const initiateCaseFileUpload = async (
 
     if (!uploadId) {
       console.log('case-file-service.initiateCaseFileUpload.....!UploadDTO:', uploadDTO);
+      const existingCaseFilecaseFile = await getCaseFileByFileLocation(
+        uploadDTO.caseUlid,
+        uploadDTO.filePath,
+        uploadDTO.fileName,
+        repositoryProvider
+      );
+      console.log(
+        'case-file-service.initiateCaseFileUpload.....existingCaseFilecaseFile:',
+        existingCaseFilecaseFile
+      );
 
       caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
 
@@ -112,7 +122,7 @@ export const validateInitiateUploadRequirements = async (
   );
 
   const doNotOverwriteExistingCase = false;
-  console.log('Check Overwritting exiting case allowed.... ', doNotOverwriteExistingCase);
+  console.log('Check Overwritting existing case allowed.... ', !doNotOverwriteExistingCase);
 
   if (existingCaseFile && doNotOverwriteExistingCase) {
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
@@ -122,7 +132,7 @@ export const validateInitiateUploadRequirements = async (
     }
     throw new ValidationError('File already exists in the DB');
   } else {
-    console.log('Overwritting exiting case....');
+    console.log('Overwritting existing case....');
   }
 };
 
