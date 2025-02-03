@@ -111,7 +111,7 @@ export const validateInitiateUploadRequirements = async (
     repositoryProvider
   );
 
-  const doNotOverwriteExistingCase = true;
+  const doNotOverwriteExistingCase = false;
   console.log('Check Overwritting exiting case allowed.... ', doNotOverwriteExistingCase);
 
   if (existingCaseFile && doNotOverwriteExistingCase) {
