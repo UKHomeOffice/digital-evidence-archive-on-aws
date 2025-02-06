@@ -63,7 +63,7 @@ interface ActiveFileUpload {
 
 export const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
 export const ONE_MB = 1024 * 1024;
-const MAX_PARALLEL_PART_UPLOADS = 10;
+const MAX_PARALLEL_PART_UPLOADS = 15;
 const MAX_PARALLEL_UPLOADS = 2; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
