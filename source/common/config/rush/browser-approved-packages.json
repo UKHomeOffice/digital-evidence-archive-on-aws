@@ -155,6 +155,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/xhr-http-handler",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/dea-app",
       "allowedCategories": [ "production" ]
     },
@@ -300,6 +304,14 @@
     },
     {
       "name": "@rushstack/ts-command-line",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@smithy/fetch-http-handler",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@smithy/node-http-handler",
       "allowedCategories": [ "production" ]
     },
     {
@@ -491,6 +503,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "http2",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "i18next",
       "allowedCategories": [ "production" ]
     },
@@ -556,6 +572,10 @@
     },
     {
       "name": "minimist",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "net",
       "allowedCategories": [ "production" ]
     },
     {

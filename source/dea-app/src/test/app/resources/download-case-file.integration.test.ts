@@ -4,14 +4,14 @@
  */
 
 import { fail } from 'assert';
-import {
-  ArchiveStatus,
-  S3Client,
-  S3ClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-  StorageClass,
-} from '@aws-sdk/client-s3';
+// import {
+//   ArchiveStatus,
+//   S3Client,
+//   S3ClientResolvedConfig,
+//   ServiceInputTypes,
+//   ServiceOutputTypes,
+//   StorageClass,
+// } from '@aws-sdk/client-s3';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
@@ -39,15 +39,15 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+// let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
 let caseToDownloadFrom = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
-const UPLOAD_ID = '123456';
-const VERSION_ID = '543210';
+// const UPLOAD_ID = '123456';
+// const VERSION_ID = '543210';
 const DOWNLOAD_REASON = 'testing download';
 
 const region = testEnv.awsRegion;
@@ -80,12 +80,12 @@ describe('Test case file download', () => {
   });
 
   beforeEach(() => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-    });
-    process.env.KEY_ARN = 'keyarn';
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    // });
+    // process.env.KEY_ARN = 'keyarn';
   });
 
   it('should successfully download a file', async () => {
@@ -152,12 +152,12 @@ describe('Test case file download', () => {
   });
 
   it('should indicate when file is intelligent-tier: deep archived', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      ArchiveStatus: ArchiveStatus.DEEP_ARCHIVE_ACCESS,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   ArchiveStatus: ArchiveStatus.DEEP_ARCHIVE_ACCESS,
+    // });
 
     const fileName = 'IT deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
@@ -176,12 +176,12 @@ describe('Test case file download', () => {
   });
 
   it('should indicate when file is intelligent-tier: archived', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+    // });
 
     const fileName = 'IT archived file';
     const caseFile = await callInitiateCaseFileUpload(
@@ -200,12 +200,12 @@ describe('Test case file download', () => {
   });
 
   it('should indicate when file is deep archived', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      StorageClass: StorageClass.DEEP_ARCHIVE,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   StorageClass: StorageClass.DEEP_ARCHIVE,
+    // });
 
     const fileName = 'deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
@@ -224,12 +224,12 @@ describe('Test case file download', () => {
   });
 
   it('should indicate when file is archived', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      StorageClass: StorageClass.GLACIER,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   StorageClass: StorageClass.GLACIER,
+    // });
 
     const fileName = 'archived file';
     const caseFile = await callInitiateCaseFileUpload(
@@ -248,13 +248,13 @@ describe('Test case file download', () => {
   });
 
   it('should indicate when file is being restored', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-      Restore: 'ongoing-request="true"',
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+    //   Restore: 'ongoing-request="true"',
+    // });
 
     const fileName = 'restoring file';
     const caseFile = await callInitiateCaseFileUpload(
@@ -273,13 +273,13 @@ describe('Test case file download', () => {
   });
 
   it('should work when archived file is restored', async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-      Restore: 'ongoing-request="false"',
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    //   ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+    //   Restore: 'ongoing-request="false"',
+    // });
 
     const fileName = 'restored file';
     const caseFile = await callInitiateCaseFileUpload(

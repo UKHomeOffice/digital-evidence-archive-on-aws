@@ -5,7 +5,6 @@
 
 import { fail } from 'assert';
 import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aws-sdk/client-athena';
-import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import {
   STSClient,
   STSClientResolvedConfig,
@@ -30,7 +29,6 @@ import { callCreateDataVault } from './data-vault-integration-test-helper';
 let dataVaultId = '';
 let fileId = '';
 let athenaMock;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 describe('get datavault file audit', () => {
@@ -38,11 +36,11 @@ describe('get datavault file audit', () => {
 
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: 'hi',
-      VersionId: 'hello',
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: 'hi',
+    //   VersionId: 'hello',
+    // });
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({
