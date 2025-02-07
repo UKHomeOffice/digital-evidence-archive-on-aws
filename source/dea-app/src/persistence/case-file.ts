@@ -61,6 +61,7 @@ export const completeCaseFileUpload = async (
     repositoryProvider
   );
 
+  console.log('Case file: ', caseFile, ', Old Case File :', deaCaseFile);
   if (caseFile) {
     fileCount = 0;
     fileSizeBytes = caseFile.fileSizeBytes - fileSizeBytes;
