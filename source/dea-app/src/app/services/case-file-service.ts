@@ -46,33 +46,22 @@ export const initiateCaseFileUpload = async (
     let caseFile: DeaCaseFile | undefined;
     let uploadId = uploadDTO.uploadId;
 
-    console.log('case-file-service.initiateCaseFileUpload.....UploadId:', uploadId);
-
+    console.log('case-file-service.initiateCaseFileUpload.....!UploadDTO:', uploadDTO);
+    caseFile = await getCaseFileByFileLocation(
+      uploadDTO.caseUlid,
+      uploadDTO.filePath,
+      uploadDTO.fileName,
+      repositoryProvider
+    );
     if (!uploadId) {
-      console.log('case-file-service.initiateCaseFileUpload.....!UploadDTO:', uploadDTO);
-      caseFile = await getCaseFileByFileLocation(
-        uploadDTO.caseUlid,
-        uploadDTO.filePath,
-        uploadDTO.fileName,
-        repositoryProvider
-      );
-      console.log('case-file-service.initiateCaseFileUpload.....existingCaseFilecaseFile:', caseFile);
-
       if (!caseFile) {
         console.log('case-file-service.initiateCaseFileUpload.....No existingCaseFile :');
         caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
       }
 
+      console.log('case-file-service.initiateCaseFileUpload.....existingCaseFilecaseFile:', caseFile);
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
     } else {
-      console.log('case-file-service.initiateCaseFileUpload.....UploadDTO:', uploadDTO);
-
-      caseFile = await getCaseFileByFileLocation(
-        uploadDTO.caseUlid,
-        uploadDTO.filePath,
-        uploadDTO.fileName,
-        repositoryProvider
-      );
       if (!caseFile) {
         throw new NotFoundError('Case file not found');
       }

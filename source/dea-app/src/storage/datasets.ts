@@ -121,9 +121,7 @@ export const createCaseFileUpload = async (
   if (!response.UploadId) {
     throw new Error('Failed to initiate multipart upload.');
   }
-
   logger.info('Multipart started');
-
   return response.UploadId;
 };
 
