@@ -86,11 +86,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           fileName: file.name,
           fileSizeBytes: Math.max(file.size, 1),
           status: UploadStatus.progress,
-          relativePath: file.relativePath,
+          relativePath: props.filePath != '/' ? props.filePath : file.relativePath,
           uploadPercentage: '0',
         })),
       ]);
 
+      console.log(' uploadedFiles : ', uploadedFiles);
       let position = 0;
       while (position < selectedFiles.length) {
         const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
@@ -364,7 +365,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               />
             </FormField>
             <FileUpload
-              onChange={(files: FileWithPath[]) => setSelectedFiles(files)}
+              onChange={(files: FileWithPath[]) => {
+                setSelectedFiles(files);
+              }}
               value={selectedFiles}
               disabled={uploadInProgress}
             />
