@@ -86,7 +86,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           fileName: file.name,
           fileSizeBytes: Math.max(file.size, 1),
           status: UploadStatus.progress,
-          relativePath: props.filePath != '/' ? props.filePath : file.relativePath,
+          relativePath: file.relativePath,
           uploadPercentage: '0',
         })),
       ]);
@@ -209,7 +209,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: selectedFile.relativePath,
+          filePath: props.filePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
