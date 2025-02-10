@@ -204,12 +204,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
+      const newFilePath = props.filePath != '/' ? props.filePath : selectedFile.relativePath;
+      console.log('newFilePath: ', newFilePath, ': selectedFile.relativePath :', selectedFile.relativePath);
+
       const activeFileUpload: ActiveFileUpload = {
         file: selectedFile,
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: props.filePath,
+          filePath: newFilePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
