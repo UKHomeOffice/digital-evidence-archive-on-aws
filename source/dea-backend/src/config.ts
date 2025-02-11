@@ -114,8 +114,8 @@ const uploadTimeoutFormat: convict.Format = {
     if (val < 0) {
       throw new Error('The Upload Timeout value must be a positive number');
     }
-    if (val > 60) {
-      throw new Error('The Upload Timeout value must be less than 60 minutes');
+    if (val > 300) {
+      throw new Error('The Upload Timeout value must be less than 300 minutes');
     }
   },
 };
