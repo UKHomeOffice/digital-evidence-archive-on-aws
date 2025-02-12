@@ -185,9 +185,14 @@ export class MyUploader {
     if (this.file) {
       if (event.type === 'progress' || event.type === 'error' || event.type === 'abort') {
         this.progressCache[part] = event.loaded;
-        const currentTime: number = performance.now() - startTimeForPart;
-        if (currentTime >= 500) {
-          console.log('Refreshing credentials as session is about to expire:', currentTime);
+        const currentTime: number = (performance.now() - startTimeForPart) / 1000;
+        if (currentTime >= 3400) {
+          console.log(
+            'Refreshing credentials as session is about to expire:',
+            currentTime,
+            ' for file ',
+            part
+          );
           //refreshCredentials();
         }
       }
