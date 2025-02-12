@@ -126,7 +126,7 @@ export class MyUploader {
 
   uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
     const startTime: number = performance.now();
-    console.log('Upload : Start...', this.convertSecondsToMinutes(startTime));
+    console.log('Upload : Start...');
 
     // uploading each part with its pre-signed URL
     return new Promise((resolve, reject) => {
@@ -137,8 +137,7 @@ export class MyUploader {
       xhr.onload = () => {
         if (xhr.status === 200) {
           resolve();
-        }
-        if (xhr.status === 403) {
+        } else if (xhr.status === 403) {
           console.log('XHR Login Session Timedout. Retrying to upload .....', part);
           //  refreshCredentials();
         } else {
