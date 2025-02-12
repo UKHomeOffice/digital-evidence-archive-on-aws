@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+// import { refreshCredentials } from '../../helpers/authService';
 
 export interface UploaderUploadedPart {
   PartNumber: number;
@@ -124,7 +125,8 @@ export class MyUploader {
   }
 
   uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
-    console.log('Upload : Start...');
+    const startTime: number = performance.now();
+    console.log('Upload : Start...', this.convertSecondsToMinutes(startTime));
 
     // uploading each part with its pre-signed URL
     return new Promise((resolve, reject) => {
@@ -135,6 +137,10 @@ export class MyUploader {
       xhr.onload = () => {
         if (xhr.status === 200) {
           resolve();
+        }
+        if (xhr.status === 403) {
+          console.log('XHR Login Session Timedout. Retrying to upload .....', part);
+          //  refreshCredentials();
         } else {
           reject(new Error(`Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
         }
@@ -150,7 +156,10 @@ export class MyUploader {
         reject(new Error(`User cancelled operation during part ${part.PartNumber} upload`));
       };
 
-      const progressListener = this.handleProgress.bind(this, part.PartNumber - 1);
+      const progressListener = (event: any) => {
+        this.handleProgress(part.PartNumber - 1, event, startTime);
+      };
+
       xhr.upload.addEventListener('progress', progressListener);
       xhr.addEventListener('error', progressListener);
       xhr.addEventListener('abort', progressListener);
@@ -172,10 +181,15 @@ export class MyUploader {
     });
   }
 
-  handleProgress(part: number, event: any) {
+  handleProgress(part: number, event: any, startTimeForPart: number) {
     if (this.file) {
       if (event.type === 'progress' || event.type === 'error' || event.type === 'abort') {
         this.progressCache[part] = event.loaded;
+        const currentTime: number = performance.now() - startTimeForPart;
+        if (currentTime >= 500) {
+          console.log('Refreshing credentials as session is about to expire:', currentTime);
+          //refreshCredentials();
+        }
       }
 
       if (event.type === 'uploaded') {
