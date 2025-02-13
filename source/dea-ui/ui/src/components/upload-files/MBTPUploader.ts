@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-// import { refreshCredentials } from '../../helpers/authService';
+import { refreshCredentials } from '../../helpers/authService';
 
 export interface UploaderUploadedPart {
   PartNumber: number;
@@ -80,21 +80,23 @@ export class MyUploader {
     const startTime = performance.now();
     try {
       await this.uploadLargeFile();
-      const endTime = performance.now(); // Record end time in milliseconds
-      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
-
-      console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
+      console.log(
+        `File ${this.file.name} uploaded successfully in ${this.fetchTotalTimeToComplete(startTime)}.`
+      );
     } catch (error: any) {
-      const endTime = performance.now(); // Capture time if upload fails
-      const timeTaken = (endTime - startTime) / 1000;
-      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
-      console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
-
+      console.error(
+        `Upload failed after ${this.fetchTotalTimeToComplete(startTime)} when uploading ${this.file.name}.`
+      );
       await this.complete(error);
     }
   }
 
+  fetchTotalTimeToComplete(startTime: number): string {
+    const endTime = performance.now(); // Capture time if upload fails
+    const timeTaken = (endTime - startTime) / 1000;
+    const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
+    return totalTimeInMinsSecs;
+  }
   convertSecondsToMinutes(seconds: number): string {
     const minutes = Math.floor(seconds / 60); // Get whole minutes
     const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
@@ -121,6 +123,7 @@ export class MyUploader {
       void this.complete();
     } catch (error) {
       console.error('Error uploading file parts:', error);
+      this.onErrorFn(error);
     }
   }
 
@@ -139,13 +142,15 @@ export class MyUploader {
           resolve();
         } else if (xhr.status === 403) {
           console.log('XHR Login Session Timedout. Retrying to upload .....', part);
-          //  refreshCredentials();
+          refreshCredentials().then(resolve).catch(reject);
         } else {
           reject(new Error(`Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
         }
       };
 
-      xhr.onerror = () => reject(new Error(`Network error during part ${part.PartNumber} upload`));
+      xhr.onerror = () => {
+        reject(new Error(`Network error during part ${part.PartNumber} upload`));
+      };
 
       xhr.ontimeout = (error) => {
         console.log('XHR Timedout.....', error, ':', part);
