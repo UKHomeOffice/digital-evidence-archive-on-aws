@@ -88,8 +88,8 @@ export const defaultDatasetsProvider = {
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: 1 * 900,
-  downloadPresignedCommandExpirySeconds: 15 * 60,
+  uploadPresignedCommandExpirySeconds: 120,
+  downloadPresignedCommandExpirySeconds: 3 * 3600,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
   checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
 };
