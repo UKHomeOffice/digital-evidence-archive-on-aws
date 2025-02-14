@@ -179,7 +179,11 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
-  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
+  logger.info('Generating presigned URLs.', {
+    partstart: partsRangeStart,
+    partsRangeEnd: partsRangeEnd,
+    s3c: datasetsProvider.s3Client,
+  });
   const presignedUrlPromises: Promise<string>[] = [];
   for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
     presignedUrlPromises.push(
