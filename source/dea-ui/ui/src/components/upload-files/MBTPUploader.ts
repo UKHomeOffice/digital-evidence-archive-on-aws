@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+
 import { refreshCredentials } from '../../helpers/authService';
 
 export interface UploaderUploadedPart {
@@ -30,6 +31,7 @@ export interface UploaderOptions {
   timeout?: number;
   onProgressFn: (payload: any) => void;
   onErrorFn: (payload: any) => void;
+  onRetryFn: (payload: any) => void;
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
 
@@ -45,8 +47,10 @@ export class MyUploader {
   private readonly onProgressFn: (payload: any) => void;
   private readonly onErrorFn: (payload: any) => void;
   private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
+  private readonly onRetryFn: (payload: any) => void;
 
   private uploadedSize: number;
+  private retriesMap: Map<number, number>;
   private readonly progressCache: any;
   private readonly uploadedParts: Array<UploaderUploadedPart>;
   private readonly uploadId: string;
@@ -74,21 +78,31 @@ export class MyUploader {
     this.onProgressFn = options.onProgressFn;
     this.onErrorFn = options.onErrorFn;
     this.onCompleteFn = options.onCompleteFn;
+    this.onRetryFn = options.onRetryFn;
+    this.retriesMap = new Map<number, number>();
   }
 
   async start() {
     const startTime = performance.now();
     try {
-      await this.uploadLargeFile();
-      console.log(
-        `File ${this.file.name} uploaded successfully in ${this.fetchTotalTimeToComplete(startTime)}.`
-      );
+      await this.uploadLargeFile().then(() => {
+        console.log(
+          `0.0: File ${this.file.name} uploaded successfully in ${this.fetchTotalTimeToComplete(startTime)}.`
+        );
+      });
     } catch (error: any) {
       console.error(
-        `Upload failed after ${this.fetchTotalTimeToComplete(startTime)} when uploading ${this.file.name}.`
+        `0.2: Upload failed after ${this.fetchTotalTimeToComplete(startTime)} when uploading ${
+          this.file.name
+        }.`
       );
       await this.complete(error);
     }
+  }
+
+  // Function to update the retries for a specific part
+  private updateRetries(partNumber: number, retryCount: number): void {
+    this.retriesMap.set(partNumber, retryCount);
   }
 
   fetchTotalTimeToComplete(startTime: number): string {
@@ -117,19 +131,30 @@ export class MyUploader {
       uploadPromises.push(this.uploadPart(this.file, partNumber, part));
     }
 
+    const credentialsInterval = setInterval(async () => {
+      refreshCredentials().catch((error) => {
+        console.log('Refresh credentials failed :', error);
+      });
+    }, 5 * 60 * 1000);
+
     // Wait for all parts to upload
     try {
       await Promise.all(uploadPromises);
-      void this.complete();
+      void this.complete().then(() => {
+        clearInterval(credentialsInterval);
+      });
     } catch (error) {
-      console.error('Error uploading file parts:', error);
+      console.error('2.7: Error uploading file parts:', error);
       this.onErrorFn(error);
+      clearInterval(credentialsInterval);
     }
   }
 
   uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
     const startTime: number = performance.now();
-    console.log('Upload : Start...');
+    const currentRetries = this.retriesMap.get(partNumber) || 0;
+
+    console.log('1. MyUPL:uploadPart"Upload : Start...', partNumber, ', current retries: ', currentRetries);
 
     // uploading each part with its pre-signed URL
     return new Promise((resolve, reject) => {
@@ -141,23 +166,29 @@ export class MyUploader {
         if (xhr.status === 200) {
           resolve();
         } else if (xhr.status === 403) {
-          console.log('XHR Login Session Timedout. Retrying to upload .....', part);
-          refreshCredentials().then(resolve).catch(reject);
+          if (currentRetries < 3) {
+            this.onRetryFn(part.PartNumber);
+            this.updateRetries(partNumber, currentRetries + 1);
+          }
+          // refreshCredentials()
+          //   .then(() => {
+          //     this.uploadPart(file, partNumber, part).then(resolve).catch(reject);
+          //   })
+          //   .catch(reject);
         } else {
-          reject(new Error(`Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
+          reject(new Error(`2.5: Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
         }
       };
 
-      xhr.onerror = () => {
-        reject(new Error(`Network error during part ${part.PartNumber} upload`));
+      xhr.onerror = (error) => {
+        reject(new Error(`2.4: Error uploading part ${part.PartNumber} upload` + error));
       };
 
       xhr.ontimeout = (error) => {
-        console.log('XHR Timedout.....', error, ':', part);
-        reject(new Error(`Timedout during part ${part.PartNumber} upload`));
+        reject(new Error(`2.2: Timedout during part ${part.PartNumber} upload` + error));
       };
       xhr.onabort = () => {
-        reject(new Error(`User cancelled operation during part ${part.PartNumber} upload`));
+        reject(new Error(`2.3: User cancelled operation during part ${part.PartNumber} upload`));
       };
 
       const progressListener = (event: any) => {
@@ -186,19 +217,12 @@ export class MyUploader {
   }
 
   handleProgress(part: number, event: any, startTimeForPart: number) {
+    if (startTimeForPart) {
+      performance.now() - startTimeForPart;
+    }
     if (this.file) {
       if (event.type === 'progress' || event.type === 'error' || event.type === 'abort') {
         this.progressCache[part] = event.loaded;
-        const currentTime: number = (performance.now() - startTimeForPart) / 1000;
-        if (currentTime % 3400 == 0) {
-          console.log(
-            'Refreshing credentials as session is about to expire:',
-            currentTime,
-            ' for file ',
-            part
-          );
-          //refreshCredentials();
-        }
       }
 
       if (event.type === 'uploaded') {
@@ -226,12 +250,10 @@ export class MyUploader {
 
   async complete(error?: any) {
     if (error && !this.aborted) {
-      console.log('Completing Error and not aborted...');
       this.onErrorFn(error);
       return;
     }
     if (error) {
-      console.log('Completing Error...');
       this.onErrorFn(error);
       return;
     }
