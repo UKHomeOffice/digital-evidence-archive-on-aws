@@ -46,7 +46,7 @@ export const initiateCaseFileUpload = async (
     let caseFile: DeaCaseFile | undefined;
     let uploadId = uploadDTO.uploadId;
 
-    console.log('case-file-service.initiateCaseFileUpload.....!UploadDTO:', uploadDTO);
+    console.log('case-file-service.initiateCaseFileUpload.....UploadDTO:', uploadDTO);
     caseFile = await getCaseFileByFileLocation(
       uploadDTO.caseUlid,
       uploadDTO.filePath,
@@ -55,11 +55,11 @@ export const initiateCaseFileUpload = async (
     );
     if (!uploadId) {
       if (!caseFile) {
-        console.log('case-file-service.initiateCaseFileUpload.....No existingCaseFile :');
+        console.log('case-file-service.initiateCaseFileUpload.No uploadId....No existingCaseFile :');
         caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
       }
 
-      console.log('case-file-service.initiateCaseFileUpload.....existingCaseFilecaseFile:', caseFile);
+      console.log('case-file-service.initiateCaseFileUpload. No uploadId....CaseFile:', caseFile);
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
     } else {
       if (!caseFile) {
