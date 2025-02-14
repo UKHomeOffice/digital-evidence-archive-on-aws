@@ -78,6 +78,7 @@ export const initiateCaseFileUpload = async (
     );
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
+      console.log('casefileservice:Fetch Temprary credentials');
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
       await validateInitiateUploadRequirements(uploadDTO, userUlid, repositoryProvider);
 
@@ -91,6 +92,7 @@ export const initiateCaseFileUpload = async (
 
       return initiateCaseFileUpload(uploadDTO, userUlid, sourceIp, repositoryProvider, datasetsProvider, 1);
     } else {
+      console.log('casefileservice:Cannot Fetch Temprary credentials. Error thrown');
       throw error;
     }
   }

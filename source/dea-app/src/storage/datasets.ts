@@ -99,7 +99,7 @@ export const createCaseFileUpload = async (
   datasetsProvider: Readonly<DatasetsProvider>
 ): Promise<string> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
-  logger.info('Initiating multipart upload.', { s3Key });
+  logger.info('Initiating multipart upload for .', { s3Key });
   let response;
   try {
     response = await datasetsProvider.s3Client.send(
@@ -121,7 +121,7 @@ export const createCaseFileUpload = async (
   if (!response.UploadId) {
     throw new Error('Failed to initiate multipart upload.');
   }
-  logger.info('Multipart started');
+  logger.info('Multipart started for Upload Id:' + response.UploadId);
   return response.UploadId;
 };
 
@@ -161,6 +161,7 @@ export const getTemporaryCredentialsForUpload = async (
   };
   const command = new AssumeRoleCommand(input);
   const federationTokenResponse = await stsClient.send(command);
+  console.log('Fetching temporary token :', federationTokenResponse); //Code will be removed before merging to test
   if (
     !federationTokenResponse.Credentials ||
     !federationTokenResponse.Credentials.AccessKeyId ||
