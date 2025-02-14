@@ -88,7 +88,7 @@ export const defaultDatasetsProvider = {
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: 900,
+  uploadPresignedCommandExpirySeconds: 3 * 3600,
   downloadPresignedCommandExpirySeconds: 3 * 3600,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
   checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
@@ -161,7 +161,6 @@ export const getTemporaryCredentialsForUpload = async (
   };
   const command = new AssumeRoleCommand(input);
   const federationTokenResponse = await stsClient.send(command);
-  console.log('Fetching temporary token :', federationTokenResponse); //Code will be removed before merging to test
   if (
     !federationTokenResponse.Credentials ||
     !federationTokenResponse.Credentials.AccessKeyId ||
@@ -179,11 +178,6 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
-  logger.info('Generating presigned URLs.', {
-    partstart: partsRangeStart,
-    partsRangeEnd: partsRangeEnd,
-    s3c: datasetsProvider.s3Client,
-  });
   const presignedUrlPromises: Promise<string>[] = [];
   for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
     presignedUrlPromises.push(

@@ -46,7 +46,6 @@ export const initiateCaseFileUpload = async (
     let caseFile: DeaCaseFile | undefined;
     let uploadId = uploadDTO.uploadId;
 
-    console.log('case-file-service.initiateCaseFileUpload.....UploadDTO:', uploadDTO);
     caseFile = await getCaseFileByFileLocation(
       uploadDTO.caseUlid,
       uploadDTO.filePath,
@@ -55,11 +54,9 @@ export const initiateCaseFileUpload = async (
     );
     if (!uploadId) {
       if (!caseFile) {
-        console.log('case-file-service.initiateCaseFileUpload.No uploadId....No existingCaseFile :');
         caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
       }
 
-      console.log('case-file-service.initiateCaseFileUpload. No uploadId....CaseFile:', caseFile);
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
     } else {
       if (!caseFile) {
@@ -78,7 +75,6 @@ export const initiateCaseFileUpload = async (
     );
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
-      console.log('casefileservice:Fetch Temprary credentials');
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
       await validateInitiateUploadRequirements(uploadDTO, userUlid, repositoryProvider);
 
@@ -92,7 +88,6 @@ export const initiateCaseFileUpload = async (
 
       return initiateCaseFileUpload(uploadDTO, userUlid, sourceIp, repositoryProvider, datasetsProvider, 1);
     } else {
-      console.log('casefileservice:Cannot Fetch Temprary credentials. Error thrown');
       throw error;
     }
   }
@@ -113,7 +108,6 @@ export const validateInitiateUploadRequirements = async (
   );
 
   const doNotOverwriteExistingCase = false;
-  console.log('Check Overwritting existing case allowed.... ', !doNotOverwriteExistingCase);
 
   if (existingCaseFile && doNotOverwriteExistingCase) {
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
