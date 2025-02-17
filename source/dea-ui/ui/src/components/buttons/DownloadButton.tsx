@@ -33,6 +33,82 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
   const [downloadReasonModalOpen, setDownloadReasonModalOpen] = useState(false);
   const [downloadReason, setDownloadReason] = useState('');
 
+  const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
+  const ONE_MB = 1024 * 1024;
+
+  async function fetchWithRange(url: string, start: number, end: number) {
+    const res = await fetch(url, {
+      headers: {
+        range: `bytes=${start}-${end}`,
+      },
+    });
+    return res;
+  }
+
+  function getRangeAndLength(contentRange: string | null) {
+    if (contentRange) {
+      const [range, length] = contentRange.split('/');
+      const [start, end] = range.split('-');
+
+      return {
+        start: parseInt(start),
+        end: parseInt(end),
+        length: parseInt(length),
+      };
+    }
+
+    throw Error('No content range in headers!');
+  }
+
+  type RangeAndLength = {
+    start: number;
+    end: number;
+    length: number;
+  };
+
+  const isComplete = ({ end, length }: RangeAndLength) => end === length - 1;
+
+  async function downloadInChunks(url: string, fileName: string) {
+    let rangeAndLength = { start: -1, end: -1, length: -1 };
+    const chunks = []; //Array to hold downloaded parts
+    while (!isComplete(rangeAndLength)) {
+      const { end } = rangeAndLength;
+      const nextRange = { start: end + 1, end: end + ONE_MB * MAX_CHUNK_SIZE_NUMBER_ONLY };
+
+      console.log(`Downloading bytes ${nextRange.start} to ${nextRange.end}`);
+
+      const res = await fetchWithRange(url, nextRange.start, nextRange.end);
+
+      if (res.ok) {
+        const resContentRange = res.headers.get('Content-Range');
+        rangeAndLength = getRangeAndLength(resContentRange);
+
+        // Create a Blob with the response data and save it as a file
+        const blob = await res.blob();
+        chunks.push(blob);
+      } else {
+        throw Error(await res.json());
+      }
+    }
+
+    // After all chunks are downloaded, combine them into a single Blob
+    const combinedBlob = new Blob(chunks); // Create a Blob from all parts
+
+    // Create a URL for the combined Blob
+    const downloadUrl = URL.createObjectURL(combinedBlob);
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = fileName; // Specify the final file name
+
+    // Trigger the download
+    link.click();
+
+    // Clean up the object URL after the download
+    URL.revokeObjectURL(downloadUrl);
+  }
+
   async function downloadFilesHandler() {
     const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
     try {
@@ -60,15 +136,21 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             }
             continue;
           }
-          const alink = document.createElement('a');
-          alink.href = downloadResponse.downloadUrl;
-          alink.download = file.fileName;
-          alink.rel = 'noopener';
-          alink.style.display = 'none';
-          window.open(downloadResponse.downloadUrl, '_blank');
-          // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
-          // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(100);
+
+          await downloadInChunks(downloadResponse.downloadUrl, file.fileName);
+          // else {
+          //   const alink = document.createElement('a');
+          //   alink.href = downloadResponse.downloadUrl;
+          //   alink.download = file.fileName;
+          //   alink.rel = 'noopener';
+          //   alink.style.display = 'none';
+          //   window.open(downloadResponse.downloadUrl, '_blank');
+          //   // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          //   // long term we should consider zipping the files in the backend and then downloading as a single file
+          // await sleep(100);
+
+          console.log(`${file.fileName} downloaded successfully.....`);
+          // }
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);
