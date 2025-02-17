@@ -76,10 +76,12 @@ export interface DownloadCaseFileRequest {
 }
 
 export interface DownloadCaseFileResult {
-  downloadUrl?: string;
   downloadReason?: string;
   isArchived?: boolean;
   isRestoring?: boolean;
+  federationCredentials?: Credentials;
+  presignedUrls?: string[];
+  downloadUrl?: string;
 }
 
 export interface CaseFileDTO {
