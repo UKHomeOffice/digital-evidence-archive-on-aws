@@ -37,6 +37,7 @@ export interface DownloadFileResult {
   downloadUrl?: string;
   isArchived?: boolean;
   isRestoring?: boolean;
+  presignedUrls?: string[];
 }
 
 export interface CaseFileUploadForm {

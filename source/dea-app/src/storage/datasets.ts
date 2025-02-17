@@ -498,7 +498,7 @@ async function generatePresignedUrlForPart(
     Bucket: bucketName,
     Key: key,
     VersionId: caseFile.versionId,
-    ResponseContentType: caseFile.contentType,
+    ResponseContentType: 'arraybuffer',
     ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(caseFile.fileName)}`,
     Range: `bytes=${startByte}-${endByte}`,
   });
