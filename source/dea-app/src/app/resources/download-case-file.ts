@@ -9,11 +9,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { downloadFileRequestBodySchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import {
-  defaultDatasetsProvider,
-  getMultiPartPresignedUrlForDownload,
-  getPresignedUrlForDownload,
-} from '../../storage/datasets';
+import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -45,33 +41,12 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
     throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
   }
 
-  // const downloadResult = await getPresignedUrlForDownload(
-  //   retrievedCaseFile,
-  //   `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-  //   datasetsProvider,
-  //   downloadReason
-  // );
-
-  let downloadResult = await getMultiPartPresignedUrlForDownload(
+  const downloadResult = await getPresignedUrlForDownload(
     retrievedCaseFile,
     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
     datasetsProvider,
     downloadReason
   );
-
-  if (!downloadResult) {
-    console.log('Empty multi part upload');
-    downloadResult = await getPresignedUrlForDownload(
-      retrievedCaseFile,
-      `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-      datasetsProvider,
-      downloadReason
-    );
-  } else {
-    if (downloadResult.presignedUrls && downloadResult.presignedUrls.length > 0) {
-      downloadResult.downloadUrl = downloadResult.presignedUrls[0];
-    }
-  }
 
   return responseOk(event, downloadResult);
 };
