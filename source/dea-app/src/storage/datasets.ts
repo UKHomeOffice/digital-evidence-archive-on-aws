@@ -419,8 +419,11 @@ export const getMultiPartPresignedUrlForDownload = async (
     datasetsProvider
   );
 
-  const partSize = 350 * 1014;
+  const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
+  const ONE_MB = 1024 * 1024;
+
   const fileSize = caseFile.fileSizeBytes;
+  const partSize = Math.max(fileSize / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
   const parts = fileSize / partSize;
   const expiresIn = datasetsProvider.downloadPresignedCommandExpirySeconds;
   const presignedUrlPromises = [];
