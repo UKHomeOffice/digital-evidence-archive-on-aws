@@ -371,6 +371,125 @@ export const getPresignedUrlForDownload = async (
   return result;
 };
 
+export const getMultiPartPresignedUrlForDownload = async (
+  caseFile: DeaCaseFile,
+  sourceIp: string,
+  datasetsProvider: DatasetsProvider,
+  downloadReason = ''
+): Promise<DownloadCaseFileResult> => {
+  console.log('getMultiPartPresignedUrlForDownload-Start');
+  const s3Key = getS3KeyForCaseFile(caseFile);
+
+  const headObjectResponse = await datasetsProvider.s3Client.send(
+    new HeadObjectCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      VersionId: caseFile.versionId,
+    })
+  );
+
+  logger.info('Checking if caseFile is archived', headObjectResponse);
+
+  const result: DownloadCaseFileResult = { isArchived: false, isRestoring: false };
+
+  if (isS3ObjectArchived(headObjectResponse)) {
+    logger.info('CaseFile is archived.');
+    result.isArchived = true;
+    if (headObjectResponse.Restore === 'ongoing-request="true"') {
+      logger.info('CaseFile is archived and has an active restore job');
+      result.isRestoring = true;
+      return result;
+    }
+
+    if (!headObjectResponse.Restore) {
+      logger.info('CaseFile is archived and is not being restored');
+      result.isRestoring = false;
+      return result;
+    }
+
+    logger.info('CaseFile is archived, but has a restored object available for download');
+  }
+
+  logger.info('Creating presigned URL for caseFile.', caseFile);
+  const roleSessionName = `${caseFile.caseUlid}-${caseFile.ulid}`;
+  const presignedUrlS3Client = await getDownloadPresignedUrlClient(
+    s3Key,
+    sourceIp,
+    roleSessionName,
+    datasetsProvider
+  );
+
+  const partSize = 350 * 1014;
+  const fileSize = caseFile.fileSizeBytes;
+  const parts = fileSize / partSize;
+  const expiresIn = datasetsProvider.downloadPresignedCommandExpirySeconds;
+  const presignedUrlPromises = [];
+
+  console.log('Parts :', parts);
+
+  for (let i = 0; i < parts; i++) {
+    const startByte = i * partSize;
+    const endByte = Math.min(startByte + partSize - 1, fileSize - 1);
+    const url = await generatePresignedUrlForPart(
+      presignedUrlS3Client,
+      datasetsProvider.bucketName,
+      s3Key,
+      caseFile,
+      startByte,
+      endByte,
+      expiresIn
+    );
+
+    presignedUrlPromises.push(url);
+  }
+
+  const presignedUrls = await Promise.all(presignedUrlPromises);
+
+  result.downloadReason = downloadReason;
+
+  result.presignedUrls = presignedUrls;
+
+  logger.info('Result :', result);
+
+  // return {
+  //   ...caseFile,
+  //   bucket: datasetsProvider.bucketName,
+  //   region,
+  //   uploadId,
+  //   federationCredentials: {
+  //     accessKeyId: federationTokenResponse.Credentials.AccessKeyId,
+  //     secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
+  //     sessionToken: federationTokenResponse.Credentials.SessionToken,
+  //   },
+  //   presignedUrls,
+  // };
+
+  return result;
+};
+
+// Function to generate a presigned URL for a specific part
+async function generatePresignedUrlForPart(
+  presignedUrlS3Client: S3Client,
+  bucketName: string,
+  key: string,
+  caseFile: DeaCaseFile,
+  startByte: number,
+  endByte: number,
+  expiresIn: number
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    VersionId: caseFile.versionId,
+    ResponseContentType: caseFile.contentType,
+    ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(caseFile.fileName)}`,
+    Range: `bytes=${startByte}-${endByte}`,
+  });
+
+  const url = await getSignedUrl(presignedUrlS3Client, command, { expiresIn });
+  return url;
+}
+
 export const restoreObject = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider
