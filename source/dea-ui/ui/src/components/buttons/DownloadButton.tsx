@@ -33,8 +33,8 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
   const [downloadReasonModalOpen, setDownloadReasonModalOpen] = useState(false);
   const [downloadReason, setDownloadReason] = useState('');
 
-  const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
-  const ONE_MB = 1024 * 1024;
+  // const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
+  // const ONE_MB = 1024 * 1024;
 
   async function fetchWithRange(url: string, start: number, end: number) {
     const res = await fetch(url, {
@@ -45,68 +45,85 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
     return res;
   }
 
-  function getRangeAndLength(contentRange: string | null) {
-    if (contentRange) {
-      const [range, length] = contentRange.split('/');
-      const [start, end] = range.split('-');
+  function convertSecondsToMinutes(seconds: number): string {
+    const minutes = Math.floor(seconds / 60); // Get whole minutes
+    const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
 
-      return {
-        start: parseInt(start),
-        end: parseInt(end),
-        length: parseInt(length),
-      };
-    }
-
-    throw Error('No content range in headers!');
+    // Format the output as "minutes:seconds"
+    return `${minutes}m ${remainingSeconds}s`;
   }
 
-  type RangeAndLength = {
-    start: number;
-    end: number;
-    length: number;
-  };
-
-  const isComplete = ({ end, length }: RangeAndLength) => end === length - 1;
-
   async function downloadInChunks(url: string, fileName: string) {
-    let rangeAndLength = { start: -1, end: -1, length: -1 };
-    const chunks = []; //Array to hold downloaded parts
-    while (!isComplete(rangeAndLength)) {
-      const { end } = rangeAndLength;
-      const nextRange = { start: end + 1, end: end + ONE_MB * MAX_CHUNK_SIZE_NUMBER_ONLY };
+    const chunks: Blob[] = []; //Array to hold downloaded parts
+    let totalBytesDownloaded = 0;
 
-      console.log(`Downloading bytes ${nextRange.start} to ${nextRange.end}`);
+    // First, make a request to get the total file size
+    const initialRes = await fetch(url, { method: 'HEAD' });
 
-      const res = await fetchWithRange(url, nextRange.start, nextRange.end);
-
-      if (res.ok) {
-        const resContentRange = res.headers.get('Content-Range');
-        rangeAndLength = getRangeAndLength(resContentRange);
-
-        // Create a Blob with the response data and save it as a file
-        const blob = await res.blob();
-        chunks.push(blob);
-      } else {
-        throw Error(await res.json());
-      }
+    const contentLength = initialRes.headers.get('Content-Length');
+    if (!contentLength) {
+      throw new Error('Content-Length header is missing');
     }
 
-    // After all chunks are downloaded, combine them into a single Blob
-    const combinedBlob = new Blob(chunks); // Create a Blob from all parts
+    const totalFileSize = parseInt(contentLength);
 
-    // Create a URL for the combined Blob
+    if (isNaN(totalFileSize)) {
+      throw new Error('Invalid Content-Length header value');
+    }
+
+    console.log(`Total file size: ${totalFileSize} bytes`);
+
+    // Define how many parallel chunks to download
+    const numParallelDownloads = 4; // You can adjust this number based on your network
+
+    // Calculate the chunk size for each parallel download
+    const chunkSize = Math.ceil(totalFileSize / numParallelDownloads);
+
+    // Create an array of promises for parallel downloads
+    const downloadPromises = [];
+
+    for (let i = 0; i < numParallelDownloads; i++) {
+      const start = i * chunkSize;
+      const end = Math.min((i + 1) * chunkSize - 1, totalFileSize - 1);
+
+      console.log(`Downloading bytes ${start} to ${end}`);
+
+      // Push the parallel download promise into the array
+      const downloadPromise = fetchWithRange(url, start, end).then((res) => {
+        if (res.ok) {
+          // Collect the chunk data as a Blob
+          return res.blob().then((blob) => {
+            chunks.push(blob);
+            totalBytesDownloaded += blob.size;
+            // Calculate and log the progress
+            const percentageDownloaded = (totalBytesDownloaded / totalFileSize) * 100;
+            console.log(`Downloaded ${totalBytesDownloaded} bytes (${percentageDownloaded.toFixed(2)}%)`);
+          });
+        } else {
+          throw new Error('Failed to fetch the range.');
+        }
+      });
+
+      downloadPromises.push(downloadPromise);
+    }
+
+    // Wait for all parallel downloads to finish
+    await Promise.all(downloadPromises);
+
+    // Combine all chunks into one Blob
+    const combinedBlob = new Blob(chunks);
     const downloadUrl = URL.createObjectURL(combinedBlob);
 
-    // Create a download link
+    // Create a download link and trigger the download
     const link = document.createElement('a');
     link.href = downloadUrl;
     link.download = fileName; // Specify the final file name
-
-    // Trigger the download
     link.click();
 
     // Clean up the object URL after the download
     URL.revokeObjectURL(downloadUrl);
+
+    console.log('Download complete!');
   }
 
   async function downloadFilesHandler() {
@@ -116,6 +133,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
 
       let allFilesDownloaded = true;
       for (const file of props.selectedFiles) {
+        const startTime = performance.now();
         try {
           const downloadResponse = await getPresignedUrl({
             caseUlid: file.caseUlid,
@@ -148,7 +166,10 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           //   // long term we should consider zipping the files in the backend and then downloading as a single file
           // await sleep(100);
 
-          console.log(`${file.fileName} downloaded successfully.....`);
+          const endTime = performance.now(); // Record end time in milliseconds
+          const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+          const totalTimeInMinsSecs = convertSecondsToMinutes(timeTaken);
+          console.log(`File ${file.fileName} downloaded successfully in ${totalTimeInMinsSecs}.`);
           // }
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
