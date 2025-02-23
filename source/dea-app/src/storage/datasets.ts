@@ -182,10 +182,25 @@ export const getTemporaryCredentialsForUpload = async (
 
   logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
   const presignedUrlPromises: Promise<string>[] = [];
-  for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+
+  if (partsRangeStart === partsRangeEnd) {
+    console.log('Regenerating URLs........');
     presignedUrlPromises.push(
-      getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+      getUploadPresignedUrlPromise(
+        s3Key,
+        uploadId,
+        partsRangeStart,
+        datasetsProvider.s3Client,
+        datasetsProvider
+      )
     );
+    console.log('Regenerated URLs........', presignedUrlPromises);
+  } else {
+    for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+      presignedUrlPromises.push(
+        getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+      );
+    }
   }
   const presignedUrls = await Promise.all(presignedUrlPromises);
 
