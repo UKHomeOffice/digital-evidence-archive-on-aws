@@ -184,7 +184,7 @@ export const getTemporaryCredentialsForUpload = async (
   const presignedUrlPromises: Promise<string>[] = [];
 
   if (partsRangeStart === partsRangeEnd) {
-    console.log('Regenerating URLs........');
+    console.log('Regenerating URLs........', partsRangeStart, '-', partsRangeEnd);
     presignedUrlPromises.push(
       getUploadPresignedUrlPromise(
         s3Key,
