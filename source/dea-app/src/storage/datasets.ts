@@ -88,7 +88,7 @@ export const defaultDatasetsProvider = {
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: 1 * 3600,
+  uploadPresignedCommandExpirySeconds: 1 * 900,
   downloadPresignedCommandExpirySeconds: 1 * 3600,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
   checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
@@ -178,12 +178,29 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
+  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
   const presignedUrlPromises: Promise<string>[] = [];
-  for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+
+  if (partsRangeStart === partsRangeEnd) {
+    console.log('Regenerating URLs........', partsRangeStart, '-', partsRangeEnd);
     presignedUrlPromises.push(
-      getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+      getUploadPresignedUrlPromise(
+        s3Key,
+        uploadId,
+        partsRangeStart,
+        datasetsProvider.s3Client,
+        datasetsProvider
+      )
     );
+    console.log('Regenerated URLs........', presignedUrlPromises.length);
+  } else {
+    for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+      presignedUrlPromises.push(
+        getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+      );
+    }
   }
+
   const presignedUrls = await Promise.all(presignedUrlPromises);
 
   return {
