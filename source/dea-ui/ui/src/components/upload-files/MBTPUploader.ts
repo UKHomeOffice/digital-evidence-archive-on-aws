@@ -3,6 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
+import { initiateUpload } from '../../api/cases';
+
 export interface UploaderUploadedPart {
   PartNumber: number;
   ETag: string;
@@ -27,10 +30,13 @@ export interface UploaderOptions {
   chunkSize: number;
   threads?: number;
   timeout?: number;
+  uploadDto: InitiateCaseFileUploadDTO;
   onProgressFn: (payload: any) => void;
   onErrorFn: (payload: any) => void;
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
+
+const MAXRETRIES = 3;
 
 export class MyUploader {
   private parts: UploaderFilePart[];
@@ -41,6 +47,7 @@ export class MyUploader {
   private readonly file: File;
   private aborted: boolean;
 
+  private readonly uploadDto: InitiateCaseFileUploadDTO;
   private readonly onProgressFn: (payload: any) => void;
   private readonly onErrorFn: (payload: any) => void;
   private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
@@ -70,6 +77,7 @@ export class MyUploader {
     this.uploadedParts = [];
     this.uploadId = options.uploadId;
     this.fileKey = options.fileKey;
+    this.uploadDto = options.uploadDto;
     this.onProgressFn = options.onProgressFn;
     this.onErrorFn = options.onErrorFn;
     this.onCompleteFn = options.onCompleteFn;
@@ -125,55 +133,110 @@ export class MyUploader {
 
   uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
     console.log('Upload : Start...');
+    let attempts = 0;
+    let presignedUrl = part.signedUrl;
 
     // uploading each part with its pre-signed URL
     return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('PUT', part.signedUrl, true);
-      xhr.setRequestHeader('Content-Type', file.type);
+      while (attempts < MAXRETRIES) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', presignedUrl, true);
+        xhr.setRequestHeader('Content-Type', file.type);
 
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          resolve();
-        } else {
-          reject(new Error(`Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve();
+          } else {
+            console.log('Load Error....');
+            if (++attempts === MAXRETRIES) {
+              console.log('Load Error....reject');
+              reject();
+            }
+
+            this.handleRetry(attempts, partNumber, presignedUrl)
+              .then((newUrl) => {
+                console.log('Setting new pre-signed URL');
+                presignedUrl = newUrl;
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+          }
+        };
+        xhr.onabort = () => {
+          reject(new Error(`User cancelled operation during part ${part.PartNumber} upload`));
+        };
+
+        const progressListener = this.handleProgress.bind(this, part.PartNumber - 1);
+        xhr.upload.addEventListener('progress', progressListener);
+        xhr.addEventListener('error', progressListener);
+        xhr.addEventListener('abort', progressListener);
+        xhr.addEventListener('loadend', progressListener);
+
+        const abortXHR = () => xhr.abort();
+        window.addEventListener('offline', abortXHR);
+
+        // Calculate the byte range for the part
+        const startByte = (partNumber - 1) * this.chunkSize;
+        const endByte = Math.min(startByte + this.chunkSize, file.size);
+
+        const partBlob = file.slice(startByte, endByte);
+        try {
+          xhr.send(partBlob);
+          if (!xhr.response.ok)
+            throw new Error(`Failed to upload part ${partNumber} - HTTP ${xhr.response.status}`);
+          return;
+        } catch (error) {
+          if (++attempts === MAXRETRIES) {
+            throw error;
+          }
+
+          this.handleRetry(attempts, partNumber, presignedUrl)
+            .then((newUrl) => {
+              console.log('Setting new pre-signed URL');
+              presignedUrl = newUrl;
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+          this.onErrorFn(error);
         }
-      };
-
-      xhr.onerror = () => reject(new Error(`Network error during part ${part.PartNumber} upload`));
-
-      xhr.ontimeout = (error) => {
-        console.log('XHR Timedout.....', error, ':', part);
-        reject(new Error(`Timedout during part ${part.PartNumber} upload`));
-      };
-      xhr.onabort = () => {
-        reject(new Error(`User cancelled operation during part ${part.PartNumber} upload`));
-      };
-
-      const progressListener = this.handleProgress.bind(this, part.PartNumber - 1);
-      xhr.upload.addEventListener('progress', progressListener);
-      xhr.addEventListener('error', progressListener);
-      xhr.addEventListener('abort', progressListener);
-      xhr.addEventListener('loadend', progressListener);
-
-      const abortXHR = () => xhr.abort();
-      window.addEventListener('offline', abortXHR);
-
-      // Calculate the byte range for the part
-      const startByte = (partNumber - 1) * this.chunkSize;
-      const endByte = Math.min(startByte + this.chunkSize, file.size);
-
-      const partBlob = file.slice(startByte, endByte);
-      try {
-        xhr.send(partBlob);
-      } catch (error) {
-        this.onErrorFn(error);
       }
     });
   }
 
+  async handleRetry(attempts: number, partNumber: number, presignedUrl: string): Promise<string> {
+    console.log(`\u{23F3} Retrying ${attempts} part ${partNumber} in 1000ms...`);
+    new Promise((resolve) => setTimeout(resolve, 1000)).catch((error) => {
+      // Handle error
+      console.error('Error in setting timeout for retry:', error);
+    });
+
+    // Regenerate URL before retrying
+    const oldUrl = presignedUrl;
+    presignedUrl = await this.generatePresignedUrl(partNumber);
+    console.log(`\u{1F50D}  URL Changed? ${oldUrl !== presignedUrl ? '\u{2705} Yes' : '\u{274C} No'}`);
+    return presignedUrl;
+  }
+
+  async generatePresignedUrl(partNumber: number): Promise<string> {
+    console.log('Generating new URL.....');
+
+    const newUploadDto = { ...this.uploadDto };
+    newUploadDto.partRangeStart = partNumber;
+    newUploadDto.partRangeEnd = partNumber;
+
+    const initiatedCaseFile = await initiateUpload(newUploadDto);
+
+    console.log('New Pre Signed URLS: ', initiatedCaseFile.presignedUrls);
+    return initiatedCaseFile.presignedUrls[0];
+  }
+
   handleProgress(part: number, event: any) {
     if (this.file) {
+      if (event.type === 'error') {
+        console.log('Error detected...');
+      }
       if (event.type === 'progress' || event.type === 'error' || event.type === 'abort') {
         this.progressCache[part] = event.loaded;
       }

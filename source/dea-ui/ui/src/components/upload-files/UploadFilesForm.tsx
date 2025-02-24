@@ -181,6 +181,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       uploadId: uploadId,
       fileKey: initiatedCaseFile.fileS3Key,
       file: activeFileUpload.file,
+      uploadDto: uploadDto,
       threads: MAX_PARALLEL_PART_UPLOADS,
       timeout: 300000,
       onProgressFn: handleProgress,
