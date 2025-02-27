@@ -24,6 +24,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
 import { MyUploader, UploaderCompleteEvent } from './MBTPUploader';
@@ -59,7 +60,7 @@ interface ActiveFileUpload {
   caseFileUploadDetails: UploadDetails;
 }
 
-export const MAX_CHUNK_SIZE_NUMBER_ONLY = 450;
+export const MAX_CHUNK_SIZE_NUMBER_ONLY = 350;
 export const ONE_MB = 1024 * 1024;
 const MAX_PARALLEL_PART_UPLOADS = 10;
 const MAX_PARALLEL_UPLOADS = 2; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
@@ -72,42 +73,41 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const router = useRouter();
-  const startTime = performance.now();
 
   async function onSubmitHandler() {
+    const startTime = performance.now();
     // top level try/finally to set uploadInProgress bool state
+    try {
+      setUploadInProgress(true);
 
-    setUploadInProgress(true);
+      setUploadedFiles([
+        ...uploadedFiles,
+        ...selectedFiles.map((file) => ({
+          fileName: file.name,
+          fileSizeBytes: Math.max(file.size, 1),
+          status: UploadStatus.progress,
+          relativePath: file.relativePath,
+          uploadPercentage: '0',
+        })),
+      ]);
 
-    setUploadedFiles([
-      ...uploadedFiles,
-      ...selectedFiles.map((file) => ({
-        fileName: file.name,
-        fileSizeBytes: Math.max(file.size, 1),
-        status: UploadStatus.progress,
-        relativePath: file.relativePath,
-        uploadPercentage: '0',
-      })),
-    ]);
-
-    let position = 0;
-    while (position < selectedFiles.length) {
-      const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
-      try {
+      let position = 0;
+      while (position < selectedFiles.length) {
+        const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
         await Promise.all(itemsForBatch.map((item) => uploadFile(item)));
-        const endTime = performance.now(); // Record end time in milliseconds
-        const timeTaken = (endTime - startTime) / 1000; // Time in seconds
-        const totalTimeInMinsSecs = convertSecondsToMinutes(timeTaken);
-
-        console.log(`UFF.OSH.1.0: All files uploaded successfully in ${totalTimeInMinsSecs}.`);
-      } catch (error) {
-        setUploadInProgress(false);
-        console.log('UFF.OSH.1.2: UploadFilesForm.onSubmitHandler: Upload failed');
+        position += MAX_PARALLEL_UPLOADS;
       }
-      position += MAX_PARALLEL_UPLOADS;
+
+      setSelectedFiles([]);
+    } finally {
+      setUploadInProgress(false);
+
+      const endTime = performance.now(); // Record end time in milliseconds
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const totalTimeInMinsSecs = convertSecondsToMinutes(timeTaken);
+
+      console.log(`All files uploaded successfully in ${totalTimeInMinsSecs}.`);
     }
-    setUploadInProgress(false);
-    setSelectedFiles([]);
   }
 
   function convertSecondsToMinutes(seconds: number): string {
@@ -135,7 +135,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     uploadId = initiatedCaseFile.uploadId;
 
     if (!initiatedCaseFile.presignedUrls) {
-      throw new Error('UFF.UFPC.3.0: No presigned urls provided');
+      throw new Error('No presigned urls provided');
     }
 
     const parts = initiatedCaseFile.presignedUrls.map((preSignedUrl, index) => ({
@@ -144,11 +144,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }));
 
     const handleError = (e: Error) => {
-      console.log(e);
       updateFileProgress(activeFileUpload.file, UploadStatus.failed);
+      console.log('Upload failed', e);
     };
 
     const handleProgress = (p: any) => {
+      // console.log(p);
       setUploadedFiles((prevState) => {
         // Map over the previous state to update the specific file's uploadPercentage
         return prevState.map((file) => {
@@ -161,35 +162,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           return file; // Return other files unchanged
         });
       });
-    };
-
-    const handleRetry = (partNumber: number) => {
-      console.log('UFF.UFPC.3.2: Retry case file: Start : ', partNumber);
-
-      const retryUploadDto: InitiateCaseFileUploadDTO = {
-        ...activeFileUpload.caseFileUploadDetails,
-        // range is inclusive
-        partRangeStart: partNumber,
-        partRangeEnd: partNumber,
-        uploadId: uploadId,
-      };
-
-      initiateUpload(retryUploadDto)
-        .then((retryInitiatedCaseFile) => {
-          axiosUploader
-            .uploadPart(activeFileUpload.file, partNumber, parts[partNumber - 1])
-            .catch((error) => {
-              console.log(
-                'UFF.UFPC.3.4: Retry Failed....',
-                error,
-                ', retryInitiatedCaseFile :',
-                retryInitiatedCaseFile.fileName
-              );
-            });
-        })
-        .catch((error) => {
-          console.error('UFF.UFPC.3.5: Error in handleRetry:', error);
-        });
     };
 
     const handleComplete = (uce: UploaderCompleteEvent) => {
@@ -209,19 +181,17 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       uploadId: uploadId,
       fileKey: initiatedCaseFile.fileS3Key,
       file: activeFileUpload.file,
+      uploadDto: uploadDto,
       threads: MAX_PARALLEL_PART_UPLOADS,
       timeout: 300000,
-      onRetryFn: handleRetry,
       onProgressFn: handleProgress,
       onErrorFn: handleError,
       onCompleteFn: handleComplete,
     });
 
-    try {
-      await axiosUploader.start();
-    } catch (error) {
-      console.log('UPL:uploadFilePartsAndComplete: Axis Upload Error', error);
-    }
+    await axiosUploader.start();
+
+    await refreshCredentials();
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
@@ -234,24 +204,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-      let newFilePath = props.filePath + selectedFile.relativePath;
-      newFilePath = newFilePath.replaceAll('//', '/');
-
-      console.log(
-        'newFilePath : ',
-        newFilePath,
-        ', props.filePath',
-        props.filePath,
-        ', selectedFile.relativePath:',
-        selectedFile.relativePath
-      );
-
       const activeFileUpload: ActiveFileUpload = {
         file: selectedFile,
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: newFilePath,
+          filePath: selectedFile.relativePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
@@ -262,7 +220,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       await uploadFilePartsAndComplete(activeFileUpload);
     } catch (e) {
       updateFileProgress(selectedFile, UploadStatus.failed);
-      console.log('UploadFilesForm:Upload failed', e);
+      console.log('Upload failed', e);
     }
   }
 
@@ -302,7 +260,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="status-negative" variant="error" />
-              <span>{uploadProgress.status} </span>
+              <span>
+                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+              </span>
             </SpaceBetween>
           </Box>
         );
@@ -312,7 +272,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="check" variant="success" />
-              <span> {uploadProgress.status}</span>
+              <span>
+                {' '}
+                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+              </span>
             </SpaceBetween>
           </Box>
         );
@@ -407,9 +370,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               />
             </FormField>
             <FileUpload
-              onChange={(files: FileWithPath[]) => {
-                setSelectedFiles(files);
-              }}
+              onChange={(files: FileWithPath[]) => setSelectedFiles(files)}
               value={selectedFiles}
               disabled={uploadInProgress}
             />

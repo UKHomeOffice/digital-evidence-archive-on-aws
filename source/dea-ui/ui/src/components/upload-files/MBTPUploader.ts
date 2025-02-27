@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { refreshCredentials } from '../../helpers/authService';
+import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
+import axios, { AxiosProgressEvent } from 'axios';
+import { initiateUpload } from '../../api/cases';
 
 export interface UploaderUploadedPart {
   PartNumber: number;
@@ -29,11 +31,14 @@ export interface UploaderOptions {
   chunkSize: number;
   threads?: number;
   timeout?: number;
+  uploadDto: InitiateCaseFileUploadDTO;
   onProgressFn: (payload: any) => void;
   onErrorFn: (payload: any) => void;
-  onRetryFn: (payload: any) => void;
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
+
+const MAX_RETRIES = 3;
+const MAX_CONCURRENT_UPLOADS = 5;
 
 export class MyUploader {
   private parts: UploaderFilePart[];
@@ -44,17 +49,18 @@ export class MyUploader {
   private readonly file: File;
   private aborted: boolean;
 
+  private readonly uploadDto: InitiateCaseFileUploadDTO;
   private readonly onProgressFn: (payload: any) => void;
   private readonly onErrorFn: (payload: any) => void;
   private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
-  private readonly onRetryFn: (payload: any) => void;
 
   private uploadedSize: number;
-  private retriesMap: Map<number, number>;
   private readonly progressCache: any;
   private readonly uploadedParts: Array<UploaderUploadedPart>;
   private readonly uploadId: string;
   private readonly fileKey: string;
+
+  private totalUploaded = 0; // Track the total uploaded size
 
   // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
   constructor(options: UploaderOptions) {
@@ -75,42 +81,154 @@ export class MyUploader {
     this.uploadedParts = [];
     this.uploadId = options.uploadId;
     this.fileKey = options.fileKey;
+    this.uploadDto = options.uploadDto;
     this.onProgressFn = options.onProgressFn;
     this.onErrorFn = options.onErrorFn;
     this.onCompleteFn = options.onCompleteFn;
-    this.onRetryFn = options.onRetryFn;
-    this.retriesMap = new Map<number, number>();
   }
 
   async start() {
     const startTime = performance.now();
     try {
-      await this.uploadLargeFile().then(() => {
-        console.log(
-          `0.0: File ${this.file.name} uploaded successfully in ${this.fetchTotalTimeToComplete(startTime)}.`
-        );
-      });
+      // await this.uploadLargeFile();
+      await this.uploadMultiPartFile();
+      const endTime = performance.now(); // Record end time in milliseconds
+      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
+
+      console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
     } catch (error: any) {
-      console.error(
-        `0.2: Upload failed after ${this.fetchTotalTimeToComplete(startTime)} when uploading ${
-          this.file.name
-        }.`
-      );
+      const endTime = performance.now(); // Capture time if upload fails
+      const timeTaken = (endTime - startTime) / 1000;
+      const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
+      console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
+
       await this.complete(error);
     }
   }
 
-  // Function to update the retries for a specific part
-  private updateRetries(partNumber: number, retryCount: number): void {
-    this.retriesMap.set(partNumber, retryCount);
+  async uploadMultiPartFile(): Promise<void> {
+    const totalParts = Math.ceil(this.file.size / this.chunkSize);
+
+    const partPromises: Promise<void>[] = [];
+
+    this.totalUploaded = 0;
+
+    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+      const presignedUrl = this.parts[partNumber - 1].signedUrl;
+      const startByte = (partNumber - 1) * this.chunkSize;
+      const endByte = Math.min(partNumber * this.chunkSize, this.file.size);
+      const partBlob = this.file.slice(startByte, endByte); // Get the file part ot upload
+
+      const partUploadPromise = this.uploadPartToSignedUrlWithRetry(
+        presignedUrl,
+        partBlob,
+        partNumber,
+        totalParts,
+        this.totalUploaded,
+        this.file.size
+      );
+      partPromises.push(partUploadPromise);
+
+      // Limit the number of concurrent uploads
+      if (partPromises.length >= MAX_CONCURRENT_UPLOADS) {
+        await Promise.all(partPromises); // Wait for these uploads to finish
+        partPromises.length = 0; // Reset the queue
+      }
+    }
+
+    await Promise.all(partPromises);
+    await this.complete();
   }
 
-  fetchTotalTimeToComplete(startTime: number): string {
-    const endTime = performance.now(); // Capture time if upload fails
-    const timeTaken = (endTime - startTime) / 1000;
-    const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
-    return totalTimeInMinsSecs;
+  async uploadPartToSignedUrlWithRetry(
+    signedUrl: string,
+    partBlob: Blob,
+    partNumber: number,
+    totalParts: number,
+    totalUploaded: number,
+    totalFileSize: number
+  ): Promise<void> {
+    let attempts = 0;
+    let partUploaded = false;
+
+    while (attempts < MAX_RETRIES && !partUploaded) {
+      try {
+        await this.uploadPartToSignedUrl(
+          signedUrl,
+          partBlob,
+          partNumber,
+          totalParts,
+          totalUploaded,
+          totalFileSize
+        );
+        console.log(`Part ${partNumber} uploaded successfully.`);
+
+        // Update totalUploaded after part upload
+        totalUploaded += partBlob.size;
+
+        partUploaded = true; // Success, move to the next part
+      } catch (error) {
+        console.error(
+          `Error uploading part ${partNumber}. Attempt ${attempts + 1} of ${MAX_RETRIES}. Error: ${error}`
+        );
+        attempts++;
+
+        if (attempts === MAX_RETRIES) {
+          console.error(`Failed to upload part ${partNumber} after ${MAX_RETRIES} retries. Aborting.`);
+          throw new Error(`Failed to upload part ${partNumber}`);
+        } else {
+          const oldURL = signedUrl;
+          this.handleRetry(attempts, partNumber, signedUrl)
+            .then((newURL) => {
+              console.log(`Setting URL for part: ${oldURL != newURL ? '\u{2705}' : '`\u{274C}'}`, partNumber);
+              signedUrl = newURL;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      }
+    }
   }
+
+  async uploadPartToSignedUrl(
+    signedUrl: string,
+    partBlob: Blob,
+    partNumber: number,
+    totalParts: number,
+    totalUploaded: number,
+    totalFileSize: number
+  ): Promise<void> {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': this.file.type, // Set the content type
+        },
+        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+          if (progressEvent.upload) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / partBlob.size);
+            // const overallPercent = Math.round(((totalUploaded + progressEvent.loaded) / totalFileSize) * 100);
+
+            this.handleProgress(partNumber, progressEvent);
+
+            // Display the percentage uploaded for this part
+            // console.log(`Part ${partNumber}: ${percentCompleted}% uploaded.`);
+
+            // Display overall progress
+            // console.log(`Overall Progress: ${overallPercent}%`);
+          }
+        },
+      };
+
+      // Perform the upload to the signed URL using Axios (correct argument order)
+      await axios.put(signedUrl, partBlob, config);
+    } catch (error) {
+      console.error(`Error uploading part ${partNumber} to signed URL:`, error);
+      throw error; // Rethrow to handle failure in main function
+    }
+  }
+
   convertSecondsToMinutes(seconds: number): string {
     const minutes = Math.floor(seconds / 60); // Get whole minutes
     const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
@@ -119,113 +237,49 @@ export class MyUploader {
     return `${minutes}m ${remainingSeconds}s`;
   }
 
-  async uploadLargeFile() {
-    // Wait for all parts to upload
-    const totalParts = Math.ceil(this.file.size / this.chunkSize);
-
-    // Step 2: Upload each part
-    const uploadPromises = [];
-
-    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
-      const part = this.parts[partNumber - 1];
-      uploadPromises.push(this.uploadPart(this.file, partNumber, part));
-    }
-
-    const credentialsInterval = setInterval(async () => {
-      refreshCredentials().catch((error) => {
-        console.log('Refresh credentials failed :', error);
-      });
-    }, 5 * 60 * 1000);
-
-    // Wait for all parts to upload
-    try {
-      await Promise.all(uploadPromises);
-      void this.complete().then(() => {
-        clearInterval(credentialsInterval);
-      });
-    } catch (error) {
-      console.error('2.7: Error uploading file parts:', error);
-      this.onErrorFn(error);
-      clearInterval(credentialsInterval);
-    }
-  }
-
-  uploadPart(file: Blob, partNumber: number, part: UploaderFilePart): Promise<void> {
-    const startTime: number = performance.now();
-    const currentRetries = this.retriesMap.get(partNumber) || 0;
-
-    console.log('1. MyUPL:uploadPart"Upload : Start...', partNumber, ', current retries: ', currentRetries);
-
-    // uploading each part with its pre-signed URL
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('PUT', part.signedUrl, true);
-      xhr.setRequestHeader('Content-Type', file.type);
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          resolve();
-        } else if (xhr.status === 403) {
-          if (currentRetries < 3) {
-            this.onRetryFn(part.PartNumber);
-            this.updateRetries(partNumber, currentRetries + 1);
-          }
-          // refreshCredentials()
-          //   .then(() => {
-          //     this.uploadPart(file, partNumber, part).then(resolve).catch(reject);
-          //   })
-          //   .catch(reject);
-        } else {
-          reject(new Error(`2.5: Failed to upload part ${part.PartNumber}: ${xhr.statusText}`));
-        }
-      };
-
-      xhr.onerror = (error) => {
-        reject(new Error(`2.4: Error uploading part ${part.PartNumber} upload` + error));
-      };
-
-      xhr.ontimeout = (error) => {
-        reject(new Error(`2.2: Timedout during part ${part.PartNumber} upload` + error));
-      };
-      xhr.onabort = () => {
-        reject(new Error(`2.3: User cancelled operation during part ${part.PartNumber} upload`));
-      };
-
-      const progressListener = (event: any) => {
-        this.handleProgress(part.PartNumber - 1, event, startTime);
-      };
-
-      xhr.upload.addEventListener('progress', progressListener);
-      xhr.addEventListener('error', progressListener);
-      xhr.addEventListener('abort', progressListener);
-      xhr.addEventListener('loadend', progressListener);
-
-      const abortXHR = () => xhr.abort();
-      window.addEventListener('offline', abortXHR);
-
-      // Calculate the byte range for the part
-      const startByte = (partNumber - 1) * this.chunkSize;
-      const endByte = Math.min(startByte + this.chunkSize, file.size);
-
-      const partBlob = file.slice(startByte, endByte);
-      try {
-        xhr.send(partBlob);
-      } catch (error) {
-        this.onErrorFn(error);
-      }
+  async handleRetry(attempts: number, partNumber: number, presignedUrl: string): Promise<string> {
+    // debugger;
+    console.log(`\u{23F3} Retrying attempt ${attempts} for part ${partNumber} in 1000ms...`);
+    new Promise((resolve) => setTimeout(resolve, 1000)).catch((error) => {
+      // Handle error
+      console.error('Error in setting timeout for retry:', error);
     });
+
+    // Regenerate URL before retrying
+    const oldUrl = presignedUrl;
+    presignedUrl = await this.generatePresignedUrl(partNumber);
+    // console.log(`\u{1F50D}  URL Changed? ${oldUrl !== presignedUrl ? "\u{2705} Yes" : "\u{274C} No"}`);
+    return presignedUrl;
   }
 
-  handleProgress(part: number, event: any, startTimeForPart: number) {
-    if (startTimeForPart) {
-      performance.now() - startTimeForPart;
-    }
+  async generatePresignedUrl(partNumber: number): Promise<string> {
+    const newUploadDto = { ...this.uploadDto };
+    newUploadDto.partRangeStart = partNumber;
+    newUploadDto.partRangeEnd = partNumber;
+
+    const initiatedCaseFile = await initiateUpload(newUploadDto);
+    return initiatedCaseFile.presignedUrls[0];
+  }
+
+  handleProgress(part: number, event: any) {
+    // if(Object.entries(this.progressCache).length > 20){
+    //   // console.log(Object.entries(this.progressCache).slice(-10).map(([key, value]) => `${key} : ${value}`).join(' | '));
+    //   console.log(Object.entries(this.progressCache).filter(([,value])=> (value != 367001599)).map(([key, value]) => `${key} : ${value}`).join(' | '));
+    // }else{
+    //   // console.log(this.progressCache);
+    // }
+
     if (this.file) {
-      if (event.type === 'progress' || event.type === 'error' || event.type === 'abort') {
+      const eventObj = event.event;
+
+      if (eventObj.type === 'error') {
+        console.log('Error detected...', part, '-', event);
+      }
+      if (eventObj.type === 'progress' || event.type === 'error' || event.type === 'abort') {
         this.progressCache[part] = event.loaded;
       }
 
-      if (event.type === 'uploaded') {
+      if (eventObj.type === 'uploaded') {
         this.uploadedSize += this.progressCache[part] || 0;
         delete this.progressCache[part];
       }
@@ -241,7 +295,6 @@ export class MyUploader {
       this.onProgressFn({
         fileName: this.file.name,
         part: part,
-        // sent: sent,
         total: total,
         percentage: percentage,
       });
@@ -250,10 +303,12 @@ export class MyUploader {
 
   async complete(error?: any) {
     if (error && !this.aborted) {
+      console.log('Completing Error and not aborted...');
       this.onErrorFn(error);
       return;
     }
     if (error) {
+      console.log('Completing Error...');
       this.onErrorFn(error);
       return;
     }
