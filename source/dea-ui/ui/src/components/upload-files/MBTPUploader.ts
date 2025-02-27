@@ -120,14 +120,7 @@ export class MyUploader {
       const endByte = Math.min(partNumber * this.chunkSize, this.file.size);
       const partBlob = this.file.slice(startByte, endByte); // Get the file part ot upload
 
-      const partUploadPromise = this.uploadPartToSignedUrlWithRetry(
-        presignedUrl,
-        partBlob,
-        partNumber,
-        totalParts,
-        this.totalUploaded,
-        this.file.size
-      );
+      const partUploadPromise = this.uploadPartToSignedUrlWithRetry(presignedUrl, partBlob, partNumber);
       partPromises.push(partUploadPromise);
 
       // Limit the number of concurrent uploads
@@ -141,31 +134,14 @@ export class MyUploader {
     await this.complete();
   }
 
-  async uploadPartToSignedUrlWithRetry(
-    signedUrl: string,
-    partBlob: Blob,
-    partNumber: number,
-    totalParts: number,
-    totalUploaded: number,
-    totalFileSize: number
-  ): Promise<void> {
+  async uploadPartToSignedUrlWithRetry(signedUrl: string, partBlob: Blob, partNumber: number): Promise<void> {
     let attempts = 0;
     let partUploaded = false;
 
     while (attempts < MAX_RETRIES && !partUploaded) {
       try {
-        await this.uploadPartToSignedUrl(
-          signedUrl,
-          partBlob,
-          partNumber,
-          totalParts,
-          totalUploaded,
-          totalFileSize
-        );
+        await this.uploadPartToSignedUrl(signedUrl, partBlob, partNumber);
         console.log(`Part ${partNumber} uploaded successfully.`);
-
-        // Update totalUploaded after part upload
-        totalUploaded += partBlob.size;
 
         partUploaded = true; // Success, move to the next part
       } catch (error) {
@@ -192,14 +168,7 @@ export class MyUploader {
     }
   }
 
-  async uploadPartToSignedUrl(
-    signedUrl: string,
-    partBlob: Blob,
-    partNumber: number,
-    totalParts: number,
-    totalUploaded: number,
-    totalFileSize: number
-  ): Promise<void> {
+  async uploadPartToSignedUrl(signedUrl: string, partBlob: Blob, partNumber: number): Promise<void> {
     try {
       const config = {
         headers: {
@@ -207,15 +176,14 @@ export class MyUploader {
         },
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.upload) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / partBlob.size);
-            // const overallPercent = Math.round(((totalUploaded + progressEvent.loaded) / totalFileSize) * 100);
-
             this.handleProgress(partNumber, progressEvent);
 
             // Display the percentage uploaded for this part
+            // const percentCompleted = Math.round((progressEvent.loaded * 100) / partBlob.size);
             // console.log(`Part ${partNumber}: ${percentCompleted}% uploaded.`);
 
             // Display overall progress
+            // const overallPercent = Math.round(((totalUploaded + progressEvent.loaded) / totalFileSize) * 100);
             // console.log(`Overall Progress: ${overallPercent}%`);
           }
         },
@@ -246,7 +214,7 @@ export class MyUploader {
     });
 
     // Regenerate URL before retrying
-    const oldUrl = presignedUrl;
+    // const oldUrl = presignedUrl;
     presignedUrl = await this.generatePresignedUrl(partNumber);
     // console.log(`\u{1F50D}  URL Changed? ${oldUrl !== presignedUrl ? "\u{2705} Yes" : "\u{274C} No"}`);
     return presignedUrl;
