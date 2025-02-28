@@ -24,6 +24,8 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
+  console.log('completeCaseFileUpload:Start');
+
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
   const requestCaseFile: CompleteCaseFileUploadDTO = getRequiredPayload(

@@ -5,7 +5,6 @@
 
 import {
   AbortMultipartUploadCommand,
-  ChecksumAlgorithm,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
@@ -21,6 +20,7 @@ import {
   RestoreObjectCommand,
   S3Client,
   StorageClass,
+  UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import {
   CreateJobCommand,
@@ -73,7 +73,7 @@ const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() 
 const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
 
 export const defaultDatasetsProvider = {
-  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
+  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent(), useAccelerateEndpoint: true }),
   region: region,
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   s3BatchDeleteCaseFileLambdaArn: getRequiredEnv(
@@ -88,7 +88,7 @@ export const defaultDatasetsProvider = {
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: 3600,
+  uploadPresignedCommandExpirySeconds: 900,
   downloadPresignedCommandExpirySeconds: 15 * 60,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
   checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
@@ -110,7 +110,7 @@ export const createCaseFileUpload = async (
         ServerSideEncryption: 'aws:kms',
         ContentType: caseFile.contentType,
         StorageClass: 'INTELLIGENT_TIERING',
-        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+        // ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
       })
     );
   } catch (error) {
@@ -122,16 +122,34 @@ export const createCaseFileUpload = async (
     throw new Error('Failed to initiate multipart upload.');
   }
 
-  logger.info('Multipart started');
-
   return response.UploadId;
 };
+
+async function getUploadPresignedUrlPromise(
+  s3Key: string,
+  uploadId: string,
+  partNumber: number,
+  presignedUrlClient: S3Client,
+  datasetsProvider: DatasetsProvider
+): Promise<string> {
+  const uploadPartCommand = new UploadPartCommand({
+    Bucket: datasetsProvider.bucketName,
+    Key: s3Key,
+    UploadId: uploadId,
+    PartNumber: partNumber,
+  });
+  return getSignedUrl(presignedUrlClient, uploadPartCommand, {
+    expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,
+  });
+}
 
 export const getTemporaryCredentialsForUpload = async (
   caseFile: Readonly<DeaCaseFile>,
   uploadId: string,
   userUlid: string,
   sourceIp: string,
+  partsRangeStart: number,
+  partsRangeEnd: number,
   datasetsProvider: Readonly<DatasetsProvider>
 ): Promise<DeaCaseFileUpload> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
@@ -160,6 +178,29 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
+  logger.info(`Generating presigned URLs for parts: ${partsRangeStart}  -  ${partsRangeEnd} `);
+  const presignedUrlPromises: Promise<string>[] = [];
+
+  if (partsRangeStart === partsRangeEnd) {
+    logger.info(`Re-Generating presigned URLs for parts: ${partsRangeStart}  -  ${partsRangeEnd} `);
+    presignedUrlPromises.push(
+      getUploadPresignedUrlPromise(
+        s3Key,
+        uploadId,
+        partsRangeStart,
+        datasetsProvider.s3Client,
+        datasetsProvider
+      )
+    );
+  } else {
+    for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+      presignedUrlPromises.push(
+        getUploadPresignedUrlPromise(s3Key, uploadId, i, datasetsProvider.s3Client, datasetsProvider)
+      );
+    }
+  }
+  const presignedUrls = await Promise.all(presignedUrlPromises);
+
   return {
     ...caseFile,
     bucket: datasetsProvider.bucketName,
@@ -170,6 +211,7 @@ export const getTemporaryCredentialsForUpload = async (
       secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
       sessionToken: federationTokenResponse.Credentials.SessionToken,
     },
+    presignedUrls,
   };
 };
 
@@ -181,7 +223,7 @@ export const completeUploadForCaseFile = async (
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
   const s3Key = getS3KeyForCaseFile(caseFile);
-  logger.info('Collecting upload parts.', { s3Key });
+  logger.info('completeUploadForCaseFile: Collecting upload parts.', { s3Key });
 
   /* eslint-disable no-await-in-loop */
   do {
@@ -556,6 +598,7 @@ async function getDownloadPresignedUrlClient(
       sessionToken: credentials.SessionToken,
       expiration: credentials.Expiration,
     },
+    useAccelerateEndpoint: true,
   });
 }
 

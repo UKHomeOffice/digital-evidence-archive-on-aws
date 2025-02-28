@@ -61,7 +61,15 @@ export const initiateCaseFileUpload = async (
       }
     }
 
-    return getTemporaryCredentialsForUpload(caseFile, uploadId, userUlid, sourceIp, datasetsProvider);
+    return getTemporaryCredentialsForUpload(
+      caseFile,
+      uploadId,
+      userUlid,
+      sourceIp,
+      uploadDTO.partRangeStart,
+      uploadDTO.partRangeEnd,
+      datasetsProvider
+    );
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
@@ -96,13 +104,18 @@ export const validateInitiateUploadRequirements = async (
     repositoryProvider
   );
 
-  if (existingCaseFile) {
+  const doNotOverwriteExistingCase = true;
+  console.log('Check Overwritting exiting case allowed.... ', doNotOverwriteExistingCase);
+
+  if (existingCaseFile && doNotOverwriteExistingCase) {
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
     // todo: add more protection to prevent creation of 2 files with same filePath+fileName
     if (existingCaseFile.status == CaseFileStatus.PENDING) {
       throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
     }
     throw new ValidationError('File already exists in the DB');
+  } else {
+    console.log(`${existingCaseFile}? "Overwritting existing case....": "Creating new case....."`);
   }
 };
 
@@ -154,6 +167,7 @@ export const completeCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFileResult> => {
+  console.log('CaseFileService.completeCaseFileUpload.Start');
   const checksum = await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider, checksum);
 };
@@ -277,6 +291,7 @@ export const getRequiredCaseFile = async (
   if (!caseFile) {
     throw new NotFoundError('Could not find file');
   }
+  console.log('CaeFileService.getRequiredCaseFile:caseFile:', caseFile);
   return caseFile;
 };
 
