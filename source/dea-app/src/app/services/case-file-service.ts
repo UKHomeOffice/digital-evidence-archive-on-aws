@@ -290,6 +290,7 @@ export const getRequiredCaseFile = async (
   if (!caseFile) {
     throw new NotFoundError('Could not find file');
   }
+  console.log('CaeFileService.getRequiredCaseFile:caseFile:', caseFile);
   return caseFile;
 };
 
