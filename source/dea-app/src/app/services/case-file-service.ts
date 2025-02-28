@@ -115,7 +115,7 @@ export const validateInitiateUploadRequirements = async (
     }
     throw new ValidationError('File already exists in the DB');
   } else {
-    console.log('Overwritting exiting case....');
+    console.log(`${existingCaseFile}? "Overwritting existing case....": "Creating new case....."`);
   }
 };
 

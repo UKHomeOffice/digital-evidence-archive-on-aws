@@ -122,8 +122,6 @@ export const createCaseFileUpload = async (
     throw new Error('Failed to initiate multipart upload.');
   }
 
-  logger.info('Multipart started');
-
   return response.UploadId;
 };
 
@@ -180,11 +178,11 @@ export const getTemporaryCredentialsForUpload = async (
     throw new Error('Failed to generate upload credentials');
   }
 
-  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
+  logger.info(`Generating presigned URLs for parts: ${partsRangeStart}  -  ${partsRangeEnd} `);
   const presignedUrlPromises: Promise<string>[] = [];
 
   if (partsRangeStart === partsRangeEnd) {
-    console.log('Regenerating URLs........', partsRangeStart, '-', partsRangeEnd);
+    logger.info(`Re-Generating presigned URLs for parts: ${partsRangeStart}  -  ${partsRangeEnd} `);
     presignedUrlPromises.push(
       getUploadPresignedUrlPromise(
         s3Key,
@@ -194,7 +192,6 @@ export const getTemporaryCredentialsForUpload = async (
         datasetsProvider
       )
     );
-    console.log('Regenerated URLs........', presignedUrlPromises.length);
   } else {
     for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
       presignedUrlPromises.push(
@@ -226,7 +223,7 @@ export const completeUploadForCaseFile = async (
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
   const s3Key = getS3KeyForCaseFile(caseFile);
-  logger.info('Collecting upload parts.', { s3Key });
+  logger.info('completeUploadForCaseFile: Collecting upload parts.', { s3Key });
 
   /* eslint-disable no-await-in-loop */
   do {
