@@ -50,6 +50,7 @@ export const completeCaseFileUpload = async (
     { transaction }
   );
 
+  console.log('completeCaseFileUpload: ', deaCaseFile);
   await repositoryProvider.CaseModel.update(
     {
       PK: `CASE#${deaCaseFile.caseUlid}#`,
