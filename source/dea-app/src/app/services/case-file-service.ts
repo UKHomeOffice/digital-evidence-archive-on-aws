@@ -167,6 +167,7 @@ export const completeCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFileResult> => {
+  console.log('CaseFileService.completeCaseFileUpload.Start');
   const checksum = await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider, checksum);
 };
