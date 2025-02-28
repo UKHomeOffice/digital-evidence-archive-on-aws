@@ -260,7 +260,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="status-negative" variant="error" />
-              <span>{uploadProgress.status} </span>
+              <span>
+                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+              </span>
             </SpaceBetween>
           </Box>
         );
@@ -270,7 +272,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
               <Icon name="check" variant="success" />
-              <span> {uploadProgress.status}</span>
+              <span>
+                {' '}
+                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+              </span>
             </SpaceBetween>
           </Box>
         );
