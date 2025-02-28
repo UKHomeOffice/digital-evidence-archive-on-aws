@@ -38,14 +38,12 @@ export interface UploaderOptions {
 }
 
 const MAX_RETRIES = 3;
-const MAX_CONCURRENT_UPLOADS = 5;
 
 export class MyUploader {
   private parts: UploaderFilePart[];
   private readonly chunkSize: number;
   private readonly threadsQuantity: number;
   private readonly timeout: number;
-  private readonly activeConnections: { [k: number]: XMLHttpRequest };
   private readonly file: File;
   private aborted: boolean;
 
@@ -76,7 +74,6 @@ export class MyUploader {
     this.aborted = false;
     this.uploadedSize = 0;
     this.progressCache = {};
-    this.activeConnections = {};
     this.parts = options.parts;
     this.uploadedParts = [];
     this.uploadId = options.uploadId;
@@ -102,7 +99,7 @@ export class MyUploader {
       const timeTaken = (endTime - startTime) / 1000;
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
       console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
-
+      this.onErrorFn(error);
       await this.complete(error);
     }
   }
@@ -124,7 +121,7 @@ export class MyUploader {
       partPromises.push(partUploadPromise);
 
       // Limit the number of concurrent uploads
-      if (partPromises.length >= MAX_CONCURRENT_UPLOADS) {
+      if (partPromises.length >= this.threadsQuantity) {
         await Promise.all(partPromises); // Wait for these uploads to finish
         partPromises.length = 0; // Reset the queue
       }
@@ -152,12 +149,16 @@ export class MyUploader {
 
         if (attempts === MAX_RETRIES) {
           console.error(`Failed to upload part ${partNumber} after ${MAX_RETRIES} retries. Aborting.`);
+          this.onErrorFn(error);
           throw new Error(`Failed to upload part ${partNumber}`);
         } else {
           const oldURL = signedUrl;
           this.handleRetry(attempts, partNumber, signedUrl)
             .then((newURL) => {
-              console.log(`Setting URL for part: ${oldURL != newURL ? '\u{2705}' : '`\u{274C}'}`, partNumber);
+              console.log(
+                `Fetching new URL to reupload part: ${oldURL != newURL ? '\u{2705}' : '`\u{274C}'}`,
+                partNumber
+              );
               signedUrl = newURL;
             })
             .catch((error) => {
@@ -177,14 +178,6 @@ export class MyUploader {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.upload) {
             this.handleProgress(partNumber, progressEvent);
-
-            // Display the percentage uploaded for this part
-            // const percentCompleted = Math.round((progressEvent.loaded * 100) / partBlob.size);
-            // console.log(`Part ${partNumber}: ${percentCompleted}% uploaded.`);
-
-            // Display overall progress
-            // const overallPercent = Math.round(((totalUploaded + progressEvent.loaded) / totalFileSize) * 100);
-            // console.log(`Overall Progress: ${overallPercent}%`);
           }
         },
       };
@@ -214,9 +207,7 @@ export class MyUploader {
     });
 
     // Regenerate URL before retrying
-    // const oldUrl = presignedUrl;
     presignedUrl = await this.generatePresignedUrl(partNumber);
-    // console.log(`\u{1F50D}  URL Changed? ${oldUrl !== presignedUrl ? "\u{2705} Yes" : "\u{274C} No"}`);
     return presignedUrl;
   }
 
@@ -230,13 +221,6 @@ export class MyUploader {
   }
 
   handleProgress(part: number, event: any) {
-    // if(Object.entries(this.progressCache).length > 20){
-    //   // console.log(Object.entries(this.progressCache).slice(-10).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    //   console.log(Object.entries(this.progressCache).filter(([,value])=> (value != 367001599)).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    // }else{
-    //   // console.log(this.progressCache);
-    // }
-
     if (this.file) {
       const eventObj = event.event;
 
