@@ -44,6 +44,7 @@ export class MyUploader {
   private readonly chunkSize: number;
   private readonly threadsQuantity: number;
   private readonly timeout: number;
+  private readonly activeConnections: { [k: number]: XMLHttpRequest };
   private readonly file: File;
   private aborted: boolean;
 
@@ -68,12 +69,15 @@ export class MyUploader {
     this.chunkSize = options.chunkSize;
     // number of parallel uploads
     this.threadsQuantity = Math.min(options.threads || 5, 15);
+    console.log('USed Thread Qty', this.threadsQuantity, ': passed thread qty: ', options.threads);
+
     // adjust the timeout value to activate exponential backoff retry strategy
     this.timeout = options.timeout || 0;
     this.file = options.file;
     this.aborted = false;
     this.uploadedSize = 0;
     this.progressCache = {};
+    this.activeConnections = {};
     this.parts = options.parts;
     this.uploadedParts = [];
     this.uploadId = options.uploadId;
@@ -99,7 +103,7 @@ export class MyUploader {
       const timeTaken = (endTime - startTime) / 1000;
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
       console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
-      this.onErrorFn(error);
+
       await this.complete(error);
     }
   }
@@ -149,7 +153,6 @@ export class MyUploader {
 
         if (attempts === MAX_RETRIES) {
           console.error(`Failed to upload part ${partNumber} after ${MAX_RETRIES} retries. Aborting.`);
-          this.onErrorFn(error);
           throw new Error(`Failed to upload part ${partNumber}`);
         } else {
           const oldURL = signedUrl;
@@ -207,7 +210,9 @@ export class MyUploader {
     });
 
     // Regenerate URL before retrying
+    // const oldUrl = presignedUrl;
     presignedUrl = await this.generatePresignedUrl(partNumber);
+    // console.log(`\u{1F50D}  URL Changed? ${oldUrl !== presignedUrl ? "\u{2705} Yes" : "\u{274C} No"}`);
     return presignedUrl;
   }
 
@@ -221,6 +226,13 @@ export class MyUploader {
   }
 
   handleProgress(part: number, event: any) {
+    // if(Object.entries(this.progressCache).length > 20){
+    //   // console.log(Object.entries(this.progressCache).slice(-10).map(([key, value]) => `${key} : ${value}`).join(' | '));
+    // console.log(Object.entries(this.progressCache).filter(([,value])=> (value != 367001600)).map(([key, value]) => `${key} : ${value}`).join(' | '));
+    // }else{
+    // console.log(this.progressCache);
+    // }
+
     if (this.file) {
       const eventObj = event.event;
 
