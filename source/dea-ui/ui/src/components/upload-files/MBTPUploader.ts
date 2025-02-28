@@ -181,14 +181,6 @@ export class MyUploader {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.upload) {
             this.handleProgress(partNumber, progressEvent);
-
-            // Display the percentage uploaded for this part
-            // const percentCompleted = Math.round((progressEvent.loaded * 100) / partBlob.size);
-            // console.log(`Part ${partNumber}: ${percentCompleted}% uploaded.`);
-
-            // Display overall progress
-            // const overallPercent = Math.round(((totalUploaded + progressEvent.loaded) / totalFileSize) * 100);
-            // console.log(`Overall Progress: ${overallPercent}%`);
           }
         },
       };
