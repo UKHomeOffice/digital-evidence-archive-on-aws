@@ -51,21 +51,21 @@ export const completeCaseFileUpload = async (
   );
 
   //Check if overwritting existing file
-  let fileCount = 1;
-  let fileSizeBytes = deaCaseFile.fileSizeBytes;
+  const fileCount = 1;
+  const fileSizeBytes = deaCaseFile.fileSizeBytes;
 
-  const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
-    deaCaseFile.caseUlid,
-    deaCaseFile.filePath,
-    deaCaseFile.fileName,
-    repositoryProvider
-  );
+  // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
+  //   deaCaseFile.caseUlid,
+  //   deaCaseFile.filePath,
+  //   deaCaseFile.fileName,
+  //   repositoryProvider
+  // );
 
-  console.log('Case file: ', caseFile, ', Old Case File :', deaCaseFile);
-  if (caseFile) {
-    fileCount = 0;
-    fileSizeBytes = caseFile.fileSizeBytes - fileSizeBytes;
-  }
+  // console.log('Case file: ', caseFile, ', Old Case File :', deaCaseFile);
+  // if (caseFile) {
+  //   fileCount = 0;
+  //   fileSizeBytes = caseFile.fileSizeBytes - fileSizeBytes;
+  // }
 
   await repositoryProvider.CaseModel.update(
     {
