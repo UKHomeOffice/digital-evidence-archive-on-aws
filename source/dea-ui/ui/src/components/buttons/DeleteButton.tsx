@@ -32,20 +32,22 @@ function DeleteButton(props: DeleteButtonProps): JSX.Element {
   const [deleteReason, setDeleteReason] = useState('');
 
   async function deleteFilesHandler() {
+    const filesToDelete: string[] = [];
     try {
       setDeleteReasonModalOpen(false);
       props.deleteInProgressCallback(true);
 
       let allFilesDeleted = true;
       for (const file of props.selectedFiles) {
-        try {
-          console.log('Deleting file....', file.fileName);
-          await removeCaseFile(props.caseId, file.caseUlid);
-        } catch (e) {
-          pushNotification('error', fileOperationsLabels.deleteFailed(file.fileName));
-          console.log(`failed to delete ${file.fileName}`, e);
-          allFilesDeleted = false;
-        }
+        filesToDelete.push(file.fileName);
+      }
+      try {
+        console.log('Files being deleted:', filesToDelete.toString());
+        await removeCaseFile(props.caseId, filesToDelete);
+      } catch (e) {
+        pushNotification('error', fileOperationsLabels.deleteFailed(filesToDelete.toString()));
+        console.log(`failed to delete ${filesToDelete.toString()}`, e);
+        allFilesDeleted = false;
       }
 
       if (allFilesDeleted) {
