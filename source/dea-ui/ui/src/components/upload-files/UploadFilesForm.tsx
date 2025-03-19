@@ -165,10 +165,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     };
 
     const handleComplete = (uce: UploaderCompleteEvent) => {
+      console.log('UFF:handleComplete:Start', initiatedCaseFile.uploadId);
       completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
-        uploadId,
+        uploadId: initiatedCaseFile.uploadId,
       }).catch((e) => {
         console.log(e, uce.uploadId);
       });
@@ -201,6 +202,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // Maximum number of parts per upload	10,000
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     const chunkSizeBytes = Math.max(selectedFile.size / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
+
+    console.log(
+      ', props.filePath',
+      props.filePath,
+      ', selectedFile.relativePath:',
+      selectedFile.relativePath
+    );
+
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
@@ -209,7 +218,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: selectedFile.relativePath,
+          filePath: props.filePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
