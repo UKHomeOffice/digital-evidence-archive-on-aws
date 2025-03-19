@@ -165,7 +165,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     };
 
     const handleComplete = (uce: UploaderCompleteEvent) => {
-      console.log('UFF:handleComplete:Start', initiatedCaseFile.uploadId);
       completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
