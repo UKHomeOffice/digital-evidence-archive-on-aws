@@ -19,6 +19,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  deleteButton: 'Delete Case Files',
   restoreButton: 'Restore',
   saveButton: 'Save',
   saveUpdatesButton: 'Save updates',
@@ -141,6 +142,10 @@ export const fileOperationsLabels = {
   downloadFileReasonInputHeader: 'Reason for downloading folders and files',
   downloadFileReasonInputDetails:
     "Specify why you're downloading the case files. This will be displayed in the case audit log.",
+  deleteFileReasonLabel: 'Deleting files',
+  deleteFileReasonInputHeader: 'Reason for deleting files',
+  deleteFileReasonInputDetails:
+    "Specify why you're deleting the case files. This will be displayed in the case audit log.",
   selectFileDescription: 'Choose files',
   restoreFilesModalLabel: (count: number) =>
     `${count} of the files you tried to download was archived due to inactivity.`,
@@ -165,6 +170,8 @@ export const fileOperationsLabels = {
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
   downloadSucceeds: (numFiles: number) => `All ${numFiles} files successfully downloaded`,
+  deleteFailed: (fileName: string) => `Failed to delete ${fileName}`,
+  deleteSucceeds: (numFiles: number) => `All ${numFiles} files successfully deleted`,
 };
 
 export const caseDetailLabels = {
@@ -283,6 +290,11 @@ export const caseActionOptions = {
         return {
           value: CaseAction.DOWNLOAD,
           label: 'Download files',
+        };
+      case CaseAction.DELETE_CASE_FILES:
+        return {
+          value: CaseAction.DELETE_CASE_FILES,
+          label: 'Delete Case files',
         };
       case CaseAction.VIEW_FILES:
         return {

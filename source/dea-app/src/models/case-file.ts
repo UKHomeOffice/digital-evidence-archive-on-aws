@@ -156,3 +156,4 @@ export interface RemoveCaseAssociationDTO {
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
 export type DownloadDTO = DeaCaseFileResult | CaseFileDTO;
+export type DeleteDTO = DeaCaseFileResult | CaseFileDTO;
