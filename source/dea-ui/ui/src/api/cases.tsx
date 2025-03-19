@@ -228,6 +228,6 @@ export const retrieveSystemAuditResult = async (auditId: string): Promise<AuditR
   return await httpApiGet(`system/audit/${auditId}/csv`, undefined);
 };
 
-export const removeCaseFile = async (caseId: string, fileId: string): Promise<void> => {
-  await httpApiDelete(`cases/${caseId}/files/${fileId}/`, undefined);
+export const removeCaseFile = async (caseId: string, filesToDelete: string[]): Promise<void> => {
+  await httpApiDelete(`cases/${caseId}/files`, { ...filesToDelete });
 };
