@@ -15,6 +15,10 @@ export const canDownloadFiles = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.DOWNLOAD) ?? false;
 };
 
+export const canDeleteFiles = (actions?: CaseAction[]): boolean => {
+  return actions?.includes(CaseAction.DELETE_CASE_FILES) ?? false;
+};
+
 export const canUploadFiles = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.UPLOAD) ?? false;
 };

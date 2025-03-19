@@ -34,6 +34,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import DeleteButton from '../buttons/DeleteButton';
 import DownloadButton from '../buttons/DownloadButton';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { ConfirmModal } from '../common-components/ConfirmModal';
@@ -186,6 +187,16 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             selectedFilesCallback={setSelectedFiles}
             downloadInProgress={downloadInProgress}
             downloadInProgressCallback={setDownloadInProgress}
+            filesToRestore={filesToRestore}
+            filesToRestoreCallback={setFilesToRestore}
+          />
+          <DeleteButton
+            caseId={props.caseId}
+            caseStatus={props.caseStatus}
+            selectedFiles={selectedFiles}
+            selectedFilesCallback={setSelectedFiles}
+            deleteInProgress={downloadInProgress}
+            deleteInProgressCallback={setDownloadInProgress}
             filesToRestore={filesToRestore}
             filesToRestoreCallback={setFilesToRestore}
           />
