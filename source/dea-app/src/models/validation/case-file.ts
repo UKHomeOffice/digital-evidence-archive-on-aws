@@ -89,6 +89,10 @@ export const caseFileResponseSchema = Joi.object({
   fileS3Key: s3Identifier,
 });
 
+export const caseFileDeleteRequestSchema = Joi.object({
+  fileUlids: Joi.array().items(joiUlid).required(),
+});
+
 export const caseAssociationRequestSchema = Joi.object({
   caseUlids: Joi.array().items(joiUlid).required(),
   fileUlids: Joi.array().items(joiUlid).required(),

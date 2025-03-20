@@ -183,36 +183,38 @@ export const deleteCase = async (
 };
 
 export const deleteCaseFiles = async (
-  deaCase: DeaCase,
+  caseUlid: string,
+  fileIds: string[],
   repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
-  console.log('Deleting Case Files.....', deaCase.ulid, repositoryProvider.CaseFileModel);
+  console.log('Deleting Case Files.....', caseUlid, fileIds);
 
-  // try {
-  //   const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
-  //   const jobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, defaultDatasetsProvider);
-  //   if (!jobId) {
-  //     // no files to delete
-  //     return CasePersistence.updateCaseStatus(
-  //       deaCase,
-  //       CaseStatus.ACTIVE,
-  //       CaseFileStatus.DELETING,
-  //       repositoryProvider
-  //     );
-  //   }
+  try {
+    const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(caseUlid, repositoryProvider);
+    console.log('s3Objects:', s3Objects);
+    //   const jobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, defaultDatasetsProvider);
+    //   if (!jobId) {
+    //     // no files to delete
+    //     return CasePersistence.updateCaseStatus(
+    //       deaCase,
+    //       CaseStatus.ACTIVE,
+    //       CaseFileStatus.DELETING,
+    //       repositoryProvider
+    //     );
+    //   }
 
-  //   await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
-  //   return CasePersistence.updateCaseStatus(
-  //     deaCase,
-  //     CaseStatus.ACTIVE,
-  //     CaseFileStatus.DELETED,
-  //     repositoryProvider,
-  //     jobId
-  //   );
-  // } catch (e) {
-  //   logger.error('Failed to start delete case files s3 batch job.', e);
-  //   throw new Error('Failed to delete files. Please retry.');
-  // }
+    //   await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
+    //   return CasePersistence.updateCaseStatus(
+    //     deaCase,
+    //     CaseStatus.ACTIVE,
+    //     CaseFileStatus.DELETED,
+    //     repositoryProvider,
+    //     jobId
+    //   );
+  } catch (e) {
+    logger.error('Failed to start delete case files s3 batch job.', e);
+    throw new Error('Failed to delete files. Please retry.');
+  }
 };
 
 export const getRequiredCase = async (
