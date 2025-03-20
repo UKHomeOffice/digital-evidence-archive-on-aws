@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
+import { caseFileDeleteRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as CaseService from '../services/case-service';
@@ -20,9 +21,10 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
   const deaCase = await CaseService.getCase(caseId, repositoryProvider);
+  const fileIds: string[] = getRequiredPayload(event, 'Create cases', caseFileDeleteRequestSchema);
 
   if (deaCase) {
-    await CaseService.deleteCaseFiles(deaCase, repositoryProvider);
+    await CaseService.deleteCaseFiles(caseId, fileIds, repositoryProvider);
   }
 
   return responseNoContent(event);
