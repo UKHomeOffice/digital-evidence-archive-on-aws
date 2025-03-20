@@ -90,7 +90,7 @@ export const caseFileResponseSchema = Joi.object({
 });
 
 export const caseFileDeleteRequestSchema = Joi.object({
-  fileUlids: Joi.array().items(joiUlid).required(),
+  filesToDelete: Joi.array().items(joiUlid).required(),
 });
 
 export const caseAssociationRequestSchema = Joi.object({
