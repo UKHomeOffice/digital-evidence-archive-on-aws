@@ -193,7 +193,12 @@ export const deleteCaseFiles = async (
     // const s3Objects = await CaseFilePersistence.getCaseFileS3Objects(caseUlid, fileUlIds, repositoryProvider);
     console.log('s3Objects:', s3Objects);
 
-    // s3Objects.filter(s3object => s3object.)
+    const filteredS3ObjectsToDelete = s3Objects.filter((obj) =>
+      fileUlIds.some((key) => obj.key.endsWith(key))
+    );
+
+    console.log('filteredS3ObjectsToDelete:', filteredS3ObjectsToDelete);
+
     //   const jobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, defaultDatasetsProvider);
     //   if (!jobId) {
     //     // no files to delete
