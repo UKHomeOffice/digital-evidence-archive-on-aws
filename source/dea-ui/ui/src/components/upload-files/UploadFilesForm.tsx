@@ -202,6 +202,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     const chunkSizeBytes = Math.max(selectedFile.size / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
 
+    let newFilePath = props.filePath + selectedFile.relativePath;
+    newFilePath = newFilePath.replaceAll('//', '/');
+
     console.log(
       ', props.filePath',
       props.filePath,
@@ -217,7 +220,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: props.filePath,
+          filePath: newFilePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
