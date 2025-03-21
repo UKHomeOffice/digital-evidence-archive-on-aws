@@ -147,7 +147,10 @@ export const getCaseFileS3Objects = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<S3Object[]> => {
   console.log('Is fileIds an array :', Array.isArray(fileIds));
-  const fileIdsAsString = fileIds.join(',');
+  let fileIdsAsString = '';
+  for (const fileUlid in fileIds) {
+    fileIdsAsString = fileUlid + ',';
+  }
   console.log('getCaseFileS3Objects:', fileIds, fileIdsAsString);
   const items = await repositoryProvider.CaseFileModel.find(
     {
