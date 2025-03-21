@@ -52,6 +52,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DownloadDTO[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const [deleteInProgress, setDeleteInProgress] = React.useState(false);
 
   const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
   const { pushNotification } = useNotifications();
@@ -195,8 +196,8 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             caseStatus={props.caseStatus}
             selectedFiles={selectedFiles}
             selectedFilesCallback={setSelectedFiles}
-            deleteInProgress={downloadInProgress}
-            deleteInProgressCallback={setDownloadInProgress}
+            deleteInProgress={deleteInProgress}
+            deleteInProgressCallback={setDeleteInProgress}
             filesToRestore={filesToRestore}
             filesToRestoreCallback={setFilesToRestore}
           />
