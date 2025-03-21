@@ -30,7 +30,7 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
 
   console.log('deleteCaseFilesDTO:', deleteCaseFilesDTO, typeof deleteCaseFilesDTO.fileUlids);
 
-  if (caseId && deleteCaseFilesDTO.fileUlids.length > 0) {
+  if (caseId && deleteCaseFilesDTO.fileUlids) {
     await CaseService.deleteCaseFiles(caseId, deleteCaseFilesDTO.fileUlids, repositoryProvider);
   } else {
     console.log('No files to delete');
