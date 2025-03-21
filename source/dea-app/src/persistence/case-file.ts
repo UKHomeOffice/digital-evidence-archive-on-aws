@@ -141,6 +141,26 @@ export const getAllCaseFileS3Objects = async (
   });
 };
 
+export const getCaseFileS3Objects = async (
+  caseId: string,
+  fileIds: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<S3Object[]> => {
+  console.log('getCaseFileS3Objects:', fileIds);
+  const items = await repositoryProvider.CaseFileModel.find(
+    {
+      PK: `CASE#${caseId}#`,
+    },
+    {
+      fields: ['ulid', 'versionId'],
+      where: `isFile = true AND status <> 'DELETED' AND ulid IN (${fileIds})`,
+    }
+  );
+  return items.map((item) => {
+    return { key: `${caseId}/${item.ulid}`, versionId: item.versionId ?? '' };
+  });
+};
+
 export const setCaseFileStatusDeleteFailed = async (
   casefile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider

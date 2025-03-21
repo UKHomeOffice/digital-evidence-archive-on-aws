@@ -229,5 +229,5 @@ export const retrieveSystemAuditResult = async (auditId: string): Promise<AuditR
 };
 
 export const removeCaseFile = async (caseId: string, filesToDelete: string[]): Promise<void> => {
-  await httpApiDelete(`cases/${caseId}/files`, { ...filesToDelete });
+  await httpApiDelete(`cases/${caseId}/files`, { filesToDelete: filesToDelete });
 };
