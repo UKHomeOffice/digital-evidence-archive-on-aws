@@ -154,6 +154,10 @@ export interface RemoveCaseAssociationDTO {
   readonly caseUlids: string[];
 }
 
+export interface DeleteCaseFilesDTO {
+  readonly fileUlids: string[];
+}
+
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
 export type DownloadDTO = DeaCaseFileResult | CaseFileDTO;
 export type DeleteDTO = DeaCaseFileResult | CaseFileDTO;

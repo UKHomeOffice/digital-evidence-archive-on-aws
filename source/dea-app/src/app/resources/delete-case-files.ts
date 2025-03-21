@@ -4,6 +4,7 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
+import { DeleteCaseFilesDTO } from '../../models/case-file';
 import { caseFileDeleteRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -21,10 +22,14 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
   // const deaCase = await CaseService.getCase(caseId, repositoryProvider);
-  const fileIds: string[] = getRequiredPayload(event, 'Delete cases', caseFileDeleteRequestSchema);
+  const deleteCaseFilesDTO: DeleteCaseFilesDTO = getRequiredPayload(
+    event,
+    'Delete cases',
+    caseFileDeleteRequestSchema
+  );
 
-  if (caseId && fileIds) {
-    await CaseService.deleteCaseFiles(caseId, fileIds, repositoryProvider);
+  if (caseId && deleteCaseFilesDTO.fileUlids) {
+    await CaseService.deleteCaseFiles(caseId, deleteCaseFilesDTO.fileUlids, repositoryProvider);
   }
 
   return responseNoContent(event);
