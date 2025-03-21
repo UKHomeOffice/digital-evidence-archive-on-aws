@@ -10,9 +10,10 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseNoContent } from './dea-lambda-utils';
+import { responseOk } from './dea-lambda-utils';
 
 export const deleteCaseFiles: DEAGatewayProxyHandler = async (
   event,
@@ -29,22 +30,27 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find case: ${caseId}`);
   }
 
+  if (!datasetsProvider.deletionAllowed) {
+    throw new ValidationError('The application is not configured to delete files');
+  }
+
   const deleteCaseFilesDTO: DeleteCaseFilesDTO = getRequiredPayload(
     event,
     'Delete cases',
     caseFileDeleteRequestSchema
   );
 
-  if (caseId && deleteCaseFilesDTO) {
-    await CaseService.deleteCaseFiles(
-      deaCase,
-      deleteCaseFilesDTO.filesToDelete,
-      repositoryProvider,
-      datasetsProvider
-    );
-  } else {
-    console.log('No files to delete');
+  if (!caseId && !deleteCaseFilesDTO) {
+    console.log('No files deleted');
+    return responseOk(event, deaCase);
   }
 
-  return responseNoContent(event);
+  const updatedCase = await CaseService.deleteCaseFiles(
+    deaCase,
+    deleteCaseFilesDTO.filesToDelete,
+    repositoryProvider,
+    datasetsProvider
+  );
+
+  return responseOk(event, updatedCase);
 };

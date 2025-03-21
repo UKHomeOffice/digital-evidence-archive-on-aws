@@ -189,16 +189,14 @@ export const deleteCaseFiles = async (
   defaultDatasetsProvider: DatasetsProvider
 ): Promise<DeaCase> => {
   try {
+    //Need to replace with a way to get all S3objects for the fileUlIds
     const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
 
     // const s3Objects = await CaseFilePersistence.getCaseFileS3Objects(caseUlid, fileUlIds, repositoryProvider);
-    console.log('s3Objects:', s3Objects);
-
     const filteredS3ObjectsToDelete = s3Objects.filter((obj) =>
       fileUlIds.some((key) => obj.key.endsWith(key))
     );
 
-    console.log('filteredS3ObjectsToDelete:', filteredS3ObjectsToDelete);
     const jobId = await startDeleteCaseFilesS3BatchJob(
       deaCase.ulid,
       filteredS3ObjectsToDelete,
