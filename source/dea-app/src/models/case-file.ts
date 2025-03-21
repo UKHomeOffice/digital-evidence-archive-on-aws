@@ -155,7 +155,7 @@ export interface RemoveCaseAssociationDTO {
 }
 
 export interface DeleteCaseFilesDTO {
-  readonly fileUlids: string[];
+  readonly filesToDelete: string[];
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
