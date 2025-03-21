@@ -39,7 +39,7 @@ function DeleteButton(props: DeleteButtonProps): JSX.Element {
 
       let allFilesDeleted = true;
       for (const file of props.selectedFiles) {
-        filesToDelete.push(file.fileName);
+        filesToDelete.push(file.ulid);
       }
       try {
         console.log('Files being deleted:', filesToDelete.toString());

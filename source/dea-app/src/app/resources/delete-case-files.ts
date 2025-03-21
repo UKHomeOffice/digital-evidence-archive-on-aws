@@ -20,10 +20,10 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
-  const deaCase = await CaseService.getCase(caseId, repositoryProvider);
-  const fileIds: string[] = getRequiredPayload(event, 'Create cases', caseFileDeleteRequestSchema);
+  // const deaCase = await CaseService.getCase(caseId, repositoryProvider);
+  const fileIds: string[] = getRequiredPayload(event, 'Delete cases', caseFileDeleteRequestSchema);
 
-  if (deaCase) {
+  if (caseId && fileIds) {
     await CaseService.deleteCaseFiles(caseId, fileIds, repositoryProvider);
   }
 
