@@ -146,14 +146,15 @@ export const getCaseFileS3Objects = async (
   fileIds: string[],
   repositoryProvider: ModelRepositoryProvider
 ): Promise<S3Object[]> => {
-  console.log('getCaseFileS3Objects:', fileIds, fileIds.join(','));
+  const fileIsAsString = fileIds.join(',');
+  console.log('getCaseFileS3Objects:', fileIds, fileIsAsString);
   const items = await repositoryProvider.CaseFileModel.find(
     {
       PK: `CASE#${caseId}#`,
     },
     {
       fields: ['ulid', 'versionId'],
-      where: `isFile = {true} AND status <> {DELETED} AND ulid IN (${fileIds.join(',')})`,
+      where: `isFile = {true} AND status <> {DELETED} AND ulid IN (${fileIsAsString})`,
     }
   );
   return items.map((item) => {
