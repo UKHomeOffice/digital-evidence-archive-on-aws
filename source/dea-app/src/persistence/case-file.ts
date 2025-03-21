@@ -153,7 +153,7 @@ export const getCaseFileS3Objects = async (
     },
     {
       fields: ['ulid', 'versionId'],
-      where: `isFile = true AND status <> 'DELETED' AND ulid IN (${fileIds})`,
+      where: `isFile = {true} AND status <> {DELETED} AND ulid IN (${fileIds})`,
     }
   );
   return items.map((item) => {
