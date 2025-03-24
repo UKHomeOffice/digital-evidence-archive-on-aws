@@ -56,7 +56,7 @@ export const completeCaseFileUpload = async (
   const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.ulid, repositoryProvider);
 
   console.log('s3Objects:', s3Objects);
-  if (s3Objects) {
+  if (s3Objects && s3Objects.length > 0) {
     fileCount = s3Objects.length;
   }
   console.log('s3Objects:', s3Objects, 'length:', 's3Objects:', fileCount);
