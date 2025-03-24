@@ -53,13 +53,13 @@ export const completeCaseFileUpload = async (
   //Check if overwritting existing file
   let fileCount = 1;
   const fileSizeBytes = deaCaseFile.fileSizeBytes;
-  const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.ulid, repositoryProvider);
+  const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.caseUlid, repositoryProvider);
 
-  console.log('s3Objects:', s3Objects);
+  console.log('deaCaseFile:', deaCaseFile);
   if (s3Objects && s3Objects.length > 0) {
     fileCount = s3Objects.length;
   }
-  console.log('s3Objects:', s3Objects, 'length:', 's3Objects:', fileCount);
+  console.log('s3Objects:', s3Objects, 'fileCount:', fileCount);
   // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
   //   deaCaseFile.caseUlid,
   //   deaCaseFile.filePath,
