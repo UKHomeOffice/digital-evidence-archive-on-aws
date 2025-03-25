@@ -309,7 +309,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           header: commonTableLabels.dateUploadedHeader,
           cell: (e) =>
             formatDateFromISOString(
-              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.created?.toString()
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.updated?.toString()
             ),
           width: 165,
           minWidth: 165,

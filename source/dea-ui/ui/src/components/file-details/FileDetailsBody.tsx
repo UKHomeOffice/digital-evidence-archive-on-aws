@@ -89,8 +89,8 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
 
     if (fileData.dataVaultUploadDate) {
       uploadDate = new Date(fileData.dataVaultUploadDate);
-    } else if (fileData.created) {
-      uploadDate = new Date(fileData.created);
+    } else if (fileData.updated) {
+      uploadDate = new Date(fileData.updated);
     }
 
     uploadDate = uploadDate
