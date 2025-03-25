@@ -75,6 +75,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
+    validateOverwrite();
     const startTime = performance.now();
     // top level try/finally to set uploadInProgress bool state
     try {
@@ -202,8 +203,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     const chunkSizeBytes = Math.max(selectedFile.size / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
 
-    let newFilePAth = props.filePath + selectedFile.relativePath;
-    newFilePAth = newFilePAth.replaceAll('//', '/');
+    let newFilePath = props.filePath + selectedFile.relativePath;
+    newFilePath = newFilePath.replaceAll('//', '/');
 
     console.log(
       ', props.filePath',
@@ -220,7 +221,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         caseFileUploadDetails: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          filePath: newFilePAth,
+          filePath: newFilePath,
           fileSizeBytes,
           chunkSizeBytes,
           contentType,
@@ -311,6 +312,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   function validateFields(): boolean {
     return reason.length > 1 && details.length > 1;
+  }
+
+  function validateOverwrite(): boolean {
+    selectedFiles.map((file) => console.log('validateOverwrite', file.name));
+    return false;
   }
 
   return (

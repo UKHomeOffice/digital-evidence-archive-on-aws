@@ -51,9 +51,15 @@ export const completeCaseFileUpload = async (
   );
 
   //Check if overwritting existing file
-  const fileCount = 1;
+  let fileCount = 1;
   const fileSizeBytes = deaCaseFile.fileSizeBytes;
+  const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.caseUlid, repositoryProvider);
 
+  console.log('deaCaseFile:', deaCaseFile);
+  if (s3Objects && s3Objects.length > 0) {
+    fileCount = s3Objects.length;
+  }
+  console.log('s3Objects:', s3Objects, 'fileCount:', fileCount);
   // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
   //   deaCaseFile.caseUlid,
   //   deaCaseFile.filePath,
@@ -73,7 +79,8 @@ export const completeCaseFileUpload = async (
       SK: 'CASE#',
     },
     {
-      add: { objectCount: fileCount, totalSizeBytes: fileSizeBytes },
+      set: { objectCount: fileCount },
+      add: { totalSizeBytes: fileSizeBytes },
       transaction,
     }
   );
