@@ -37,7 +37,7 @@ export interface UploaderOptions {
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
 
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 
 export class MyUploader {
   private parts: UploaderFilePart[];
