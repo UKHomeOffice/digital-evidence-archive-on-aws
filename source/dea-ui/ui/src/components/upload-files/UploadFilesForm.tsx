@@ -75,6 +75,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
+    validateOverwrite();
     const startTime = performance.now();
     // top level try/finally to set uploadInProgress bool state
     try {
@@ -311,6 +312,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   function validateFields(): boolean {
     return reason.length > 1 && details.length > 1;
+  }
+
+  function validateOverwrite(): boolean {
+    selectedFiles.map((file) => console.log('validateOverwrite', file.name));
+    return false;
   }
 
   return (
