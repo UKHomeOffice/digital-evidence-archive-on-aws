@@ -38,3 +38,10 @@ export interface DownloadFileResult {
   isArchived?: boolean;
   isRestoring?: boolean;
 }
+
+export interface CaseFileUploadForm {
+  caseUlid: string;
+  fileNames: string[];
+  filePath: string;
+  uploadId?: string;
+}

@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
+import { DownloadDTO, InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import {
   Alert,
   Box,
@@ -22,7 +22,7 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload } from '../../api/cases';
+import { completeUpload, initiateUpload, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
@@ -73,9 +73,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const router = useRouter();
+  const { data } = useListCaseFiles(props.caseId, props.filePath);
+
+  const [confirmOverwrite, setConfirmOverwrite] = useState(false);
+  const [confirmOverwriteFileList, setConfirmOverwriteFileList] = useState('');
 
   async function onSubmitHandler() {
-    validateOverwrite();
     const startTime = performance.now();
     // top level try/finally to set uploadInProgress bool state
     try {
@@ -314,22 +317,55 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     return reason.length > 1 && details.length > 1;
   }
 
-  function validateOverwrite(): boolean {
-    selectedFiles.map((file) => console.log('validateOverwrite', file.name));
-    return false;
+  function validateOverwrite(): void {
+    if (data.length <= 0) {
+      return;
+    }
+    const fileNames: string[] = selectedFiles.map((file) =>
+      (file.relativePath + props.filePath + file.name).replaceAll('//', '/')
+    );
+
+    const filesBeingOverwritten: DownloadDTO[] = fetchCommonFiles(fileNames, data);
+
+    if (filesBeingOverwritten.length > 0) {
+      setConfirmOverwrite(true);
+      setConfirmOverwriteFileList(
+        filesBeingOverwritten.map((file) => file.filePath + file.fileName).join(',')
+      );
+    }
+  }
+
+  function fetchCommonFiles(fileNames: string[], data: DownloadDTO[]): DownloadDTO[] {
+    const set1 = new Set(fileNames);
+    const set2 = new Set(data);
+    return [...new Set([...set2].filter((X) => set1.has(X.filePath + X.fileName)))];
+  }
+
+  function showConfirmUploadModal() {
+    validateOverwrite();
+    setConfirmationVisible(true);
   }
 
   return (
     <SpaceBetween data-testid="upload-file-form-space" size="xxl">
       <Modal
         data-testid="upload-file-form-modal"
-        onDismiss={() => setConfirmationVisible(false)}
+        onDismiss={() => {
+          setConfirmationVisible(false);
+          setConfirmOverwrite(false);
+        }}
         visible={confirmationVisible}
         closeAriaLabel="Close modal"
         footer={
           <Box float="right">
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="link" onClick={() => setConfirmationVisible(false)}>
+              <Button
+                variant="link"
+                onClick={() => {
+                  setConfirmationVisible(false);
+                  setConfirmOverwrite(false);
+                }}
+              >
                 Go back
               </Button>
               <Button
@@ -338,6 +374,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                 onClick={() => {
                   void onSubmitHandler();
                   setConfirmationVisible(false);
+                  setConfirmOverwrite(false);
                 }}
               >
                 Confirm
@@ -349,6 +386,18 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       >
         <Alert statusIconAriaLabel="Warning" type="warning">
           {fileOperationsLabels.modalBody}
+          {confirmOverwrite && (
+            <>
+              <br />
+              {fileOperationsLabels.modalBodyOverwriteWarn}
+              <br />
+              <ol>
+                {confirmOverwriteFileList.split(',').map((fileName, index) => (
+                  <li key={index}>{fileName}</li>
+                ))}
+              </ol>
+            </>
+          )}
         </Alert>
       </Modal>
       <Form>
@@ -403,7 +452,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           variant="primary"
           iconAlign="right"
           data-testid="upload-file-submit"
-          onClick={() => setConfirmationVisible(true)}
+          onClick={() => {
+            void showConfirmUploadModal();
+          }}
           disabled={uploadInProgress || !validateFields()}
         >
           {commonLabels.uploadAndSaveButton}
