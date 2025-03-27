@@ -24,6 +24,8 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
 
   const caseUser: CaseUserDTO = getRequiredPayload(event, 'CaseUser', caseUserSchema);
 
+  console.log('event:', event, 'caseUser:', caseUser);
+
   if (caseId !== caseUser.caseUlid) {
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
