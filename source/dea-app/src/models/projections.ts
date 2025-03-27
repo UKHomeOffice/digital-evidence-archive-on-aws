@@ -165,6 +165,8 @@ export const caseUserFromEntity = (caseUserEntity: CaseUserType): CaseUser => {
 };
 
 export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileResult => {
+  console.log('caseFileFromEntity: Start');
+
   return {
     ulid: caseFileEntity.ulid,
     caseUlid: caseFileEntity.caseUlid,

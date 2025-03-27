@@ -97,6 +97,7 @@ export const createCaseFileAssociation = async (
   deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
+  console.log('createCaseFileAssociation: Start');
   const transaction = {};
   const newEntity = await repositoryProvider.CaseFileModel.create(
     {
@@ -230,6 +231,7 @@ const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider:
         status: CaseFileStatus.ACTIVE,
         isFile: false,
       });
+      console.log('createCaseFilePaths:');
       await createCaseFilePaths(newFileObj, repositoryProvider);
     } catch (error) {
       if ('code' in error && error.code === 'UniqueError') {
