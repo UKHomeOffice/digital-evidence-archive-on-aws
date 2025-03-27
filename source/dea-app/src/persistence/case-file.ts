@@ -52,12 +52,16 @@ export const completeCaseFileUpload = async (
 
   //Check if overwritting existing file
   let fileCount = 1;
-  const fileSizeBytes = deaCaseFile.fileSizeBytes;
+  let fileSizeBytes = deaCaseFile.fileSizeBytes;
   const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.caseUlid, repositoryProvider);
 
-  console.log('deaCaseFile:', deaCaseFile);
   if (s3Objects && s3Objects.length > 0) {
     fileCount = s3Objects.length;
+    let totalFileSize = 0;
+    for (let j = 0; j < s3Objects.length; j++) {
+      totalFileSize += s3Objects[j].fileSizeBytes;
+    }
+    fileSizeBytes = totalFileSize;
   }
   console.log('s3Objects:', s3Objects, 'fileCount:', fileCount);
   // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
@@ -79,8 +83,7 @@ export const completeCaseFileUpload = async (
       SK: 'CASE#',
     },
     {
-      set: { objectCount: fileCount },
-      add: { totalSizeBytes: fileSizeBytes },
+      set: { objectCount: fileCount, totalSizeBytes: fileSizeBytes },
       transaction,
     }
   );
@@ -139,12 +142,16 @@ export const getAllCaseFileS3Objects = async (
       PK: `CASE#${caseId}#`,
     },
     {
-      fields: ['ulid', 'versionId'],
+      fields: ['ulid', 'versionId', 'fileSizeBytes'],
       where: '${isFile} = {true} AND ${status} <> {DELETED}',
     }
   );
   return items.map((item) => {
-    return { key: `${caseId}/${item.ulid}`, versionId: item.versionId ?? '' };
+    return {
+      key: `${caseId}/${item.ulid}`,
+      versionId: item.versionId ?? '',
+      fileSizeBytes: item.fileSizeBytes ?? 0,
+    };
   });
 };
 

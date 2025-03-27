@@ -159,6 +159,7 @@ export const fileOperationsLabels = {
   restoreFail: 'Failed to restore selected files.',
   modalTitle: 'Confirm you want to upload these files.',
   modalBody: 'Once uploaded case files cannot be individually removed.',
+  modalBodyOverwriteWarn: 'The following files will be overwritten, if you continue with the upload',
   restoreInProgress: (fileName: string) =>
     `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>
