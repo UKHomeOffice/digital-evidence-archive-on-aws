@@ -67,6 +67,7 @@ export interface DatasetsProvider {
 export interface S3Object {
   key: string;
   versionId: string;
+  fileSizeBytes: number;
 }
 
 const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() });
