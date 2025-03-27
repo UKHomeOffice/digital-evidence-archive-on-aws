@@ -48,7 +48,7 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     if (status == CaseFileStatus.ACTIVE) {
       return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
-      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
+      return <StatusIndicator type="stopped">{status}</StatusIndicator>;
     }
   }
 
