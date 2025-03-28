@@ -19,6 +19,9 @@ function formatDate(date: Date | undefined, locale = 'en-us'): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false, // 24-hour format
   });
 }
 
