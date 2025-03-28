@@ -98,6 +98,9 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: false, // 24-hour format
         })
       : '-';
 
@@ -149,7 +152,8 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
               <TextContent>
                 <div>
                   {' '}
-                  <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                  {fileData.status == 'DELETED' && <h5>{fileDetailLabels.deletedDateLabel}</h5>}
+                  {fileData.status != 'DELETED' && <h5>{fileDetailLabels.uploadDateLabel}</h5>}
                   <SpaceBetween size="l">
                     <p>{uploadDate}</p>
 

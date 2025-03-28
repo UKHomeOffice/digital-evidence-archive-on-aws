@@ -361,6 +361,7 @@ export const fileUploadLabels = {
 };
 
 export const fileDetailLabels = {
+  deletedDateLabel: 'Deletion date',
   uploadDateLabel: 'Upload date',
   fileSizeLabel: 'File size',
   shaHashLabel: 'SHA 256 hash',
