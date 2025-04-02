@@ -5,6 +5,7 @@
 
 import {
   AbortMultipartUploadCommand,
+  ChecksumAlgorithm,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
@@ -111,7 +112,7 @@ export const createCaseFileUpload = async (
         ServerSideEncryption: 'aws:kms',
         ContentType: caseFile.contentType,
         StorageClass: 'INTELLIGENT_TIERING',
-        // ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
       })
     );
   } catch (error) {
