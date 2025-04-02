@@ -137,6 +137,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     };
 
     const initiatedCaseFile = await initiateUpload(uploadDto);
+
+    console.log('initiatedCaseFile:', initiatedCaseFile);
     uploadId = initiatedCaseFile.uploadId;
 
     if (!initiatedCaseFile.presignedUrls) {

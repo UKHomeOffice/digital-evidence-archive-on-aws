@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
+import crypto from 'crypto';
 import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import axios, { AxiosProgressEvent } from 'axios';
 import { initiateUpload } from '../../api/cases';
@@ -135,6 +135,24 @@ export class MyUploader {
     await this.complete();
   }
 
+  async blobToArrayBuffer(blob: Blob) {
+    if ('arrayBuffer' in blob) {
+      return await blob.arrayBuffer();
+    }
+
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result && typeof reader.result !== 'string') {
+          resolve(reader.result);
+        }
+        reject();
+      };
+      reader.onerror = () => reject();
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
   async uploadPartToSignedUrlWithRetry(signedUrl: string, partBlob: Blob, partNumber: number): Promise<void> {
     let attempts = 0;
     let partUploaded = false;
@@ -174,9 +192,16 @@ export class MyUploader {
 
   async uploadPartToSignedUrl(signedUrl: string, partBlob: Blob, partNumber: number): Promise<void> {
     try {
+      const arrayFromBlob = new Uint8Array(await this.blobToArrayBuffer(partBlob));
+      const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('hex');
+
       const config = {
         headers: {
-          'Content-Type': this.file.type, // Set the content type
+          // 'Content-Type': 'application/octet-stream', // Set the content type
+          'Content-Length': partBlob.size,
+          // 'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+          // 'X-Amz-Content-Sha256': partHash,
+          // 'x-amz-checksum-sha256': partHash
         },
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.upload) {
@@ -185,8 +210,10 @@ export class MyUploader {
         },
       };
 
+      console.log('Hash being uploaded :', partHash, ', signedURL:', signedUrl);
       // Perform the upload to the signed URL using Axios (correct argument order)
-      await axios.put(signedUrl, partBlob, config);
+      const response = await axios.put(signedUrl, partBlob, config);
+      console.log('Upload response: ', response);
     } catch (error) {
       console.error(`Error uploading part ${partNumber} to signed URL:`, error);
       throw error; // Rethrow to handle failure in main function
