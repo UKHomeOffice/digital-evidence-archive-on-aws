@@ -120,6 +120,8 @@ export const createCaseFileUpload = async (
     throw error;
   }
 
+  console.log('response: datasetsProvider.s3Client.send: ', response);
+
   if (!response.UploadId) {
     throw new Error('Failed to initiate multipart upload.');
   }
