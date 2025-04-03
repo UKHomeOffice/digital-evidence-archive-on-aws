@@ -118,6 +118,7 @@ export const updateCaseStatus = async (
       return: 'get',
     }
   );
+
   console.log('case.updateCaseStatus: End: ');
 
   return caseFromEntity(updatedCase);

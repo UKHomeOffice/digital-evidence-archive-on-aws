@@ -201,7 +201,6 @@ export const deleteCaseFiles = async (
 
     console.log('case-service.deleteCaseFiles: s3Objects: ', s3Objects);
 
-    // const s3Objects = await CaseFilePersistence.getCaseFileS3Objects(caseUlid, fileUlIds, repositoryProvider);
     const filteredS3ObjectsToDelete = s3Objects.filter((obj) =>
       fileUlIds.some((key) => obj.key.endsWith(key))
     );
@@ -226,6 +225,11 @@ export const deleteCaseFiles = async (
     console.log('case-service.deleteCaseFiles: createJob: ');
 
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
+
+    fileUlIds.forEach((fileUlIds) =>
+      CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlIds, updatedBy, repositoryProvider)
+    );
+
     return CasePersistence.updateCaseStatus(
       deaCase,
       updatedBy,

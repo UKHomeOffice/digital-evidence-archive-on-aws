@@ -424,3 +424,17 @@ export const updateCaseFileChecksum = async (
     sha256Hash: checksum,
   });
 };
+
+export const updateCaseFileUpdatedBy = async (
+  caseUlid: string,
+  fileUlid: string,
+  updatedBy: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  console.log('updateCaseFileUpdatedBy : ', updatedBy);
+  await repositoryProvider.CaseFileModel.update({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${fileUlid}#`,
+    updatedBy: updatedBy,
+  });
+};
