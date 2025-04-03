@@ -39,6 +39,8 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   }
 
   const userUlid = getUserUlid(event);
+
+  console.log('complete-case-file-upload.userUlid: ', userUlid, event);
   const existingFile = await validateCompleteCaseFileRequirements(
     requestCaseFile,
     userUlid,
