@@ -170,7 +170,13 @@ describe('S3 batch job status change handler', () => {
 
     const createdCase = (await getCase(caseId, undefined, repositoryProvider)) ?? fail();
     // update case status to inactive directly in DB
-    await updateCaseStatusInDb(createdCase, CaseStatus.ACTIVE, CaseFileStatus.ACTIVE, repositoryProvider);
+    await updateCaseStatusInDb(
+      createdCase,
+      caseOwner.ulid,
+      CaseStatus.ACTIVE,
+      CaseFileStatus.ACTIVE,
+      repositoryProvider
+    );
 
     // call lambda
     await s3BatchJobStatusChangeHandler(

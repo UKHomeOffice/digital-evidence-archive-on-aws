@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
+import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
 import { UpdateCaseStatusInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
@@ -64,8 +64,11 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     }
   }
 
+  const userUlid = getUserUlid(event);
+
   const updatedCase = await CaseService.updateCaseStatus(
     deaCase,
+    userUlid,
     input.status,
     input.deleteFiles,
     repositoryProvider,

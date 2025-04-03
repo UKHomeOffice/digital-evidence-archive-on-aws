@@ -130,6 +130,7 @@ export const updateCases = async (
 
 export const updateCaseStatus = async (
   deaCase: DeaCase,
+  updatedBy: string,
   newStatus: CaseStatus,
   deleteFiles: boolean,
   repositoryProvider: ModelRepositoryProvider,
@@ -138,6 +139,7 @@ export const updateCaseStatus = async (
   const filesStatus = deleteFiles ? CaseFileStatus.DELETE_FAILED : CaseFileStatus.ACTIVE;
   const updatedCase = await CasePersistence.updateCaseStatus(
     deaCase,
+    updatedBy,
     newStatus,
     filesStatus,
     repositoryProvider
@@ -154,6 +156,7 @@ export const updateCaseStatus = async (
       // no files to delete
       return CasePersistence.updateCaseStatus(
         updatedCase,
+        updatedBy,
         newStatus,
         CaseFileStatus.DELETED,
         repositoryProvider
@@ -163,6 +166,7 @@ export const updateCaseStatus = async (
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
     return CasePersistence.updateCaseStatus(
       updatedCase,
+      updatedBy,
       newStatus,
       CaseFileStatus.DELETING,
       repositoryProvider,
@@ -184,6 +188,7 @@ export const deleteCase = async (
 
 export const deleteCaseFiles = async (
   deaCase: DeaCase,
+  updatedBy: string,
   fileUlIds: string[],
   repositoryProvider: ModelRepositoryProvider,
   defaultDatasetsProvider: DatasetsProvider
@@ -212,6 +217,7 @@ export const deleteCaseFiles = async (
       // no files to delete
       return CasePersistence.updateCaseStatus(
         deaCase,
+        updatedBy,
         CaseStatus.ACTIVE,
         CaseFileStatus.DELETING,
         repositoryProvider
@@ -222,6 +228,7 @@ export const deleteCaseFiles = async (
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
     return CasePersistence.updateCaseStatus(
       deaCase,
+      updatedBy,
       CaseStatus.ACTIVE,
       CaseFileStatus.DELETED,
       repositoryProvider,

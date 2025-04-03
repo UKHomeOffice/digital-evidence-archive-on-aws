@@ -172,7 +172,13 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     // update case status to inactive directly in DB
-    await updateCaseStatusInDb(createdCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED, repositoryProvider);
+    await updateCaseStatusInDb(
+      createdCase,
+      caseOwner.ulid,
+      CaseStatus.INACTIVE,
+      CaseFileStatus.DELETED,
+      repositoryProvider
+    );
 
     const updatedCase = await callUpdateCaseStatusAndValidate(
       caseOwner.ulid,
