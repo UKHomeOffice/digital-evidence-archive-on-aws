@@ -100,6 +100,8 @@ export const updateCaseStatus = async (
   repositoryProvider: CaseModelRepositoryProvider,
   s3BatchJobId?: string
 ): Promise<DeaCase> => {
+  console.log('case.updateCaseStatus: Start: ');
+
   const updatedCase = await repositoryProvider.CaseModel.update(
     {
       ...deaCase,
@@ -115,6 +117,8 @@ export const updateCaseStatus = async (
       return: 'get',
     }
   );
+  console.log('case.updateCaseStatus: End: ');
+
   return caseFromEntity(updatedCase);
 };
 
