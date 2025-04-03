@@ -231,6 +231,7 @@ export const hydrateUsersForFiles = async (
   const userUlids = [
     ...new Set([
       ...files.map((file) => file.createdBy),
+      ...files.map((file) => file.updatedBy),
       ...files
         .filter((file) => file.associationCreatedBy?.length)
         .map((file) => file.associationCreatedBy ?? ''),
