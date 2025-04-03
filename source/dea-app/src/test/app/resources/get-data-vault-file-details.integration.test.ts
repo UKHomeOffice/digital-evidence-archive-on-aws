@@ -53,6 +53,7 @@ describe('test data vault file details', () => {
       isFile: true,
       fileSizeBytes: 1024,
       createdBy: user.ulid,
+      updatedBy: user.ulid,
       contentType: 'regular',
       sha256Hash: 'SHA256HASH',
       versionId: 'VERSIONID',

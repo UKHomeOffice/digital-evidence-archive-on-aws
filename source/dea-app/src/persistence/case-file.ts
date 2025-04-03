@@ -28,6 +28,7 @@ export const initiateCaseFileUpload = async (
     ...uploadDTO,
     isFile: true,
     createdBy: userUlid,
+    updatedBy: userUlid,
     status: CaseFileStatus.PENDING,
     ttl: Math.round(Date.now() / 1000) + SECONDS_IN_A_DAY,
   });

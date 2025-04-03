@@ -361,6 +361,7 @@ export const validateCaseFile = async (
   expect(deaCaseFile.fileName).toEqual(expectedFileName);
   expect(deaCaseFile.filePath).toEqual(expectedFilePath);
   expect(deaCaseFile.createdBy).toEqual(expectedCreator);
+  expect(deaCaseFile.updatedBy).toEqual(expectedCreator);
   expect(deaCaseFile.fileSizeBytes).toEqual(expectedFileSizeBytes);
   expect(deaCaseFile.details).toEqual(expectedDetails);
   expect(deaCaseFile.reason).toEqual(expectedReason);

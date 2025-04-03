@@ -108,6 +108,7 @@ export const associateFilesListToCase = async (
         fileName: retrievedDataVaultFile.fileName,
         contentType: retrievedDataVaultFile.contentType,
         createdBy: retrievedDataVaultFile.createdBy,
+        updatedBy: retrievedDataVaultFile.updatedBy,
         filePath: retrievedDataVaultFile.filePath,
         fileSizeBytes: retrievedDataVaultFile.fileSizeBytes,
         sha256Hash: retrievedDataVaultFile.sha256Hash,
@@ -155,8 +156,10 @@ export const hydrateUsersForDataVaultFiles = async (
   return files.map((file) => {
     const user = userMap.get(file.createdBy);
     let createdBy = file.createdBy;
+    let updatedBy = file.updatedBy;
     if (user) {
       createdBy = `${user?.firstName} ${user?.lastName}`;
+      updatedBy = createdBy;
     }
     return {
       ulid: file.ulid,
@@ -166,6 +169,7 @@ export const hydrateUsersForDataVaultFiles = async (
       isFile: file.isFile,
       fileSizeBytes: file.fileSizeBytes,
       createdBy,
+      updatedBy,
       contentType: file.contentType,
       sha256Hash: file.sha256Hash,
       versionId: file.versionId,

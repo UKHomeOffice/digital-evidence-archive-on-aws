@@ -248,8 +248,10 @@ const caseFilesToDTO = (
   return files.map((file) => {
     const user = userMap.get(file.createdBy);
     let createdBy = file.createdBy;
+    let updatedBy = file.updatedBy;
     if (user) {
       createdBy = `${user?.firstName} ${user?.lastName}`;
+      updatedBy = `${user?.firstName} ${user?.lastName}`;
     }
     const associationUser = userMap.get(file.associationCreatedBy ?? '');
     const associationCreatedBy = associationUser
@@ -261,6 +263,7 @@ const caseFilesToDTO = (
       fileName: file.fileName,
       contentType: file.contentType,
       createdBy,
+      updatedBy,
       filePath: file.filePath,
       fileSizeBytes: file.fileSizeBytes,
       sha256Hash: file.sha256Hash,

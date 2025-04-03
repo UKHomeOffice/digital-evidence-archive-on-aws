@@ -96,6 +96,7 @@ export const DeaSchema = {
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
       caseUlid: { type: String, validate: ulidRegex, required: true },
       createdBy: { type: String, validate: ulidRegex, required: true },
+      updatedBy: { type: String, validate: ulidRegex, required: true }, // Added to support CFI
       isFile: { type: Boolean, required: true },
       fileSizeBytes: { type: Number, required: true },
       status: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
@@ -246,6 +247,7 @@ export const DeaSchema = {
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
       dataVaultUlid: { type: String, validate: ulidRegex, required: true },
       createdBy: { type: String, validate: ulidRegex, required: true },
+      updatedBy: { type: String, validate: ulidRegex, required: true }, // Added to support CFI
       isFile: { type: Boolean, required: true },
       fileSizeBytes: { type: Number, required: true },
       versionId: { type: String },

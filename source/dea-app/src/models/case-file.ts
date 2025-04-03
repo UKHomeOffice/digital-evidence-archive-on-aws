@@ -13,6 +13,7 @@ export interface DeaCaseFile {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   status: CaseFileStatus;
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
@@ -47,6 +48,7 @@ export interface DeaCaseFileResult {
   fileName: string;
   contentType?: string;
   createdBy: string;
+  updatedBy: string;
   filePath: string;
   fileSizeBytes: number;
   uploadId?: string;
@@ -86,6 +88,7 @@ export interface CaseFileDTO {
   readonly fileName: string;
   readonly contentType?: string;
   readonly createdBy: string;
+  readonly updatedBy: string;
   readonly filePath: string;
   readonly fileSizeBytes: number;
   readonly sha256Hash?: string;
@@ -117,6 +120,7 @@ export type CompleteCaseFileUploadObject = {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   status: CaseFileStatus;
   readonly ulid: string;
   readonly contentType?: string;
