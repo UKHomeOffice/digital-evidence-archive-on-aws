@@ -24,6 +24,7 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  // const userUlid = getUserUlid(event);
 
   const deaCase = await CaseService.getCase(caseId, repositoryProvider);
   if (!deaCase) {
