@@ -248,10 +248,14 @@ const caseFilesToDTO = (
   return files.map((file) => {
     const user = userMap.get(file.createdBy);
     let createdBy = file.createdBy;
-    let updatedBy = file.updatedBy;
     if (user) {
       createdBy = `${user?.firstName} ${user?.lastName}`;
-      updatedBy = `${user?.firstName} ${user?.lastName}`;
+    }
+
+    const updatedByUser = userMap.get(file.updatedBy);
+    let updatedBy = file.updatedBy;
+    if (user) {
+      updatedBy = `${updatedByUser?.firstName} ${updatedByUser?.lastName}`;
     }
     const associationUser = userMap.get(file.associationCreatedBy ?? '');
     const associationCreatedBy = associationUser
