@@ -318,7 +318,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'createdBy',
           header: commonTableLabels.uploadedByHeader,
-          cell: (e) => e.updatedBy,
+          cell: (e) => (e.updatedBy ? e.updatedBy : e.createdBy),
           width: 150,
           minWidth: 150,
           sortingField: 'createdBy',
