@@ -331,7 +331,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       );
       setConfirmOverwriteFileList(listOfActiveFilesBeingOverwritten);
 
-      if (confirmOverwriteFileList.length > 0) {
+      if (listOfActiveFilesBeingOverwritten.length > 0) {
         setConfirmOverwrite(true);
       }
       console.log(
