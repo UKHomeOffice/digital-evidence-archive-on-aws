@@ -165,6 +165,9 @@ export const fileOperationsLabels = {
   modalTitle: 'Confirm you want to upload these files.',
   modalBody: 'Once uploaded case files cannot be individually removed.',
   modalBodyOverwriteWarn: 'The following files will be overwritten, if you continue with the upload',
+  modalBodyOverwriteDeleteWarn:
+    'The following files will not be overwritten, since they are in a DELETED status',
+
   restoreInProgress: (fileName: string) =>
     `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>

@@ -46,8 +46,6 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
     return responseOk(event, deaCase);
   }
 
-  console.log('deleteCaseFiles:', deleteCaseFilesDTO, ' : userUlid :', userUlid);
-
   const updatedCase = await CaseService.deleteCaseFiles(
     deaCase,
     userUlid,

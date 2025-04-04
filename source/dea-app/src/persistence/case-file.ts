@@ -64,7 +64,6 @@ export const completeCaseFileUpload = async (
     }
     fileSizeBytes = totalFileSize;
   }
-  console.log('s3Objects:', s3Objects, 'fileCount:', fileCount);
   // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
   //   deaCaseFile.caseUlid,
   //   deaCaseFile.filePath,

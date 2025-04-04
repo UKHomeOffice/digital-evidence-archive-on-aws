@@ -4,6 +4,7 @@
  */
 
 import { DownloadDTO, InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
   Alert,
   Box,
@@ -76,7 +77,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const { data } = useListCaseFiles(props.caseId, props.filePath);
 
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
+  const [deletedFilesOverwrite, setDeletedFilesOverwrite] = useState(false);
+
   const [confirmOverwriteFileList, setConfirmOverwriteFileList] = useState('');
+  const [deleteOverwriteFileList, setDeleteOverwriteFileList] = useState('');
 
   async function onSubmitHandler() {
     const startTime = performance.now();
@@ -209,13 +213,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     let newFilePAth = props.filePath + selectedFile.relativePath;
     newFilePAth = newFilePAth.replaceAll('//', '/');
 
-    console.log(
-      ', props.filePath',
-      props.filePath,
-      ', selectedFile.relativePath:',
-      selectedFile.relativePath
-    );
-
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
@@ -328,11 +325,36 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     const filesBeingOverwritten: DownloadDTO[] = fetchCommonFiles(fileNames, data);
 
     if (filesBeingOverwritten.length > 0) {
-      setConfirmOverwrite(true);
-      setConfirmOverwriteFileList(
-        filesBeingOverwritten.map((file) => file.filePath + file.fileName).join(',')
+      const listOfActiveFilesBeingOverwritten = fetchFilesWithStatus(
+        filesBeingOverwritten,
+        CaseFileStatus.ACTIVE
       );
+      setConfirmOverwriteFileList(listOfActiveFilesBeingOverwritten);
+
+      if (confirmOverwriteFileList.length > 0) {
+        setConfirmOverwrite(true);
+      }
+      console.log(
+        'filesBeingOverwritten :',
+        filesBeingOverwritten,
+        ' : ',
+        confirmOverwrite,
+        ' : ',
+        listOfActiveFilesBeingOverwritten
+      );
+
+      setDeleteOverwriteFileList(fetchFilesWithStatus(filesBeingOverwritten, CaseFileStatus.DELETED));
+      if (deleteOverwriteFileList.length > 0) {
+        setDeletedFilesOverwrite(true);
+      }
     }
+  }
+
+  function fetchFilesWithStatus(files: DownloadDTO[], status: CaseFileStatus): string {
+    return files
+      .filter((file) => file.status === status)
+      .map((file) => file.filePath + file.fileName)
+      .join(',');
   }
 
   function fetchCommonFiles(fileNames: string[], data: DownloadDTO[]): DownloadDTO[] {
@@ -364,6 +386,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                 onClick={() => {
                   setConfirmationVisible(false);
                   setConfirmOverwrite(false);
+                  setDeletedFilesOverwrite(false);
                 }}
               >
                 Go back
@@ -371,10 +394,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               <Button
                 data-testid="confirm-upload-button"
                 variant="primary"
+                disabled={deletedFilesOverwrite}
                 onClick={() => {
                   void onSubmitHandler();
                   setConfirmationVisible(false);
                   setConfirmOverwrite(false);
+                  setDeletedFilesOverwrite(false);
                 }}
               >
                 Confirm
@@ -386,13 +411,25 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       >
         <Alert statusIconAriaLabel="Warning" type="warning">
           {fileOperationsLabels.modalBody}
-          {confirmOverwrite && (
+          {confirmOverwriteFileList.length > 0 && confirmOverwrite && (
             <>
               <br />
               {fileOperationsLabels.modalBodyOverwriteWarn}
               <br />
               <ol>
                 {confirmOverwriteFileList.split(',').map((fileName, index) => (
+                  <li key={index}>{fileName}</li>
+                ))}
+              </ol>
+            </>
+          )}
+          {deleteOverwriteFileList.length > 0 && deletedFilesOverwrite && (
+            <>
+              <br />
+              {fileOperationsLabels.modalBodyOverwriteDeleteWarn}
+              <br />
+              <ol>
+                {deleteOverwriteFileList.split(',').map((fileName, index) => (
                   <li key={index}>{fileName}</li>
                 ))}
               </ol>

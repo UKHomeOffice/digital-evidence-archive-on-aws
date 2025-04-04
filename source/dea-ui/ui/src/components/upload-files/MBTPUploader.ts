@@ -69,7 +69,6 @@ export class MyUploader {
     this.chunkSize = options.chunkSize;
     // number of parallel uploads
     this.threadsQuantity = Math.min(options.threads || 5, 15);
-    console.log('USed Thread Qty', this.threadsQuantity, ': passed thread qty: ', options.threads);
 
     // adjust the timeout value to activate exponential backoff retry strategy
     this.timeout = options.timeout || 0;

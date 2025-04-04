@@ -193,7 +193,6 @@ export const getTemporaryCredentialsForUpload = async (
         datasetsProvider
       )
     );
-    console.log('Regenerated URLs........', presignedUrlPromises.length);
   } else {
     for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
       presignedUrlPromises.push(
