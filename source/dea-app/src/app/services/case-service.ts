@@ -2,7 +2,6 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { DescribeJobResult } from '@aws-sdk/client-s3-control';
 import { OneTableError, Paged } from 'dynamodb-onetable';
 import { logger } from '../../logger';
 import { DeaCase, DeaCaseInput, MyCase } from '../../models/case';
@@ -17,7 +16,7 @@ import * as CaseUserPersistence from '../../persistence/case-user';
 import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
-import { DatasetsProvider, describeS3BatchJob, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
+import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseUserService from './case-user-service';
@@ -219,12 +218,9 @@ export const deleteCaseFiles = async (
     }
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
 
-    const s3BatchJob = await describeS3BatchJob(jobId, awsAccountId);
-    if (s3BatchJobSucceeded(s3BatchJob)) {
-      fileUlIds.forEach((fileUlIds) =>
-        CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlIds, updatedBy, repositoryProvider)
-      );
-    }
+    fileUlIds.forEach((fileUlIds) =>
+      CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlIds, updatedBy, repositoryProvider)
+    );
 
     const updateStatus = await CasePersistence.updateCaseStatus(
       deaCase,
@@ -241,17 +237,6 @@ export const deleteCaseFiles = async (
     throw new Error('Failed to delete files. Please retry.');
   }
 };
-
-function s3BatchJobSucceeded(s3BatchJob: DescribeJobResult): boolean {
-  if (
-    s3BatchJob.Job &&
-    s3BatchJob.Job.ProgressSummary &&
-    s3BatchJob.Job.ProgressSummary.NumberOfTasksFailed === 0
-  ) {
-    return true;
-  }
-  return false;
-}
 
 export const getRequiredCase = async (
   caseId: string,

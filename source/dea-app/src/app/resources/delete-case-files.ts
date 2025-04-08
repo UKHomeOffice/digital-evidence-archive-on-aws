@@ -48,8 +48,6 @@ export const deleteCaseFiles: DEAGatewayProxyHandler = async (
 
   const awsAccountId = context.invokedFunctionArn.split(':')[4];
 
-  console.log('awsAccountId:', awsAccountId, context);
-
   const updatedCase = await CaseService.deleteCaseFiles(
     deaCase,
     userUlid,
