@@ -14,7 +14,7 @@ import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import * as CaseUserPersistence from '../../persistence/case-user';
-import { createJob } from '../../persistence/job';
+import { createJob, getJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
@@ -217,6 +217,12 @@ export const deleteCaseFiles = async (
       );
     }
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
+
+    //Added to delay completion of deletion until Deletion job completes
+    const deaJob = await getJob(jobId, repositoryProvider);
+    if (deaJob) {
+      console.log('DEA JOB : ', deaJob);
+    }
 
     fileUlIds.forEach((fileUlIds) =>
       CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlIds, updatedBy, repositoryProvider)
