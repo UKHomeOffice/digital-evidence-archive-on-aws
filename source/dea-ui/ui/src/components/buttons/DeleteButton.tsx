@@ -21,8 +21,7 @@ export interface DeleteButtonProps {
   selectedFilesCallback: (setSelectedFiles: DeleteDTO[]) => void;
   readonly deleteInProgress: boolean;
   deleteInProgressCallback: (setDownloadInProgress: boolean) => void;
-  readonly filesToRestore: DeleteDTO[];
-  filesToRestoreCallback: (setFilesToRestore: DeleteDTO[]) => void;
+  deleteCompleted: () => void;
 }
 
 function DeleteButton(props: DeleteButtonProps): JSX.Element {
@@ -37,21 +36,18 @@ function DeleteButton(props: DeleteButtonProps): JSX.Element {
       setDeleteReasonModalOpen(false);
       props.deleteInProgressCallback(true);
 
-      let allFilesDeleted = true;
       for (const file of props.selectedFiles) {
         filesToDelete.push(file.ulid);
       }
       try {
-        console.log('Files being deleted:', filesToDelete.toString());
-        await removeCaseFile(props.caseId, filesToDelete);
+        const removePromise = removeCaseFile(props.caseId, filesToDelete);
+        await removePromise;
+        pushNotification('success', fileOperationsLabels.deleteSucceeds(props.selectedFiles.length));
+
+        props.deleteCompleted();
       } catch (e) {
         pushNotification('error', fileOperationsLabels.deleteFailed(filesToDelete.toString()));
         console.log(`failed to delete ${filesToDelete.toString()}`, e);
-        allFilesDeleted = false;
-      }
-
-      if (allFilesDeleted) {
-        pushNotification('success', fileOperationsLabels.deleteSucceeds(props.selectedFiles.length));
       }
     } finally {
       props.deleteInProgressCallback(false);

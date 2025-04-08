@@ -222,7 +222,7 @@ export const deleteCaseFiles = async (
       CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlIds, updatedBy, repositoryProvider)
     );
 
-    return CasePersistence.updateCaseStatus(
+    const updateStatus = await CasePersistence.updateCaseStatus(
       deaCase,
       updatedBy,
       CaseStatus.ACTIVE,
@@ -230,6 +230,8 @@ export const deleteCaseFiles = async (
       repositoryProvider,
       jobId
     );
+
+    return updateStatus;
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);
     throw new Error('Failed to delete files. Please retry.');

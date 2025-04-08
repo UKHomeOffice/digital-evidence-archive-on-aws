@@ -155,6 +155,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
+  async function deleteCompletedHandler() {
+    console.log('Delete Completed......');
+  }
+
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
@@ -198,8 +202,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             selectedFilesCallback={setSelectedFiles}
             deleteInProgress={deleteInProgress}
             deleteInProgressCallback={setDeleteInProgress}
-            filesToRestore={filesToRestore}
-            filesToRestoreCallback={setFilesToRestore}
+            deleteCompleted={deleteCompletedHandler}
           />
         </SpaceBetween>
       );

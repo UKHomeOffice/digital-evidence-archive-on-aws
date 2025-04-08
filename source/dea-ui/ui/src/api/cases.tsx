@@ -82,7 +82,8 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DownloadDTO> => {
-  return useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
+  const data = useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
+  return data;
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFileUpload> => {
