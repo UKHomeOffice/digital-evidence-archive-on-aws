@@ -19,7 +19,6 @@ import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/enti
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
-import { getCaseFile } from './case-file-service';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -219,13 +218,10 @@ export const deleteCaseFiles = async (
     }
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
 
-    for (const fileUlId of fileUlIds) {
-      try {
-        await updateCaseFile(deaCase.ulid, fileUlId, updatedBy, repositoryProvider);
-      } catch (error) {
-        console.log('Updating the case file failed....');
-      }
-    }
+    fileUlIds.forEach((fileUlId) =>
+      CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlId, updatedBy, repositoryProvider)
+    );
+
     const updateStatus = await CasePersistence.updateCaseStatus(
       deaCase,
       updatedBy,
@@ -239,28 +235,6 @@ export const deleteCaseFiles = async (
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);
     throw new Error('Failed to delete files. Please retry.');
-  }
-};
-export const updateCaseFile = async (
-  caseUlid: string,
-  fileUlid: string,
-  updatedBy: string,
-  repositoryProvider: ModelRepositoryProvider
-): Promise<void> => {
-  const deaCaseFileResult = await getCaseFile(caseUlid, fileUlid, repositoryProvider);
-
-  if (deaCaseFileResult) {
-    try {
-      await CaseFilePersistence.updateCaseFileUpdatedBy(
-        caseUlid,
-        fileUlid,
-        updatedBy,
-        deaCaseFileResult.fileName + '.DELETED',
-        repositoryProvider
-      );
-    } catch (error) {
-      console.log('Updating the case file failed....');
-    }
   }
 };
 

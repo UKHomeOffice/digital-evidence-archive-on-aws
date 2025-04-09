@@ -183,7 +183,7 @@ export const setCaseFileStatusDeleted = async (
       SK: `FILE#${casefile.ulid}#`,
     },
     {
-      set: { status: CaseFileStatus.DELETED },
+      set: { status: CaseFileStatus.DELETED, fileName: casefile.fileName + '.DELETED' },
       transaction,
     }
   );
@@ -258,6 +258,28 @@ export const getCaseFileByUlid = async (
 };
 
 export const getCaseFileByFileLocation = async (
+  caseUlid: string,
+  filePath: string,
+  fileName: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFileResult | undefined> => {
+  const caseFileEntity = await repositoryProvider.CaseFileModel.get(
+    {
+      GSI2PK: `CASE#${caseUlid}#${filePath}${fileName}#`,
+      GSI2SK: 'FILE#true#',
+    },
+    {
+      index: 'GSI2',
+    }
+  );
+
+  if (!caseFileEntity) {
+    return caseFileEntity;
+  }
+  return caseFileFromEntity(caseFileEntity);
+};
+
+export const getCaseFileByFileLocationAndStatus = async (
   caseUlid: string,
   filePath: string,
   fileName: string,
@@ -428,7 +450,6 @@ export const updateCaseFileUpdatedBy = async (
   caseUlid: string,
   fileUlid: string,
   updatedBy: string,
-  fileName: string,
   repositoryProvider: ModelRepositoryProvider
 ) => {
   console.log('updateCaseFileUpdatedBy : ', updatedBy);
@@ -436,6 +457,5 @@ export const updateCaseFileUpdatedBy = async (
     PK: `CASE#${caseUlid}#`,
     SK: `FILE#${fileUlid}#`,
     updatedBy: updatedBy,
-    fileName: fileName,
   });
 };

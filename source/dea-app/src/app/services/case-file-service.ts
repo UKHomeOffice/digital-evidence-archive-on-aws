@@ -116,8 +116,6 @@ export const validateInitiateUploadRequirements = async (
       throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
     }
     throw new ValidationError('File already exists in the DB');
-  } else {
-    console.log('Overwritting existing case....');
   }
 };
 
