@@ -131,12 +131,19 @@ export const validateCompleteCaseFileRequirements = async (
     repositoryProvider
   );
 
-  if (existingCaseFile.status === CaseFileStatus.ACTIVE) {
+  if (
+    existingCaseFile.status === CaseFileStatus.ACTIVE ||
+    existingCaseFile.status === CaseFileStatus.DELETED
+  ) {
     return existingCaseFile;
   }
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
     throw new ValidationError(
-      'File ' + existingCaseFile.fileName + ' is in incorrect state' + existingCaseFile.status + ' for upload'
+      'File ' +
+        existingCaseFile.fileName +
+        ' is in incorrect state: ' +
+        existingCaseFile.status +
+        ' for upload'
     );
   }
 
