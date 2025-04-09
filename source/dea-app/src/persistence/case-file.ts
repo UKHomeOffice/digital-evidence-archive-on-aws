@@ -428,6 +428,7 @@ export const updateCaseFileUpdatedBy = async (
   caseUlid: string,
   fileUlid: string,
   updatedBy: string,
+  fileName: string,
   repositoryProvider: ModelRepositoryProvider
 ) => {
   console.log('updateCaseFileUpdatedBy : ', updatedBy);
@@ -435,5 +436,6 @@ export const updateCaseFileUpdatedBy = async (
     PK: `CASE#${caseUlid}#`,
     SK: `FILE#${fileUlid}#`,
     updatedBy: updatedBy,
+    fileName: fileName,
   });
 };
