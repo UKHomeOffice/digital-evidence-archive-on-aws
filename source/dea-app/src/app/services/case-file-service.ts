@@ -55,6 +55,15 @@ export const initiateCaseFileUpload = async (
     if (!uploadId) {
       if (!caseFile) {
         caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
+      } else {
+        if (caseFile.status === CaseFileStatus.DELETED && caseFile.ulid) {
+          await CaseFilePersistence.updateCaseFileName(
+            uploadDTO.caseUlid,
+            caseFile.ulid,
+            uploadDTO.fileName,
+            repositoryProvider
+          );
+        }
       }
 
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
