@@ -309,10 +309,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         },
         {
           id: 'created',
-          header: commonTableLabels.dateUploadedHeader,
+          header: commonTableLabels.creationDateHeader,
           cell: (e) =>
             formatDateFromISOString(
-              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.updated?.toString()
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.created?.toString()
             ),
           width: 165,
           minWidth: 165,
@@ -321,10 +321,29 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'createdBy',
           header: commonTableLabels.uploadedByHeader,
-          cell: (e) => (e.updatedBy ? e.updatedBy : e.createdBy),
+          cell: (e) => e.createdBy,
           width: 150,
           minWidth: 150,
           sortingField: 'createdBy',
+        },
+        {
+          id: 'updated',
+          header: commonTableLabels.dateUploadedHeader,
+          cell: (e) =>
+            formatDateFromISOString(
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.updated?.toString()
+            ),
+          width: 165,
+          minWidth: 165,
+          sortingField: 'updated',
+        },
+        {
+          id: 'updatedBy',
+          header: commonTableLabels.updatedByHeader,
+          cell: (e) => (e.updatedBy ? e.updatedBy : e.createdBy),
+          width: 150,
+          minWidth: 150,
+          sortingField: 'updatedBy',
         },
         {
           id: 'status',
