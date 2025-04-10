@@ -164,10 +164,10 @@ export const fileOperationsLabels = {
   restoreSuccessful: 'Successfully initiated restore for selected files.',
   restoreFail: 'Failed to restore selected files.',
   modalTitle: 'Confirm you want to upload these files.',
-  modalBody: 'Once uploaded case files cannot be individually removed.',
+  modalBody: 'Once uploaded case files will be added to the audit log.',
   modalBodyOverwriteWarn: 'The following files will be overwritten, if you continue with the upload',
   modalBodyOverwriteDeleteWarn:
-    'The following files will not be overwritten, since they are in a DELETED status',
+    'The following files will not be overwritten, since they are in a DELETED status. Please remove these files',
 
   restoreInProgress: (fileName: string) =>
     `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,

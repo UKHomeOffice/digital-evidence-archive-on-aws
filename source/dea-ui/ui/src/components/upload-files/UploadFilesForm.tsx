@@ -77,9 +77,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const { data } = useListCaseFiles(props.caseId, props.filePath);
 
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
-  const [deletedFilesOverwrite, setDeletedFilesOverwrite] = useState(false);
+  const [confirmDeletedFilesOverwrite, setConfirmDeletedFilesOverwrite] = useState(false);
 
-  const [confirmOverwriteFileList, setConfirmOverwriteFileList] = useState('');
+  const [overwriteFileList, setOverwriteFileList] = useState('');
   const [deleteOverwriteFileList, setDeleteOverwriteFileList] = useState('');
 
   async function onSubmitHandler() {
@@ -329,23 +329,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         filesBeingOverwritten,
         CaseFileStatus.ACTIVE
       );
-      setConfirmOverwriteFileList(listOfActiveFilesBeingOverwritten);
-
       if (listOfActiveFilesBeingOverwritten.length > 0) {
+        setOverwriteFileList(listOfActiveFilesBeingOverwritten);
         setConfirmOverwrite(true);
       }
-      console.log(
-        'filesBeingOverwritten :',
-        filesBeingOverwritten,
-        ' : ',
-        confirmOverwrite,
-        ' : ',
-        listOfActiveFilesBeingOverwritten
-      );
 
-      setDeleteOverwriteFileList(fetchFilesWithStatus(filesBeingOverwritten, CaseFileStatus.DELETED));
-      if (deleteOverwriteFileList.length > 0) {
-        setDeletedFilesOverwrite(true);
+      const deletedFiles = fetchFilesWithStatus(filesBeingOverwritten, CaseFileStatus.DELETED);
+      if (deletedFiles.length > 0) {
+        setDeleteOverwriteFileList(deletedFiles);
+        setConfirmDeletedFilesOverwrite(true);
       }
     }
   }
@@ -386,7 +378,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                 onClick={() => {
                   setConfirmationVisible(false);
                   setConfirmOverwrite(false);
-                  setDeletedFilesOverwrite(false);
+                  setConfirmDeletedFilesOverwrite(false);
                 }}
               >
                 Go back
@@ -394,12 +386,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               <Button
                 data-testid="confirm-upload-button"
                 variant="primary"
-                disabled={deletedFilesOverwrite}
+                disabled={confirmDeletedFilesOverwrite}
                 onClick={() => {
                   void onSubmitHandler();
                   setConfirmationVisible(false);
                   setConfirmOverwrite(false);
-                  setDeletedFilesOverwrite(false);
+                  setConfirmDeletedFilesOverwrite(false);
                 }}
               >
                 Confirm
@@ -411,19 +403,19 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       >
         <Alert statusIconAriaLabel="Warning" type="warning">
           {fileOperationsLabels.modalBody}
-          {confirmOverwriteFileList.length > 0 && confirmOverwrite && (
+          {overwriteFileList.length > 0 && confirmOverwrite && (
             <>
               <br />
               {fileOperationsLabels.modalBodyOverwriteWarn}
               <br />
               <ol>
-                {confirmOverwriteFileList.split(',').map((fileName, index) => (
+                {overwriteFileList.split(',').map((fileName, index) => (
                   <li key={index}>{fileName}</li>
                 ))}
               </ol>
             </>
           )}
-          {deleteOverwriteFileList.length > 0 && deletedFilesOverwrite && (
+          {deleteOverwriteFileList.length > 0 && confirmDeletedFilesOverwrite && (
             <>
               <br />
               {fileOperationsLabels.modalBodyOverwriteDeleteWarn}
