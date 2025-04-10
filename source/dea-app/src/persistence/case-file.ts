@@ -183,7 +183,7 @@ export const setCaseFileStatusDeleted = async (
       SK: `FILE#${casefile.ulid}#`,
     },
     {
-      set: { status: CaseFileStatus.DELETED, fileName: casefile.fileName + '.DELETED' },
+      set: { status: CaseFileStatus.DELETED },
       transaction,
     }
   );
