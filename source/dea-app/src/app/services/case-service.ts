@@ -16,7 +16,11 @@ import * as CaseUserPersistence from '../../persistence/case-user';
 import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
-import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
+import {
+  DatasetsProvider,
+  startDeleteCaseFilesS3BatchJob,
+  waitForJobCompletion,
+} from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseUserService from './case-user-service';
@@ -230,6 +234,9 @@ export const deleteCaseFiles = async (
       repositoryProvider,
       jobId
     );
+
+    console.log('Waiting for job to complete...');
+    await waitForJobCompletion(jobId, awsAccountId);
 
     return updateStatus;
   } catch (e) {

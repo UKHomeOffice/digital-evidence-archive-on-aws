@@ -585,6 +585,27 @@ export const startDeleteCaseFilesS3BatchJob = async (
   return createDeleteCaseFileBatchJob(manifestFileName, etag, datasetsProvider);
 };
 
+export const waitForJobCompletion = async (jobId: string, accountId: string): Promise<void> => {
+  let isComplete = 0;
+
+  while (isComplete < 5) {
+    const s3BatchJob = await describeS3BatchJob(jobId, accountId);
+
+    if (
+      s3BatchJob.Job &&
+      s3BatchJob.Job.ProgressSummary &&
+      s3BatchJob.Job.ProgressSummary.NumberOfTasksFailed === 0
+    ) {
+      isComplete = 10;
+    } else {
+      console.log('Waiting for job to complete...', isComplete);
+
+      isComplete += 1;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
+};
+
 export const deleteCaseFile = async (
   s3Key: string,
   s3VersionId: string,
