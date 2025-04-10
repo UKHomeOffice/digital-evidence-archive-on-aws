@@ -16,13 +16,10 @@ import * as CaseUserPersistence from '../../persistence/case-user';
 import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
-import {
-  DatasetsProvider,
-  startDeleteCaseFilesS3BatchJob,
-  waitForJobCompletion,
-} from '../../storage/datasets';
+import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
+import { getCaseFile } from '../services/case-file-service';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -236,12 +233,34 @@ export const deleteCaseFiles = async (
     );
 
     console.log('Waiting for job to complete...');
-    await waitForJobCompletion(jobId, awsAccountId);
+    // await waitForJobCompletion(jobId, awsAccountId);
+    await waitForFileToBeDeleted(fileUlIds[0], deaCase.ulid, repositoryProvider);
 
     return updateStatus;
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);
     throw new Error('Failed to delete files. Please retry.');
+  }
+};
+
+export const waitForFileToBeDeleted = async (
+  fileUlId: string,
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  let isComplete = 0;
+
+  while (isComplete < 5) {
+    const deletedCaseFile = await getCaseFile(caseId, fileUlId, repositoryProvider);
+
+    if (deletedCaseFile && deletedCaseFile.status === CaseFileStatus.DELETED) {
+      isComplete = 10;
+    } else {
+      console.log('Waiting for job to complete...', isComplete);
+
+      isComplete += 1;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
   }
 };
 
