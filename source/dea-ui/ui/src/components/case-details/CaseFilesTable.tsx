@@ -157,6 +157,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
 
   async function deleteCompletedHandler() {
     console.log('Delete Completed......');
+    // return router.push(`/case-detail?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   function tableActions() {
