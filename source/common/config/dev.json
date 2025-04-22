@@ -107,6 +107,10 @@
           "method": "GET"
         },
         {
+          "path": "/cases/{caseId}/files",
+          "method": "DELETE"
+        },
+        {
           "path": "/cases/{caseId}/files/{fileId}/contents",
           "method": "PUT"
         },
@@ -271,6 +275,10 @@
         {
           "path": "/cases/{caseId}/files",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
