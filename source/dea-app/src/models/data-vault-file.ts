@@ -13,6 +13,7 @@ export interface DeaDataVaultFile {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   readonly contentType?: string;
   readonly sha256Hash?: string;
   readonly versionId?: string;
@@ -31,6 +32,7 @@ export interface DataVaultFileDTO {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   readonly contentType?: string;
   readonly sha256Hash?: string;
   readonly versionId?: string;

@@ -19,6 +19,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  deleteButton: 'Delete Case Files',
   restoreButton: 'Restore',
   saveButton: 'Save',
   saveUpdatesButton: 'Save updates',
@@ -60,8 +61,9 @@ export const commonTableLabels = {
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
   fileSizeHeader: 'File size',
-  dateUploadedHeader: 'Upload date',
-  uploadedByHeader: 'Uploaded by',
+  dateUploadedHeader: 'Last update date',
+  uploadedByHeader: 'Created by',
+  updatedByHeader: 'Last updated by',
   caseFileAudit: 'Download Case File Audit',
   limitShowFewerLabel: 'Show fewer',
   limitShowMoreLabel: 'Show more',
@@ -141,6 +143,10 @@ export const fileOperationsLabels = {
   downloadFileReasonInputHeader: 'Reason for downloading folders and files',
   downloadFileReasonInputDetails:
     "Specify why you're downloading the case files. This will be displayed in the case audit log.",
+  deleteFileReasonLabel: 'Deleting files',
+  deleteFileReasonInputHeader: 'Reason for deleting files',
+  deleteFileReasonInputDetails:
+    "Specify why you're deleting the case files. This will be displayed in the case audit log.",
   selectFileDescription: 'Choose files',
   restoreFilesModalLabel: (count: number) =>
     `${count} of the files you tried to download was archived due to inactivity.`,
@@ -158,13 +164,19 @@ export const fileOperationsLabels = {
   restoreSuccessful: 'Successfully initiated restore for selected files.',
   restoreFail: 'Failed to restore selected files.',
   modalTitle: 'Confirm you want to upload these files.',
-  modalBody: 'Once uploaded case files cannot be individually removed.',
+  modalBody: 'Once uploaded case files will be added to the audit log.',
+  modalBodyOverwriteWarn: 'The following files will be overwritten, if you continue with the upload',
+  modalBodyOverwriteDeleteWarn:
+    'The following files will not be overwritten, since they are in a DELETED status. Please remove these files',
+
   restoreInProgress: (fileName: string) =>
     `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
   downloadSucceeds: (numFiles: number) => `All ${numFiles} files successfully downloaded`,
+  deleteFailed: (fileName: string) => `Failed to delete ${fileName}`,
+  deleteSucceeds: (numFiles: number) => `All ${numFiles} files successfully deleted`,
 };
 
 export const caseDetailLabels = {
@@ -284,6 +296,11 @@ export const caseActionOptions = {
           value: CaseAction.DOWNLOAD,
           label: 'Download files',
         };
+      case CaseAction.DELETE_CASE_FILES:
+        return {
+          value: CaseAction.DELETE_CASE_FILES,
+          label: 'Delete Case files',
+        };
       case CaseAction.VIEW_FILES:
         return {
           value: CaseAction.VIEW_FILES,
@@ -348,6 +365,7 @@ export const fileUploadLabels = {
 };
 
 export const fileDetailLabels = {
+  deletedDateLabel: 'Deletion date',
   uploadDateLabel: 'Upload date',
   fileSizeLabel: 'File size',
   shaHashLabel: 'SHA 256 hash',

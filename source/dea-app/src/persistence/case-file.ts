@@ -28,6 +28,7 @@ export const initiateCaseFileUpload = async (
     ...uploadDTO,
     isFile: true,
     createdBy: userUlid,
+    updatedBy: userUlid,
     status: CaseFileStatus.PENDING,
     ttl: Math.round(Date.now() / 1000) + SECONDS_IN_A_DAY,
   });
@@ -50,13 +51,39 @@ export const completeCaseFileUpload = async (
     { transaction }
   );
 
+  //Check if overwritting existing file
+  let fileCount = 1;
+  let fileSizeBytes = deaCaseFile.fileSizeBytes;
+  const s3Objects = await getAllCaseFileS3Objects(deaCaseFile.caseUlid, repositoryProvider);
+
+  if (s3Objects && s3Objects.length > 0) {
+    fileCount = s3Objects.length;
+    let totalFileSize = 0;
+    for (let j = 0; j < s3Objects.length; j++) {
+      totalFileSize += s3Objects[j].fileSizeBytes;
+    }
+    fileSizeBytes = totalFileSize;
+  }
+  // const caseFile: DeaCaseFile | undefined = await getCaseFileByFileLocation(
+  //   deaCaseFile.caseUlid,
+  //   deaCaseFile.filePath,
+  //   deaCaseFile.fileName,
+  //   repositoryProvider
+  // );
+
+  // console.log('Case file: ', caseFile, ', Old Case File :', deaCaseFile);
+  // if (caseFile) {
+  //   fileCount = 0;
+  //   fileSizeBytes = caseFile.fileSizeBytes - fileSizeBytes;
+  // }
+
   await repositoryProvider.CaseModel.update(
     {
       PK: `CASE#${deaCaseFile.caseUlid}#`,
       SK: 'CASE#',
     },
     {
-      add: { objectCount: 1, totalSizeBytes: deaCaseFile.fileSizeBytes },
+      set: { objectCount: fileCount, totalSizeBytes: fileSizeBytes },
       transaction,
     }
   );
@@ -115,12 +142,16 @@ export const getAllCaseFileS3Objects = async (
       PK: `CASE#${caseId}#`,
     },
     {
-      fields: ['ulid', 'versionId'],
+      fields: ['ulid', 'versionId', 'fileSizeBytes'],
       where: '${isFile} = {true} AND ${status} <> {DELETED}',
     }
   );
   return items.map((item) => {
-    return { key: `${caseId}/${item.ulid}`, versionId: item.versionId ?? '' };
+    return {
+      key: `${caseId}/${item.ulid}`,
+      versionId: item.versionId ?? '',
+      fileSizeBytes: item.fileSizeBytes ?? 0,
+    };
   });
 };
 
@@ -227,6 +258,28 @@ export const getCaseFileByUlid = async (
 };
 
 export const getCaseFileByFileLocation = async (
+  caseUlid: string,
+  filePath: string,
+  fileName: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFileResult | undefined> => {
+  const caseFileEntity = await repositoryProvider.CaseFileModel.get(
+    {
+      GSI2PK: `CASE#${caseUlid}#${filePath}${fileName}#`,
+      GSI2SK: 'FILE#true#',
+    },
+    {
+      index: 'GSI2',
+    }
+  );
+
+  if (!caseFileEntity) {
+    return caseFileEntity;
+  }
+  return caseFileFromEntity(caseFileEntity);
+};
+
+export const getCaseFileByFileLocationAndStatus = async (
   caseUlid: string,
   filePath: string,
   fileName: string,
@@ -390,5 +443,32 @@ export const updateCaseFileChecksum = async (
     PK: `CASE#${caseUlid}#`,
     SK: `FILE#${fileUlid}#`,
     sha256Hash: checksum,
+  });
+};
+
+export const updateCaseFileUpdatedBy = async (
+  caseUlid: string,
+  fileUlid: string,
+  updatedBy: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  console.log('updateCaseFileUpdatedBy : ', updatedBy);
+  await repositoryProvider.CaseFileModel.update({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${fileUlid}#`,
+    updatedBy: updatedBy,
+  });
+};
+
+export const updateCaseFileName = async (
+  caseUlid: string,
+  fileUlid: string,
+  fileName: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  await repositoryProvider.CaseFileModel.update({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${fileUlid}#`,
+    fileName: fileName,
   });
 };

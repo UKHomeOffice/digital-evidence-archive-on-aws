@@ -40,6 +40,11 @@ describe('calculate incremental checksum', () => {
         filePath: '/',
         contentType: 'text',
         fileSizeBytes: 1,
+        chunkSizeBytes: 1,
+        partRangeStart: 1,
+        partRangeEnd: 1,
+        details: '',
+        reason: '',
       },
       user.ulid,
       modelProvider

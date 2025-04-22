@@ -29,6 +29,8 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
+  console.log('DEAGatewayProxyHandler.initiateCaseFileUpload..... Event: ', event);
+
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const requestCaseFile: InitiateCaseFileUploadDTO = getRequiredPayload(
     event,

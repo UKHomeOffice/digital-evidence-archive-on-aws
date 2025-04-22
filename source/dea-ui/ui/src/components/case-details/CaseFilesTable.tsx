@@ -34,6 +34,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import DeleteButton from '../buttons/DeleteButton';
 import DownloadButton from '../buttons/DownloadButton';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { ConfirmModal } from '../common-components/ConfirmModal';
@@ -51,6 +52,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DownloadDTO[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const [deleteInProgress, setDeleteInProgress] = React.useState(false);
 
   const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
   const { pushNotification } = useNotifications();
@@ -153,6 +155,11 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
+  async function deleteCompletedHandler() {
+    console.log('Delete Completed......');
+    // return router.push(`/case-detail?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+  }
+
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
@@ -188,6 +195,15 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             downloadInProgressCallback={setDownloadInProgress}
             filesToRestore={filesToRestore}
             filesToRestoreCallback={setFilesToRestore}
+          />
+          <DeleteButton
+            caseId={props.caseId}
+            caseStatus={props.caseStatus}
+            selectedFiles={selectedFiles}
+            selectedFilesCallback={setSelectedFiles}
+            deleteInProgress={deleteInProgress}
+            deleteInProgressCallback={setDeleteInProgress}
+            deleteCompleted={deleteCompletedHandler}
           />
         </SpaceBetween>
       );
@@ -249,7 +265,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     if (status == CaseFileStatus.ACTIVE) {
       return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
-      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
+      return <StatusIndicator type="stopped">{status}</StatusIndicator>;
     }
   }
 
@@ -294,7 +310,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         },
         {
           id: 'created',
-          header: commonTableLabels.dateUploadedHeader,
+          header: commonTableLabels.creationDateHeader,
           cell: (e) =>
             formatDateFromISOString(
               e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.created?.toString()
@@ -310,6 +326,25 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           width: 150,
           minWidth: 150,
           sortingField: 'createdBy',
+        },
+        {
+          id: 'updated',
+          header: commonTableLabels.dateUploadedHeader,
+          cell: (e) =>
+            formatDateFromISOString(
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.updated?.toString()
+            ),
+          width: 165,
+          minWidth: 165,
+          sortingField: 'updated',
+        },
+        {
+          id: 'updatedBy',
+          header: commonTableLabels.updatedByHeader,
+          cell: (e) => (e.updatedBy ? e.updatedBy : e.createdBy),
+          width: 150,
+          minWidth: 150,
+          sortingField: 'updatedBy',
         },
         {
           id: 'status',

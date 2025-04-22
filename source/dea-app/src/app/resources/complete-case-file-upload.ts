@@ -39,6 +39,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   }
 
   const userUlid = getUserUlid(event);
+
   const existingFile = await validateCompleteCaseFileRequirements(
     requestCaseFile,
     userUlid,
@@ -53,6 +54,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     {
       ulid,
       ...existingFile,
+      updatedBy: userUlid,
       uploadId: requestCaseFile.uploadId,
       fileS3Key: `${requestCaseFile.caseUlid}/${requestCaseFile.ulid}`,
     }

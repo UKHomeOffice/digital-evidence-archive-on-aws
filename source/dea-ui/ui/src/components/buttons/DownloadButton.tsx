@@ -34,12 +34,15 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
   const [downloadReason, setDownloadReason] = useState('');
 
   async function downloadFilesHandler() {
-    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+    // const downloadPromises = [];
+
     try {
       setDownloadReasonModalOpen(false);
       props.downloadInProgressCallback(true);
 
-      let allFilesDownloaded = true;
+      // let allFilesDownloaded = true;
+      // const startTime = performance.now();
+
       for (const file of props.selectedFiles) {
         try {
           const downloadResponse = await getPresignedUrl({
@@ -60,6 +63,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             }
             continue;
           }
+
           const alink = document.createElement('a');
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;
@@ -68,16 +72,12 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           window.open(downloadResponse.downloadUrl, '_blank');
           // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(100);
+          await new Promise((resolve) => setTimeout(resolve, 500));
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);
-          allFilesDownloaded = false;
+          // allFilesDownloaded = false;
         }
-      }
-
-      if (allFilesDownloaded) {
-        pushNotification('success', fileOperationsLabels.downloadSucceeds(props.selectedFiles.length));
       }
     } finally {
       props.downloadInProgressCallback(false);

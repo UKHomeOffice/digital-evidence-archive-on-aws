@@ -1,9 +1,12 @@
 {
+  "testStack": true,
+  "deaAllowedOrigins": "https://localhost:3001",
   "deletionAllowed": true,
   "isOneClick": false,
   "sourceIpValidation": false,
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
+  "uploadFilesTimeoutMinutes": 180,
   "cognito": {
     "domain": "cfisandbox"
   },
@@ -83,6 +86,10 @@
         {
           "path": "/cases/{caseId}/files",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
@@ -249,6 +256,10 @@
         {
           "path": "/cases/{caseId}/files",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",

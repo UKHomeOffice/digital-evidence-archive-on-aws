@@ -50,7 +50,9 @@ export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
   return { data: cases, isLoading: !data && !error, mutate };
 };
 
-export const useGetCaseById = (id: string | string[] | undefined): DeaSingleResult<DeaCaseDTO | undefined> => {
+export const useGetCaseById = (
+  id: string | string[] | undefined
+): DeaSingleResult<DeaCaseDTO | undefined> => {
   if (!id || typeof id !== 'string') {
     id = undefined;
   }
@@ -80,7 +82,8 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DownloadDTO> => {
-  return useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
+  const data = useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
+  return data;
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFileUpload> => {
@@ -92,7 +95,7 @@ export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaC
 };
 
 export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<DownloadFileResult> => {
-  return httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput});
+  return httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput });
 };
 
 export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {
@@ -224,4 +227,8 @@ export const startSystemAuditQuery = async (): Promise<string> => {
 
 export const retrieveSystemAuditResult = async (auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`system/audit/${auditId}/csv`, undefined);
+};
+
+export const removeCaseFile = async (caseId: string, filesToDelete: string[]): Promise<void> => {
+  await httpApiDelete(`cases/${caseId}/files`, { filesToDelete: filesToDelete });
 };

@@ -13,6 +13,7 @@ export interface DeaCaseFile {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   status: CaseFileStatus;
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
@@ -38,6 +39,7 @@ export type DeaCaseFileUpload = DeaCaseFile & {
   readonly federationCredentials: Credentials;
   readonly bucket: string;
   readonly region: string;
+  readonly presignedUrls: string[];
 };
 
 export interface DeaCaseFileResult {
@@ -46,6 +48,7 @@ export interface DeaCaseFileResult {
   fileName: string;
   contentType?: string;
   createdBy: string;
+  updatedBy: string;
   filePath: string;
   fileSizeBytes: number;
   uploadId?: string;
@@ -73,10 +76,12 @@ export interface DownloadCaseFileRequest {
 }
 
 export interface DownloadCaseFileResult {
-  downloadUrl?: string;
   downloadReason?: string;
   isArchived?: boolean;
   isRestoring?: boolean;
+  federationCredentials?: Credentials;
+  presignedUrls?: string[];
+  downloadUrl?: string;
 }
 
 export interface CaseFileDTO {
@@ -85,6 +90,7 @@ export interface CaseFileDTO {
   readonly fileName: string;
   readonly contentType?: string;
   readonly createdBy: string;
+  readonly updatedBy: string;
   readonly filePath: string;
   readonly fileSizeBytes: number;
   readonly sha256Hash?: string;
@@ -116,6 +122,7 @@ export type CompleteCaseFileUploadObject = {
   readonly isFile: boolean;
   readonly fileSizeBytes: number;
   readonly createdBy: string;
+  readonly updatedBy: string;
   status: CaseFileStatus;
   readonly ulid: string;
   readonly contentType?: string;
@@ -136,8 +143,11 @@ export interface InitiateCaseFileUploadDTO {
   readonly filePath: string;
   readonly contentType: string;
   readonly fileSizeBytes: number;
-  readonly details?: string;
-  readonly reason?: string;
+  readonly details: string;
+  readonly reason: string;
+  readonly chunkSizeBytes: number;
+  readonly partRangeStart: number;
+  readonly partRangeEnd: number;
   readonly uploadId?: string;
 }
 
@@ -150,5 +160,10 @@ export interface RemoveCaseAssociationDTO {
   readonly caseUlids: string[];
 }
 
+export interface DeleteCaseFilesDTO {
+  readonly filesToDelete: string[];
+}
+
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
 export type DownloadDTO = DeaCaseFileResult | CaseFileDTO;
+export type DeleteDTO = DeaCaseFileResult | CaseFileDTO;

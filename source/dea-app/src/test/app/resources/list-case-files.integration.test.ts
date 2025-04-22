@@ -5,7 +5,6 @@
 
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
-import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import {
   STSClient,
   STSClientResolvedConfig,
@@ -29,14 +28,11 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let fileDescriber: DeaUser;
 let caseToList = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
-const UPLOAD_ID = '123456';
-const VERSION_ID = '543210';
 
 jest.setTimeout(20000);
 
@@ -64,11 +60,11 @@ describe('Test list case files', () => {
   });
 
   beforeEach(() => {
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-      VersionId: VERSION_ID,
-    });
+    // s3Mock = mockClient(S3Client);
+    // s3Mock.resolves({
+    //   UploadId: UPLOAD_ID,
+    //   VersionId: VERSION_ID,
+    // });
   });
 
   it('List case-files should successfully get case-files', async () => {

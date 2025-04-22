@@ -48,7 +48,7 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     if (status == CaseFileStatus.ACTIVE) {
       return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
-      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
+      return <StatusIndicator type="stopped">{status}</StatusIndicator>;
     }
   }
 
@@ -89,8 +89,8 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
 
     if (fileData.dataVaultUploadDate) {
       uploadDate = new Date(fileData.dataVaultUploadDate);
-    } else if (fileData.created) {
-      uploadDate = new Date(fileData.created);
+    } else if (fileData.updated) {
+      uploadDate = new Date(fileData.updated);
     }
 
     uploadDate = uploadDate
@@ -98,6 +98,9 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: false, // 24-hour format
         })
       : '-';
 
@@ -149,7 +152,8 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
               <TextContent>
                 <div>
                   {' '}
-                  <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                  {fileData.status == 'DELETED' && <h5>{fileDetailLabels.deletedDateLabel}</h5>}
+                  {fileData.status != 'DELETED' && <h5>{fileDetailLabels.uploadDateLabel}</h5>}
                   <SpaceBetween size="l">
                     <p>{uploadDate}</p>
 

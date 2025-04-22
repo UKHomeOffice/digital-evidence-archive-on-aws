@@ -88,6 +88,7 @@ describe('datavault and file audit e2e', () => {
         isFile: true,
         fileSizeBytes: 1024,
         createdBy: userUlid,
+        updatedBy: userUlid,
         contentType: 'regular',
         sha256Hash: 'SHA256HASH',
         versionId: 'VERSIONID',

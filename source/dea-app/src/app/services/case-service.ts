@@ -2,7 +2,6 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
 import { OneTableError, Paged } from 'dynamodb-onetable';
 import { logger } from '../../logger';
 import { DeaCase, DeaCaseInput, MyCase } from '../../models/case';
@@ -20,6 +19,7 @@ import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/enti
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
+import { getCaseFile } from '../services/case-file-service';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -130,6 +130,7 @@ export const updateCases = async (
 
 export const updateCaseStatus = async (
   deaCase: DeaCase,
+  updatedBy: string,
   newStatus: CaseStatus,
   deleteFiles: boolean,
   repositoryProvider: ModelRepositoryProvider,
@@ -138,6 +139,7 @@ export const updateCaseStatus = async (
   const filesStatus = deleteFiles ? CaseFileStatus.DELETE_FAILED : CaseFileStatus.ACTIVE;
   const updatedCase = await CasePersistence.updateCaseStatus(
     deaCase,
+    updatedBy,
     newStatus,
     filesStatus,
     repositoryProvider
@@ -154,6 +156,7 @@ export const updateCaseStatus = async (
       // no files to delete
       return CasePersistence.updateCaseStatus(
         updatedCase,
+        updatedBy,
         newStatus,
         CaseFileStatus.DELETED,
         repositoryProvider
@@ -163,6 +166,7 @@ export const updateCaseStatus = async (
     await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
     return CasePersistence.updateCaseStatus(
       updatedCase,
+      updatedBy,
       newStatus,
       CaseFileStatus.DELETING,
       repositoryProvider,
@@ -180,6 +184,84 @@ export const deleteCase = async (
 ): Promise<void> => {
   await CasePersistence.deleteCase(caseUlid, repositoryProvider);
   await CaseUserService.deleteCaseUsersForCase(caseUlid, repositoryProvider);
+};
+
+export const deleteCaseFiles = async (
+  deaCase: DeaCase,
+  updatedBy: string,
+  fileUlIds: string[],
+  awsAccountId: string,
+  repositoryProvider: ModelRepositoryProvider,
+  defaultDatasetsProvider: DatasetsProvider
+): Promise<DeaCase> => {
+  try {
+    //Need to replace with a way to get all S3objects for the fileUlIds
+    const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
+
+    const filteredS3ObjectsToDelete = s3Objects.filter((obj) =>
+      fileUlIds.some((key) => obj.key.endsWith(key))
+    );
+
+    const jobId = await startDeleteCaseFilesS3BatchJob(
+      deaCase.ulid,
+      filteredS3ObjectsToDelete,
+      defaultDatasetsProvider
+    );
+    if (!jobId) {
+      // no files to delete
+      return CasePersistence.updateCaseStatus(
+        deaCase,
+        updatedBy,
+        CaseStatus.ACTIVE,
+        CaseFileStatus.DELETING,
+        repositoryProvider
+      );
+    }
+    await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
+
+    fileUlIds.forEach((fileUlId) =>
+      CaseFilePersistence.updateCaseFileUpdatedBy(deaCase.ulid, fileUlId, updatedBy, repositoryProvider)
+    );
+
+    const updateStatus = await CasePersistence.updateCaseStatus(
+      deaCase,
+      updatedBy,
+      CaseStatus.ACTIVE,
+      CaseFileStatus.DELETED,
+      repositoryProvider,
+      jobId
+    );
+
+    console.log('Waiting for job to complete...');
+    // await waitForJobCompletion(jobId, awsAccountId);
+    await waitForFileToBeDeleted(fileUlIds[0], deaCase.ulid, repositoryProvider);
+
+    return updateStatus;
+  } catch (e) {
+    logger.error('Failed to start delete case files s3 batch job.', e);
+    throw new Error('Failed to delete files. Please retry.');
+  }
+};
+
+export const waitForFileToBeDeleted = async (
+  fileUlId: string,
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  let isComplete = 0;
+
+  while (isComplete < 5) {
+    const deletedCaseFile = await getCaseFile(caseId, fileUlId, repositoryProvider);
+
+    if (deletedCaseFile && deletedCaseFile.status === CaseFileStatus.DELETED) {
+      isComplete = 10;
+    } else {
+      console.log('Waiting for job to complete...', isComplete);
+
+      isComplete += 1;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
 };
 
 export const getRequiredCase = async (

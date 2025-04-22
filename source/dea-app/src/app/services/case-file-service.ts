@@ -45,23 +45,43 @@ export const initiateCaseFileUpload = async (
   try {
     let caseFile: DeaCaseFile | undefined;
     let uploadId = uploadDTO.uploadId;
+
+    caseFile = await getCaseFileByFileLocation(
+      uploadDTO.caseUlid,
+      uploadDTO.filePath,
+      uploadDTO.fileName,
+      repositoryProvider
+    );
     if (!uploadId) {
-      caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
+      if (!caseFile) {
+        caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
+      } else {
+        if (caseFile.status === CaseFileStatus.DELETED && caseFile.ulid) {
+          await CaseFilePersistence.updateCaseFileName(
+            uploadDTO.caseUlid,
+            caseFile.ulid,
+            uploadDTO.fileName,
+            repositoryProvider
+          );
+        }
+      }
 
       uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
     } else {
-      caseFile = await getCaseFileByFileLocation(
-        uploadDTO.caseUlid,
-        uploadDTO.filePath,
-        uploadDTO.fileName,
-        repositoryProvider
-      );
       if (!caseFile) {
         throw new NotFoundError('Case file not found');
       }
     }
 
-    return getTemporaryCredentialsForUpload(caseFile, uploadId, userUlid, sourceIp, datasetsProvider);
+    return getTemporaryCredentialsForUpload(
+      caseFile,
+      uploadId,
+      userUlid,
+      sourceIp,
+      uploadDTO.partRangeStart,
+      uploadDTO.partRangeEnd,
+      datasetsProvider
+    );
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
@@ -96,7 +116,9 @@ export const validateInitiateUploadRequirements = async (
     repositoryProvider
   );
 
-  if (existingCaseFile) {
+  const doNotOverwriteExistingCase = false;
+
+  if (existingCaseFile && doNotOverwriteExistingCase) {
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
     // todo: add more protection to prevent creation of 2 files with same filePath+fileName
     if (existingCaseFile.status == CaseFileStatus.PENDING) {
@@ -118,8 +140,20 @@ export const validateCompleteCaseFileRequirements = async (
     repositoryProvider
   );
 
+  if (
+    existingCaseFile.status === CaseFileStatus.ACTIVE ||
+    existingCaseFile.status === CaseFileStatus.DELETED
+  ) {
+    return existingCaseFile;
+  }
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
-    throw new ValidationError('File is in incorrect state for upload');
+    throw new ValidationError(
+      'File ' +
+        existingCaseFile.fileName +
+        ' is in incorrect state: ' +
+        existingCaseFile.status +
+        ' for upload'
+    );
   }
 
   if (existingCaseFile.createdBy !== userUlid) {
@@ -211,6 +245,7 @@ export const hydrateUsersForFiles = async (
   const userUlids = [
     ...new Set([
       ...files.map((file) => file.createdBy),
+      ...files.map((file) => file.updatedBy),
       ...files
         .filter((file) => file.associationCreatedBy?.length)
         .map((file) => file.associationCreatedBy ?? ''),
@@ -231,6 +266,12 @@ const caseFilesToDTO = (
     if (user) {
       createdBy = `${user?.firstName} ${user?.lastName}`;
     }
+
+    const updatedByUser = userMap.get(file.updatedBy);
+    let updatedBy = file.updatedBy;
+    if (updatedByUser) {
+      updatedBy = `${updatedByUser?.firstName} ${updatedByUser?.lastName}`;
+    }
     const associationUser = userMap.get(file.associationCreatedBy ?? '');
     const associationCreatedBy = associationUser
       ? `${associationUser?.firstName} ${associationUser?.lastName}`
@@ -241,6 +282,7 @@ const caseFilesToDTO = (
       fileName: file.fileName,
       contentType: file.contentType,
       createdBy,
+      updatedBy,
       filePath: file.filePath,
       fileSizeBytes: file.fileSizeBytes,
       sha256Hash: file.sha256Hash,

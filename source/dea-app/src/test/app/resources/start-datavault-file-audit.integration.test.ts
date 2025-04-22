@@ -55,6 +55,7 @@ describe('start datavault file audit', () => {
       isFile: true,
       fileSizeBytes: 1024,
       createdBy: user.ulid,
+      updatedBy: user.ulid,
       contentType: 'regular',
       sha256Hash: 'SHA256HASH',
       versionId: 'VERSIONID',

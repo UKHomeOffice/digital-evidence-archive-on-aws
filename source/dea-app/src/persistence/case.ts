@@ -95,6 +95,7 @@ export const createCase = async (
 
 export const updateCaseStatus = async (
   deaCase: DeaCase,
+  updatedBy: string,
   status: CaseStatus,
   filesStatus: CaseFileStatus,
   repositoryProvider: CaseModelRepositoryProvider,
@@ -115,6 +116,7 @@ export const updateCaseStatus = async (
       return: 'get',
     }
   );
+
   return caseFromEntity(updatedCase);
 };
 

@@ -35,6 +35,7 @@ import {
   runPreExecutionChecks,
   withAllowedOrigin,
 } from './app/resources/dea-lambda-utils';
+import { deleteCaseFiles } from './app/resources/delete-case-files';
 import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
@@ -112,6 +113,7 @@ export {
   dataSyncExecutionEvent,
   deleteCase,
   deleteCaseFileHandler,
+  deleteCaseFiles,
   deleteCaseMembership,
   downloadCaseFile,
   dummyContext,

@@ -26,6 +26,8 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   fileSizeBytes: safeFileSize,
   reason: safeReason,
   details: safeDetails,
+  partRangeStart: Joi.number().greater(0),
+  partRangeEnd: Joi.number(),
   uploadId: Joi.string().optional(),
 });
 
@@ -56,6 +58,7 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
   fileS3Key: s3Identifier,
   bucket: Joi.string(),
   region: Joi.string(),
+  presignedUrls: Joi.array().items(Joi.string()).required(),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
@@ -84,6 +87,10 @@ export const caseFileResponseSchema = Joi.object({
   created: Joi.date(),
   updated: Joi.date(),
   fileS3Key: s3Identifier,
+});
+
+export const caseFileDeleteRequestSchema = Joi.object({
+  filesToDelete: Joi.array().items(joiUlid).required(),
 });
 
 export const caseAssociationRequestSchema = Joi.object({
