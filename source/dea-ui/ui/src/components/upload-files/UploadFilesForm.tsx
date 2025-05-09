@@ -183,6 +183,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       updateFileProgress(activeFileUpload.file, UploadStatus.complete);
     };
 
+    await refreshCredentials();
+
     const axiosUploader = new MyUploader({
       parts,
       chunkSize: chunkSizeBytes,

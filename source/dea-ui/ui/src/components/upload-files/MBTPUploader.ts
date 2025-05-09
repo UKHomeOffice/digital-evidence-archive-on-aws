@@ -6,6 +6,7 @@
 import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import axios, { AxiosProgressEvent } from 'axios';
 import { initiateUpload } from '../../api/cases';
+import { refreshCredentials } from '../../helpers/authService';
 
 export interface UploaderUploadedPart {
   PartNumber: number;
@@ -207,6 +208,8 @@ export class MyUploader {
       // Handle error
       console.error('Error in setting timeout for retry:', error);
     });
+
+    await refreshCredentials();
 
     // Regenerate URL before retrying
     // const oldUrl = presignedUrl;
