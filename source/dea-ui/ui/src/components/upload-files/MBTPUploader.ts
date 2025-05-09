@@ -60,7 +60,7 @@ export class MyUploader {
   private readonly uploadId: string;
   private readonly fileKey: string;
 
-  private totalUploaded = 0; // Track the total uploaded size
+  private refreshingCredentials = false;
 
   // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
   constructor(options: UploaderOptions) {
@@ -112,8 +112,6 @@ export class MyUploader {
     const totalParts = Math.ceil(this.file.size / this.chunkSize);
 
     const partPromises: Promise<void>[] = [];
-
-    this.totalUploaded = 0;
 
     for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
       const presignedUrl = this.parts[partNumber - 1].signedUrl;
@@ -209,8 +207,6 @@ export class MyUploader {
       console.error('Error in setting timeout for retry:', error);
     });
 
-    await refreshCredentials();
-
     // Regenerate URL before retrying
     // const oldUrl = presignedUrl;
     presignedUrl = await this.generatePresignedUrl(partNumber);
@@ -228,12 +224,21 @@ export class MyUploader {
   }
 
   handleProgress(part: number, event: any) {
-    // if(Object.entries(this.progressCache).length > 20){
-    //   // console.log(Object.entries(this.progressCache).slice(-10).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    // console.log(Object.entries(this.progressCache).filter(([,value])=> (value != 367001600)).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    // }else{
-    // console.log(this.progressCache);
-    // }
+    const dateString = sessionStorage.getItem('tokenExpirationTime');
+
+    if (dateString) {
+      const dateNum = parseFloat(dateString);
+      const currentTime = new Date().getTime() + 180 * 1000;
+      if (currentTime >= dateNum && !this.refreshingCredentials) {
+        this.refreshingCredentials = true;
+        console.log(`refreshing credentials for ${part}......`, dateString);
+        refreshCredentials()
+          .catch((err) => console.log('Error:', err))
+          .finally(() => {
+            this.refreshingCredentials = false;
+          });
+      }
+    }
 
     if (this.file) {
       const eventObj = event.event;
