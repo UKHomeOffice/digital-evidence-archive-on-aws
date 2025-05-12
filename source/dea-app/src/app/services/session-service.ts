@@ -8,10 +8,8 @@ import { DeaSession, DeaSessionInput } from '../../models/session';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
 import { retry } from './service-helpers';
-import { update } from 'lodash';
 
 const INACTIVITY_TIMEOUT_IN_MS = 300000;
-const THRESHOLD_INACTIVITY_TIMEOUT_IN_MS = 45 * 1000;
 
 export const createSession = async (
   session: DeaSessionInput,
