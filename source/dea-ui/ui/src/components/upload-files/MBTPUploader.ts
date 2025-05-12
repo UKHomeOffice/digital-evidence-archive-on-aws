@@ -98,7 +98,7 @@ export class MyUploader {
       // await this.uploadLargeFile();
       await this.uploadMultiPartFile();
       const endTime = performance.now(); // Record end time in milliseconds
-      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const timeTaken = (endTime - uploaderStartTime) / 1000; // Time in seconds
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
 
       console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
