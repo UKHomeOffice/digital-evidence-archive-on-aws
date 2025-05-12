@@ -9,7 +9,7 @@ import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
 import { retry } from './service-helpers';
 
-const INACTIVITY_TIMEOUT_IN_MS = 1800000;
+const INACTIVITY_TIMEOUT_IN_MS = 300000;
 
 export const createSession = async (
   session: DeaSessionInput,
@@ -67,13 +67,20 @@ export const isCurrentSessionValid = async (
   /* istanbul ignore next */
   repositoryProvider: ModelRepositoryProvider
 ): Promise<boolean | string> => {
+  console.log('Current user: ', userUlid);
+
   const sessions = await getSessionsForUser(userUlid, repositoryProvider);
+
+  console.log('Current user sessions: ', sessions);
 
   // First check if the current user session already exists in
   // the database: if so, check there are no other active sessions
   // and that "updated" in last 30 minutes:
   // Otherwise, check there are no other active user sessions
   const currentSessionForUser = sessions.find((session) => session.tokenId === tokenId);
+
+  console.log('Current Session for user: ', currentSessionForUser);
+
   if (currentSessionForUser) {
     if (currentSessionForUser.isRevoked) {
       return 'The current user session has been revoked, please reauthenticate.';
@@ -83,11 +90,20 @@ export const isCurrentSessionValid = async (
       return 'The current user session is expired, please reauthenticate.';
     }
 
-    if (shouldSessionBeConsideredInactive(currentSessionForUser)) {
-      return 'You have been inactive for 30+ minutes, please reauthenticate.';
+    const updatedSession: DeaSession = {
+      ...currentSessionForUser,
+      updated: new Date(),
+    };
+
+    console.log('Session updated:', updatedSession);
+
+    await updateLastActiveTimeForSession(updatedSession, repositoryProvider);
+
+    if (shouldSessionBeConsideredInactive(updatedSession)) {
+      const timeInMins = INACTIVITY_TIMEOUT_IN_MS / (1000 * 60);
+      return `You have been inactive for ${timeInMins} minutes, please reauthenticate.`;
     }
 
-    await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
     return true;
   } else {
     await createSession(
@@ -166,5 +182,13 @@ export const shouldSessionBeConsideredInactive = (session: DeaSession): boolean 
     return true;
   }
 
+  console.log(
+    'Session updated time:',
+    session.updated.getTime(),
+    ', Current time :',
+    Date.now(),
+    ',Diff',
+    Date.now() - session.updated.getTime()
+  );
   return Date.now() - session.updated.getTime() > INACTIVITY_TIMEOUT_IN_MS;
 };
