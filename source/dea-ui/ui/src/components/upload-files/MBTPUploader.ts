@@ -92,6 +92,8 @@ export class MyUploader {
   }
 
   async start() {
+    const uploaderStartTime = performance.now();
+
     try {
       // await this.uploadLargeFile();
       await this.uploadMultiPartFile();
@@ -102,7 +104,7 @@ export class MyUploader {
       console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
     } catch (error: any) {
       const endTime = performance.now(); // Capture time if upload fails
-      const timeTaken = (endTime - startTime) / 1000;
+      const timeTaken = (endTime - uploaderStartTime) / 1000;
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
       console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
 
