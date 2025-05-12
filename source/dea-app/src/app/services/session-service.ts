@@ -93,7 +93,7 @@ export const isCurrentSessionValid = async (
     await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
 
     if (shouldSessionBeConsideredInactive(currentSessionForUser)) {
-      const timeInMins = 300000 / 1000;
+      const timeInMins = INACTIVITY_TIMEOUT_IN_MS / 1000;
       return `You have been inactive for ${timeInMins} minutes, please reauthenticate.`;
     }
 
