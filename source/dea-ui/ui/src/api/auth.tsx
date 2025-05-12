@@ -46,6 +46,8 @@ export const getLoginUrl = async (callbackUrl: string) => {
 
 export const getLogoutUrl = async (callbackUrl: string) => {
   try {
+    console.log('Calling logout.......');
+
     const response: string = await httpApiGet(`auth/logoutUrl?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
@@ -55,6 +57,7 @@ export const getLogoutUrl = async (callbackUrl: string) => {
 };
 
 export const revokeToken = async (): Promise<void> => {
+  console.log('Calling revoke token.......');
   await httpApiPost(`auth/revokeToken`, undefined);
 };
 

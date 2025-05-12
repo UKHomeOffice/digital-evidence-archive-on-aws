@@ -31,6 +31,8 @@ function clearStorage() {
 
 export const signOutProcess = async () => {
   try {
+    console.log('Calling signout.......');
+
     await revokeToken();
   } catch (e) {
     console.log('Error revoking token, refresh token may be expired already:', e);
@@ -52,6 +54,9 @@ export const refreshCredentials = async () => {
     response.identityPoolId,
     response.userPoolId
   );
+
+  console.log('refreshCredentials: ', response.expiresIn);
+
   sessionStorage.setItem('accessKeyId', credentials.AccessKeyId);
   sessionStorage.setItem('secretAccessKey', credentials.SecretKey);
   sessionStorage.setItem('sessionToken', credentials.SessionToken);
