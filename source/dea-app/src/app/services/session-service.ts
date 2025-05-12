@@ -93,7 +93,7 @@ export const isCurrentSessionValid = async (
     await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
 
     if (shouldSessionBeConsideredInactive(currentSessionForUser)) {
-      const timeInMins = INACTIVITY_TIMEOUT_IN_MS / 1000;
+      const timeInMins = INACTIVITY_TIMEOUT_IN_MS / (1000 * 60);
       return `You have been inactive for ${timeInMins} minutes, please reauthenticate.`;
     }
 
@@ -175,5 +175,13 @@ export const shouldSessionBeConsideredInactive = (session: DeaSession): boolean 
     return true;
   }
 
+  console.log(
+    'Session updated time:',
+    session.updated.getTime(),
+    ', Current time :',
+    Date.now(),
+    ',Diff',
+    Date.now() - session.updated.getTime()
+  );
   return Date.now() - session.updated.getTime() > INACTIVITY_TIMEOUT_IN_MS;
 };
