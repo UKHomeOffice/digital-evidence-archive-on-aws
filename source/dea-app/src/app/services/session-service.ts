@@ -10,6 +10,7 @@ import * as SessionPersistence from '../../persistence/session';
 import { retry } from './service-helpers';
 
 const INACTIVITY_TIMEOUT_IN_MS = 300000;
+const THRESHOLD_INACTIVITY_TIMEOUT_IN_MS = 45 * 1000;
 
 export const createSession = async (
   session: DeaSessionInput,
@@ -183,5 +184,7 @@ export const shouldSessionBeConsideredInactive = (session: DeaSession): boolean 
     ',Diff',
     Date.now() - session.updated.getTime()
   );
-  return Date.now() - session.updated.getTime() > INACTIVITY_TIMEOUT_IN_MS;
+  return (
+    Date.now() - session.updated.getTime() + THRESHOLD_INACTIVITY_TIMEOUT_IN_MS > INACTIVITY_TIMEOUT_IN_MS
+  );
 };
