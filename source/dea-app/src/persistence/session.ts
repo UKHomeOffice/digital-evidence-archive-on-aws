@@ -50,6 +50,7 @@ export const updateSession = async (
   const newEntity = await repositoryProvider.SessionModel.update(
     {
       ...deaSession,
+      updated: new Date(),
     },
     {
       // Normally, update() will return the updated item automatically,
