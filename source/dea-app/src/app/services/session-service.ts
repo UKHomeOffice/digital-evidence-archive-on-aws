@@ -90,11 +90,13 @@ export const isCurrentSessionValid = async (
       return 'The current user session is expired, please reauthenticate.';
     }
 
+    await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
+
     if (shouldSessionBeConsideredInactive(currentSessionForUser)) {
-      return 'You have been inactive for 30+ minutes, please reauthenticate.';
+      const timeInMins = 300000 / 1000;
+      return `You have been inactive for ${timeInMins} minutes, please reauthenticate.`;
     }
 
-    await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
     return true;
   } else {
     await createSession(
