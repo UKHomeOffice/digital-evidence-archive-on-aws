@@ -8,6 +8,7 @@ import { DeaSession, DeaSessionInput } from '../../models/session';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
 import { retry } from './service-helpers';
+import { update } from 'lodash';
 
 const INACTIVITY_TIMEOUT_IN_MS = 300000;
 const THRESHOLD_INACTIVITY_TIMEOUT_IN_MS = 45 * 1000;
@@ -91,9 +92,16 @@ export const isCurrentSessionValid = async (
       return 'The current user session is expired, please reauthenticate.';
     }
 
-    await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
+    const updatedSession: DeaSession = {
+      ...currentSessionForUser,
+      updated: new Date(),
+    };
 
-    if (shouldSessionBeConsideredInactive(currentSessionForUser)) {
+    console.log('Session updated:', updatedSession);
+
+    await updateLastActiveTimeForSession(updatedSession, repositoryProvider);
+
+    if (shouldSessionBeConsideredInactive(updatedSession)) {
       const timeInMins = INACTIVITY_TIMEOUT_IN_MS / (1000 * 60);
       return `You have been inactive for ${timeInMins} minutes, please reauthenticate.`;
     }
@@ -184,7 +192,5 @@ export const shouldSessionBeConsideredInactive = (session: DeaSession): boolean 
     ',Diff',
     Date.now() - session.updated.getTime()
   );
-  return (
-    Date.now() - session.updated.getTime() + THRESHOLD_INACTIVITY_TIMEOUT_IN_MS > INACTIVITY_TIMEOUT_IN_MS
-  );
+  return Date.now() - session.updated.getTime() > INACTIVITY_TIMEOUT_IN_MS;
 };
