@@ -97,6 +97,7 @@ export class MyUploader {
     try {
       // await this.uploadLargeFile();
       await this.uploadMultiPartFile();
+
       const endTime = performance.now(); // Record end time in milliseconds
       const timeTaken = (endTime - uploaderStartTime) / 1000; // Time in seconds
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
@@ -197,7 +198,20 @@ export class MyUploader {
       };
 
       // Perform the upload to the signed URL using Axios (correct argument order)
-      await axios.put(signedUrl, partBlob, config);
+      const response = await axios.put(signedUrl, partBlob, config);
+      console.log('response:', response);
+
+      if (response) {
+        const etag = response.headers.etag;
+        if (etag) {
+          const uploadedPart = {
+            PartNumber: partNumber,
+            ETag: etag.replaceAll('"', ''),
+          };
+
+          this.uploadedParts.push(uploadedPart);
+        }
+      }
     } catch (error) {
       console.error(`Error uploading part ${partNumber} to signed URL:`, error);
       throw error; // Rethrow to handle failure in main function
@@ -285,6 +299,7 @@ export class MyUploader {
   }
 
   async complete(error?: any) {
+    console.log(`Completing uploads.....UploadId:${this.uploadId}, FileKey: ${this.fileKey}`);
     if (error && !this.aborted) {
       console.log('Completing Error and not aborted...');
       this.onErrorFn(error);
