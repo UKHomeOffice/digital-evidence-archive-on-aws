@@ -40,7 +40,7 @@ export interface UploaderOptions {
 
 const MAX_RETRIES = 5;
 const startTime = new Date().getTime();
-const THRESHOLD_MINUTES_IN_MS = 55 * 60 * 1000; // 55 minutes in ms. 3300,000
+const THRESHOLD_MINUTES_IN_MS = 5 * 60 * 1000; // 55 minutes in ms. 3300,000
 // const ONE_HOUR = 60 * 60 * 1000;
 
 export class MyUploader {
@@ -199,7 +199,6 @@ export class MyUploader {
 
       // Perform the upload to the signed URL using Axios (correct argument order)
       const response = await axios.put(signedUrl, partBlob, config);
-      console.log('response:', response);
 
       if (response) {
         const etag = response.headers.etag;
@@ -242,9 +241,11 @@ export class MyUploader {
   }
 
   async generatePresignedUrl(partNumber: number): Promise<string> {
-    const newUploadDto = { ...this.uploadDto };
+    const newUploadDto = { ...this.uploadDto, uploadId: this.uploadId };
     newUploadDto.partRangeStart = partNumber;
     newUploadDto.partRangeEnd = partNumber;
+
+    console.log('newUploadDto:', newUploadDto);
 
     const initiatedCaseFile = await initiateUpload(newUploadDto);
     return initiatedCaseFile.presignedUrls[0];
