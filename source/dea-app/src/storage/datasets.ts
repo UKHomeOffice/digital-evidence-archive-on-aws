@@ -240,6 +240,7 @@ export const completeUploadForCaseFile = async (
     if (listPartsResponse !== undefined && listPartsResponse.Parts) {
       uploadedParts = uploadedParts.concat(
         listPartsResponse.Parts.map(function (part) {
+          console.log(`completeUploadForCaseFile: ${part.PartNumber}`);
           return { ETag: part.ETag, PartNumber: part.PartNumber, ChecksumSHA256: part.ChecksumSHA256 };
         })
       );
