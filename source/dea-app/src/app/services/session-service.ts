@@ -9,7 +9,7 @@ import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
 import { retry } from './service-helpers';
 
-const INACTIVITY_TIMEOUT_IN_MS = 1800000;
+const INACTIVITY_TIMEOUT_IN_MS = 300000;
 
 export const createSession = async (
   session: DeaSessionInput,
