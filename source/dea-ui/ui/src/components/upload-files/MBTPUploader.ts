@@ -6,6 +6,7 @@
 import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import axios, { AxiosProgressEvent } from 'axios';
 import { initiateUpload } from '../../api/cases';
+import { refreshCredentials } from '../../helpers/authService';
 
 export interface UploaderUploadedPart {
   PartNumber: number;
@@ -38,6 +39,9 @@ export interface UploaderOptions {
 }
 
 const MAX_RETRIES = 5;
+const startTime = new Date().getTime();
+const THRESHOLD_MINUTES_IN_MS = 55 * 60 * 1000; // 55 minutes in ms. 3300,000
+// const ONE_HOUR = 60 * 60 * 1000;
 
 export class MyUploader {
   private parts: UploaderFilePart[];
@@ -59,7 +63,7 @@ export class MyUploader {
   private readonly uploadId: string;
   private readonly fileKey: string;
 
-  private totalUploaded = 0; // Track the total uploaded size
+  private refreshingCredentials = false;
 
   // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
   constructor(options: UploaderOptions) {
@@ -88,18 +92,20 @@ export class MyUploader {
   }
 
   async start() {
-    const startTime = performance.now();
+    const uploaderStartTime = performance.now();
+
     try {
       // await this.uploadLargeFile();
       await this.uploadMultiPartFile();
+
       const endTime = performance.now(); // Record end time in milliseconds
-      const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+      const timeTaken = (endTime - uploaderStartTime) / 1000; // Time in seconds
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
 
       console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
     } catch (error: any) {
       const endTime = performance.now(); // Capture time if upload fails
-      const timeTaken = (endTime - startTime) / 1000;
+      const timeTaken = (endTime - uploaderStartTime) / 1000;
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
       console.error(`Upload failed after ${totalTimeInMinsSecs} when uploading ${this.file.name}.`);
 
@@ -111,8 +117,6 @@ export class MyUploader {
     const totalParts = Math.ceil(this.file.size / this.chunkSize);
 
     const partPromises: Promise<void>[] = [];
-
-    this.totalUploaded = 0;
 
     for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
       const presignedUrl = this.parts[partNumber - 1].signedUrl;
@@ -173,6 +177,15 @@ export class MyUploader {
 
   async uploadPartToSignedUrl(signedUrl: string, partBlob: Blob, partNumber: number): Promise<void> {
     try {
+      const elapsedInMs = new Date().getTime() - startTime;
+
+      // // Calculate how many full hours have passed since start
+      // const hoursSinceStart = Math.floor(elapsed / ONE_HOUR);
+
+      if (elapsedInMs >= THRESHOLD_MINUTES_IN_MS) {
+        signedUrl = await this.generatePresignedUrl(partNumber);
+      }
+
       const config = {
         headers: {
           'Content-Type': this.file.type, // Set the content type
@@ -185,7 +198,19 @@ export class MyUploader {
       };
 
       // Perform the upload to the signed URL using Axios (correct argument order)
-      await axios.put(signedUrl, partBlob, config);
+      const response = await axios.put(signedUrl, partBlob, config);
+
+      if (response) {
+        const etag = response.headers.etag;
+        if (etag) {
+          const uploadedPart = {
+            PartNumber: partNumber,
+            ETag: etag.replaceAll('"', ''),
+          };
+
+          this.uploadedParts.push(uploadedPart);
+        }
+      }
     } catch (error) {
       console.error(`Error uploading part ${partNumber} to signed URL:`, error);
       throw error; // Rethrow to handle failure in main function
@@ -216,7 +241,7 @@ export class MyUploader {
   }
 
   async generatePresignedUrl(partNumber: number): Promise<string> {
-    const newUploadDto = { ...this.uploadDto };
+    const newUploadDto = { ...this.uploadDto, uploadId: this.uploadId };
     newUploadDto.partRangeStart = partNumber;
     newUploadDto.partRangeEnd = partNumber;
 
@@ -225,12 +250,20 @@ export class MyUploader {
   }
 
   handleProgress(part: number, event: any) {
-    // if(Object.entries(this.progressCache).length > 20){
-    //   // console.log(Object.entries(this.progressCache).slice(-10).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    // console.log(Object.entries(this.progressCache).filter(([,value])=> (value != 367001600)).map(([key, value]) => `${key} : ${value}`).join(' | '));
-    // }else{
-    // console.log(this.progressCache);
-    // }
+    const dateString = sessionStorage.getItem('tokenExpirationTime');
+
+    if (dateString) {
+      const dateNum = parseFloat(dateString);
+      const currentTime = new Date().getTime() + 180 * 1000;
+      if (currentTime >= dateNum && !this.refreshingCredentials) {
+        this.refreshingCredentials = true;
+        refreshCredentials()
+          .catch((err) => console.log('Error:', err))
+          .finally(() => {
+            this.refreshingCredentials = false;
+          });
+      }
+    }
 
     if (this.file) {
       const eventObj = event.event;
@@ -265,6 +298,7 @@ export class MyUploader {
   }
 
   async complete(error?: any) {
+    console.log(`Completing uploads.....UploadId:${this.uploadId}, FileKey: ${this.fileKey}`);
     if (error && !this.aborted) {
       console.log('Completing Error and not aborted...');
       this.onErrorFn(error);
