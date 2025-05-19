@@ -89,7 +89,7 @@ export const defaultDatasetsProvider = {
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: 2 * 3600,
+  uploadPresignedCommandExpirySeconds: 1 * 3600, // The requested DurationSeconds exceeds the 1 hour session limit for roles assumed by role chaining. When you use role chaining, AWS limits the session duration of the second assumed role to a maximum of 1 hour (3600 seconds), regardless of the DurationSeconds you request. This is a hard limit — you can't override it.
   downloadPresignedCommandExpirySeconds: 1 * 3600,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
   checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),

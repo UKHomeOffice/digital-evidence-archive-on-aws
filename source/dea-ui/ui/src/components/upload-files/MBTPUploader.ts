@@ -39,7 +39,7 @@ export interface UploaderOptions {
 }
 
 const MAX_RETRIES = 5;
-const startTime = new Date().getTime();
+let startTime = new Date().getTime();
 const THRESHOLD_MINUTES_IN_MS = 55 * 60 * 1000; // 55 minutes in ms. 3300,000
 // const ONE_HOUR = 60 * 60 * 1000;
 
@@ -92,7 +92,9 @@ export class MyUploader {
   }
 
   async start() {
+    startTime = new Date().getTime();
     const uploaderStartTime = performance.now();
+    console.log(`Upload started at ${new Date()}.`);
 
     try {
       // await this.uploadLargeFile();
@@ -183,6 +185,7 @@ export class MyUploader {
       // const hoursSinceStart = Math.floor(elapsed / ONE_HOUR);
 
       if (elapsedInMs >= THRESHOLD_MINUTES_IN_MS) {
+        console.log(`Regenerating url for ${partNumber} before it expires.`);
         signedUrl = await this.generatePresignedUrl(partNumber);
       }
 
@@ -251,11 +254,13 @@ export class MyUploader {
 
   handleProgress(part: number, event: any) {
     const dateString = sessionStorage.getItem('tokenExpirationTime');
-
     if (dateString) {
       const dateNum = parseFloat(dateString);
       const currentTime = new Date().getTime() + 180 * 1000;
-      if (currentTime >= dateNum && !this.refreshingCredentials) {
+      const oneHourFromStartTime = startTime + THRESHOLD_MINUTES_IN_MS;
+      if (currentTime >= oneHourFromStartTime && !this.refreshingCredentials) {
+        console.log(`tokenExpirationTime : ${dateNum}`);
+
         this.refreshingCredentials = true;
         refreshCredentials()
           .catch((err) => console.log('Error:', err))
