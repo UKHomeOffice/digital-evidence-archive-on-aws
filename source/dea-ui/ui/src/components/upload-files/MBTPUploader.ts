@@ -95,7 +95,6 @@ export class MyUploader {
     startTime = new Date().getTime();
     const uploaderStartTime = performance.now();
     console.log(`Upload started at ${new Date()}.`);
-
     try {
       // await this.uploadLargeFile();
       await this.uploadMultiPartFile();
@@ -181,9 +180,10 @@ export class MyUploader {
     try {
       const elapsedInMs = new Date().getTime() - startTime;
 
+      console.log('tokenExpirationTime: ' + sessionStorage.getItem('tokenExpirationTime'));
+
       // // Calculate how many full hours have passed since start
       // const hoursSinceStart = Math.floor(elapsed / ONE_HOUR);
-      console.log('elapsedInMs: ', elapsedInMs);
       if (elapsedInMs >= THRESHOLD_MINUTES_IN_MS) {
         console.log(`Regenerating url for ${partNumber} before it expires.`);
         signedUrl = await this.generatePresignedUrl(partNumber);
