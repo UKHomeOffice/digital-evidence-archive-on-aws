@@ -183,7 +183,7 @@ export class MyUploader {
 
       // // Calculate how many full hours have passed since start
       // const hoursSinceStart = Math.floor(elapsed / ONE_HOUR);
-
+      console.log('elapsedInMs: ', elapsedInMs);
       if (elapsedInMs >= THRESHOLD_MINUTES_IN_MS) {
         console.log(`Regenerating url for ${partNumber} before it expires.`);
         signedUrl = await this.generatePresignedUrl(partNumber);
@@ -257,8 +257,7 @@ export class MyUploader {
     if (dateString) {
       const dateNum = parseFloat(dateString);
       const currentTime = new Date().getTime() + 180 * 1000;
-      const oneHourFromStartTime = startTime + THRESHOLD_MINUTES_IN_MS;
-      if (currentTime >= oneHourFromStartTime && !this.refreshingCredentials) {
+      if (currentTime >= dateNum && !this.refreshingCredentials) {
         console.log(`tokenExpirationTime : ${dateNum}`);
 
         this.refreshingCredentials = true;
