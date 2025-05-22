@@ -743,7 +743,7 @@ async function getDownloadPresignedUrlClient(
       sessionToken: credentials.SessionToken,
       expiration: credentials.Expiration,
     },
-    useAccelerateEndpoint: true,
+    useAccelerateEndpoint: false,
   });
 }
 
