@@ -74,7 +74,7 @@ const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() 
 const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
 
 export const defaultDatasetsProvider = {
-  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent(), useAccelerateEndpoint: true }),
+  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent(), useAccelerateEndpoint: false }),
   region: region,
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   s3BatchDeleteCaseFileLambdaArn: getRequiredEnv(
