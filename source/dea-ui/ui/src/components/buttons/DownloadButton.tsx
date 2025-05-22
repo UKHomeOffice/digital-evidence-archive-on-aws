@@ -227,7 +227,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
 
   async function downloadFilesHandler() {
     const downloadStartTime = performance.now();
-    console.log(`Upload started at ${new Date()}.`);
+    console.log(`Download started at ${new Date()}.`);
 
     try {
       setDownloadReasonModalOpen(false);
