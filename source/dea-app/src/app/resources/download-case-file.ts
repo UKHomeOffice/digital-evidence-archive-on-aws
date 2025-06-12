@@ -3,17 +3,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { PassThrough } from 'node:stream';
 import { getRequiredEnv, getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { DownloadCaseFileRequest } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { downloadFileRequestBodySchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
+import { defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
+import { streamS3File } from '../utils/s3-multi-part-file-download';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
 
 export const downloadCaseFile: DEAGatewayProxyHandler = async (
   event,
@@ -41,12 +42,34 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
     throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
   }
 
-  const downloadResult = await getPresignedUrlForDownload(
-    retrievedCaseFile,
-    `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-    datasetsProvider,
-    downloadReason
-  );
+  const bucket = 'sheffield-upload-testing';
+  const key = retrievedCaseFile.fileS3Key;
 
-  return responseOk(event, downloadResult);
+  const passThrough = new PassThrough();
+  await streamS3File(bucket, key, passThrough);
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of passThrough) {
+    chunks.push(chunk);
+  }
+
+  const finalBuffer = Buffer.concat(chunks);
+
+  // const downloadResult = await getPresignedUrlForDownload(
+  //     retrievedCaseFile,
+  //     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
+  //     datasetsProvider,
+  //     downloadReason
+  // );
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${retrievedCaseFile.fileName}"`,
+      'Content-Length': finalBuffer.length.toString(),
+    },
+    body: finalBuffer.toString('base64'),
+    isBase64Encoded: true,
+  };
 };
