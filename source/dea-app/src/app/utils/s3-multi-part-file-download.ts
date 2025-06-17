@@ -24,13 +24,15 @@ async function downloadChunkWithRetry(
     try {
       const command = new GetObjectCommand({ Bucket: bucket, Key: key, Range: range });
       const result = await s3.send(command);
-      const s3Stream = result.Body as Readable;
 
-      return new Promise((resolve, reject) => {
-        s3Stream.on('data', (chunk) => stream.write(chunk));
-        s3Stream.on('end', resolve);
-        s3Stream.on('error', reject);
-      });
+      if (result.Body instanceof Readable) {
+        const s3Stream = result.Body;
+        return new Promise((resolve, reject) => {
+          s3Stream.on('data', (chunk) => stream.write(chunk));
+          s3Stream.on('end', resolve);
+          s3Stream.on('error', reject);
+        });
+      }
     } catch (err) {
       if (attempt === retries) {
         throw new Error(`Failed to download ${range} after ${retries} attempts: ${err}`);
@@ -41,7 +43,8 @@ async function downloadChunkWithRetry(
 
 export async function streamS3File(bucket: string, key: string, outStream: PassThrough): Promise<void> {
   const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
-  const totalSize = head.ContentLength!;
+
+  const totalSize = head.ContentLength ?? 0;
   const totalParts = Math.ceil(totalSize / CHUNK_SIZE);
 
   const queue = new PQueue({ concurrency: MAX_CONCURRENCY });

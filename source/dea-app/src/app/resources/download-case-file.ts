@@ -4,13 +4,10 @@
  */
 
 import { PassThrough } from 'node:stream';
-import { getRequiredEnv, getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
-import { DownloadCaseFileRequest } from '../../models/case-file';
+import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
-import { downloadFileRequestBodySchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
 import { streamS3File } from '../utils/s3-multi-part-file-download';
@@ -21,20 +18,20 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
+  repositoryProvider = defaultProvider
   /* istanbul ignore next */
-  datasetsProvider = defaultDatasetsProvider
+  // datasetsProvider = defaultDatasetsProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
-  const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
+  //const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
-  const body = getRequiredPayload<DownloadCaseFileRequest>(
-    event,
-    'downloadCaseFile request body',
-    downloadFileRequestBodySchema
-  );
-  const downloadReason: string | undefined = body.downloadReason;
+  // const body = getRequiredPayload<DownloadCaseFileRequest>(
+  //   event,
+  //   'downloadCaseFile request body',
+  //   downloadFileRequestBodySchema
+  // );
+  //const downloadReason: string | undefined = body.downloadReason;
 
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
