@@ -7,6 +7,7 @@ import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { Button, SpaceBetween, Spinner } from '@cloudscape-design/components';
+import { fetch } from 'next/dist/compiled/@edge-runtime/primitives/fetch';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { getPresignedUrl, useGetCaseActions } from '../../api/cases';
@@ -24,6 +25,17 @@ export interface DownloadButtonProps {
   downloadInProgressCallback: (setDownloadInProgress: boolean) => void;
   readonly filesToRestore: DownloadDTO[];
   filesToRestoreCallback: (setFilesToRestore: DownloadDTO[]) => void;
+}
+
+function concatUint8Arrays(chunks: Uint8Array[]): Uint8Array {
+  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return result;
 }
 
 function DownloadButton(props: DownloadButtonProps): JSX.Element {
@@ -64,15 +76,52 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             continue;
           }
 
-          const alink = document.createElement('a');
-          alink.href = downloadResponse.downloadUrl;
-          alink.download = file.fileName;
-          alink.rel = 'noopener';
-          alink.style.display = 'none';
-          window.open(downloadResponse.downloadUrl, '_blank');
-          // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
-          // long term we should consider zipping the files in the backend and then downloading as a single file
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          // const alink = document.createElement('a');
+          // alink.href = downloadResponse.downloadUrl;
+          // alink.download = file.fileName;
+          // alink.rel = 'noopener';
+          // alink.style.display = 'none';
+          // window.open(downloadResponse.downloadUrl, '_blank');
+          // // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // // long term we should consider zipping the files in the backend and then downloading as a single file
+          // await new Promise((resolve) => setTimeout(resolve, 500));
+
+          const response = await fetch(downloadResponse.downloadUrl);
+
+          if (!response.ok || !response.body) {
+            throw new Error('Download failed');
+          }
+
+          const handle = await (window as any).showSaveFilePicker({ suggestedName: file.fileName });
+          const writable = await handle.createWritable();
+          const reader = response.body.getReader();
+          const bufferQueue: Uint8Array[] = [];
+          let bufferedBytes = 0;
+          const BUFFER_LIMIT = 10 * 1024 * 1024; // 10 MB
+
+          let finished = false;
+
+          while (!finished) {
+            const { done, value } = await reader.read();
+            finished = done;
+
+            if (value) {
+              bufferQueue.push(value);
+              bufferedBytes += value.length;
+            }
+
+            if (bufferedBytes >= BUFFER_LIMIT) {
+              await writable.write(concatUint8Arrays(bufferQueue));
+              bufferQueue.length = 0;
+              bufferedBytes = 0;
+            }
+          }
+
+          if (bufferQueue.length) {
+            await writable.write(concatUint8Arrays(bufferQueue));
+          }
+
+          await writable.close();
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);
