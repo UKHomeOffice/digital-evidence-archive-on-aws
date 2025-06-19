@@ -7,7 +7,6 @@ import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { Button, SpaceBetween, Spinner } from '@cloudscape-design/components';
-import { fetch } from 'next/dist/compiled/@edge-runtime/primitives/fetch';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { getPresignedUrl, useGetCaseActions } from '../../api/cases';
