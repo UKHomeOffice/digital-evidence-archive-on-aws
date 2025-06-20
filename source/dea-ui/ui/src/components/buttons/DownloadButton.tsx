@@ -10,7 +10,9 @@ import { Button, SpaceBetween, Spinner } from '@cloudscape-design/components';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { getPresignedUrl, useGetCaseActions } from '../../api/cases';
+import { DownloadStatus } from '../../common/enums';
 import { commonLabels, fileOperationsLabels } from '../../common/labels';
+import { FileDownloadProgressRow } from '../../common/types';
 import { useNotifications } from '../../context/NotificationsContext';
 import { canDownloadFiles, canRestoreFiles } from '../../helpers/userActionSupport';
 import { FormFieldModal } from '../common-components/FormFieldModal';
@@ -24,6 +26,8 @@ export interface DownloadButtonProps {
   downloadInProgressCallback: (setDownloadInProgress: boolean) => void;
   readonly filesToRestore: DownloadDTO[];
   filesToRestoreCallback: (setFilesToRestore: DownloadDTO[]) => void;
+  downloadProgressMap: Record<string, FileDownloadProgressRow>;
+  setDownloadProgressMap: React.Dispatch<React.SetStateAction<Record<string, FileDownloadProgressRow>>>;
 }
 
 function concatUint8Arrays(chunks: Uint8Array[]): Uint8Array {
@@ -75,16 +79,6 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             continue;
           }
 
-          // const alink = document.createElement('a');
-          // alink.href = downloadResponse.downloadUrl;
-          // alink.download = file.fileName;
-          // alink.rel = 'noopener';
-          // alink.style.display = 'none';
-          // window.open(downloadResponse.downloadUrl, '_blank');
-          // // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
-          // // long term we should consider zipping the files in the backend and then downloading as a single file
-          // await new Promise((resolve) => setTimeout(resolve, 500));
-
           const response = await fetch(downloadResponse.downloadUrl);
 
           if (!response.ok || !response.body) {
@@ -99,6 +93,9 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           const BUFFER_LIMIT = 10 * 1024 * 1024; // 10 MB
 
           let finished = false;
+          const contentLengthHeader = response.headers.get('Content-Length');
+          const contentLength = contentLengthHeader ? parseInt(contentLengthHeader, 10) : 0;
+          let received = 0;
 
           while (!finished) {
             const { done, value } = await reader.read();
@@ -107,6 +104,28 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             if (value) {
               bufferQueue.push(value);
               bufferedBytes += value.length;
+
+              received += value.length;
+
+              if (contentLength) {
+                const percentage = Math.floor((received / contentLength) * 100).toString();
+
+                props.setDownloadProgressMap((prev) => ({
+                  ...prev,
+                  [file.ulid]: {
+                    fileName: file.fileName,
+                    downloadStatus: DownloadStatus.progress,
+                    downloadPercentage: percentage,
+                    contentType: file.contentType ?? '',
+                    fileSizeBytes: file.fileSizeBytes,
+                    created: file.created?.toString() ?? '',
+                    createdBy: file.createdBy,
+                    updated: file.updated?.toString() ?? '',
+                    updatedBy: file.updatedBy,
+                    status: file.status.toString(),
+                  },
+                }));
+              }
             }
 
             if (bufferedBytes >= BUFFER_LIMIT) {
@@ -121,10 +140,27 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           }
 
           await writable.close();
+
+          props.setDownloadProgressMap((prev: Record<string, FileDownloadProgressRow>) => ({
+            ...prev,
+            [file.ulid]: {
+              ...prev[file.ulid],
+              downloadStatus: DownloadStatus.complete,
+              downloadPercentage: '100',
+            },
+          }));
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
-          console.log(`failed to download ${file.fileName}`, e);
-          // allFilesDownloaded = false;
+          console.error(`failed to download ${file.fileName}`, e);
+
+          props.setDownloadProgressMap((prev) => ({
+            ...prev,
+            [file.ulid]: {
+              ...prev[file.ulid],
+              downloadStatus: DownloadStatus.failed,
+              downloadPercentage: '0',
+            },
+          }));
         }
       }
     } finally {

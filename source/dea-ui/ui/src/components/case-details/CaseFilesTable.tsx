@@ -12,8 +12,10 @@ import {
   BreadcrumbGroup,
   Button,
   Header,
+  Icon,
   Pagination,
   SpaceBetween,
+  Spinner,
   StatusIndicator,
   Table,
   TextFilter,
@@ -22,6 +24,7 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
+import { DownloadStatus } from '../../common/enums';
 import {
   caseStatusLabels,
   commonLabels,
@@ -30,6 +33,7 @@ import {
   filesListLabels,
   paginationLabels,
 } from '../../common/labels';
+import { FileDownloadProgressRow } from '../../common/types';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
@@ -56,6 +60,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
 
   const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
   const { pushNotification } = useNotifications();
+
+  const [downloadProgressMap, setDownloadProgressMap] = React.useState<
+    Record<string, FileDownloadProgressRow>
+  >({});
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -195,6 +203,8 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             downloadInProgressCallback={setDownloadInProgress}
             filesToRestore={filesToRestore}
             filesToRestoreCallback={setFilesToRestore}
+            downloadProgressMap={downloadProgressMap}
+            setDownloadProgressMap={setDownloadProgressMap}
           />
           <DeleteButton
             caseId={props.caseId}
@@ -269,6 +279,70 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
+  function downloadProgressCell(file: DownloadDTO) {
+    const downloadProgress = downloadProgressMap[file.ulid];
+
+    if (!downloadProgress) {
+      return (
+        <Box>
+          <SpaceBetween direction="horizontal" size={'xs'}>
+            <span>Not started</span>
+          </SpaceBetween>
+        </Box>
+      );
+    }
+
+    switch (downloadProgress.downloadStatus) {
+      case DownloadStatus.progress: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={downloadProgress.fileName}>
+              <Spinner />
+              <span>
+                {downloadProgress.downloadStatus} | {downloadProgress.downloadPercentage}%
+              </span>
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      case DownloadStatus.failed: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={downloadProgress.fileName}>
+              <Icon name="status-negative" variant="error" />
+              <span>
+                {downloadProgress.downloadStatus} | {downloadProgress.downloadPercentage}%
+              </span>
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      case DownloadStatus.complete: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={downloadProgress.fileName}>
+              <Icon name="check" variant="success" />
+              <span>
+                {' '}
+                {downloadProgress.downloadStatus} | {downloadProgress.downloadPercentage}%
+              </span>
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      default: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={downloadProgress.fileName}>
+              <Icon name="file" />
+              <span>{downloadProgress.downloadStatus}</span>
+            </SpaceBetween>
+          </Box>
+        );
+      }
+    }
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -291,6 +365,14 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           width: 400,
           minWidth: 165,
           sortingField: 'fileName',
+        },
+        {
+          id: 'downloadProgress',
+          header: 'Download progress',
+          cell: (item: DownloadDTO) => downloadProgressCell(item),
+          width: 250,
+          minWidth: 165,
+          sortingField: 'downloadProgress',
         },
         {
           id: 'contentType',
