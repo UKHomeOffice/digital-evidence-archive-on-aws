@@ -24,11 +24,13 @@ import {
   useGetFileDetailsById,
 } from '../../api/cases';
 import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from '../../common/labels';
+import { FileDownloadProgressRow } from '../../common/types';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
 import DownloadButton from '../buttons/DownloadButton';
 import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
+import { DownloadStatus } from '../../common/enums';
 
 export interface FileDetailsBodyProps {
   readonly caseId: string;
@@ -43,6 +45,9 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
   const userActions = useGetCaseActions(props.caseId);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
   const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
+  const [downloadProgressMap, setDownloadProgressMap] = React.useState<
+    Record<string, FileDownloadProgressRow>
+  >({});
 
   function getStatusIcon(status: string) {
     if (status == CaseFileStatus.ACTIVE) {
@@ -120,6 +125,8 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                   downloadInProgressCallback={setDownloadInProgress}
                   filesToRestore={filesToRestore}
                   filesToRestoreCallback={setFilesToRestore}
+                  downloadProgressMap={downloadProgressMap}
+                  setDownloadProgressMap={setDownloadProgressMap}
                 />
               </SpaceBetween>
             </Box>
@@ -166,6 +173,21 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                 <div>
                   <h5>{commonLabels.description}</h5>
                   <p>{fileData.details}</p>
+
+                  {downloadProgressMap[fileData.ulid] && (
+                    <StatusIndicator
+                      type={
+                        downloadProgressMap[fileData.ulid].downloadStatus === DownloadStatus.complete
+                          ? 'success'
+                          : downloadProgressMap[fileData.ulid].downloadStatus === DownloadStatus.failed
+                          ? 'error'
+                          : 'in-progress'
+                      }
+                    >
+                      {downloadProgressMap[fileData.ulid].downloadStatus} |{' '}
+                      {downloadProgressMap[fileData.ulid].downloadPercentage}%
+                    </StatusIndicator>
+                  )}
                 </div>
               </TextContent>
               <TextContent>
