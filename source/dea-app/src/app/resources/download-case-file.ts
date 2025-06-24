@@ -10,6 +10,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
+import { createRefreshingS3Client, initTokenCache } from '../utils/refreshing-s3-client';
 import { streamS3File } from '../utils/s3-multi-part-file-download';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
@@ -33,6 +34,16 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   // );
   //const downloadReason: string | undefined = body.downloadReason;
 
+  const idToken = event.headers?.authorization?.split(' ')[1];
+  const refreshToken = event.headers?.['x-refresh-token'];
+
+  if (!idToken || !refreshToken) {
+    throw new Error('Missing Authorization or refresh token');
+  }
+
+  initTokenCache(idToken, refreshToken);
+  const s3 = await createRefreshingS3Client();
+
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
@@ -43,7 +54,7 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   const key = retrievedCaseFile.fileS3Key;
 
   const passThrough = new PassThrough();
-  await streamS3File(bucket, key, passThrough);
+  await streamS3File(bucket, key, passThrough, s3);
 
   const chunks: Buffer[] = [];
   for await (const chunk of passThrough) {

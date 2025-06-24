@@ -11,13 +11,12 @@ const CHUNK_SIZE = 100 * 1024 * 1024;
 const MAX_CONCURRENCY = 5;
 const MAX_RETRIES = 3;
 
-const s3 = new S3Client({ region: 'eu-west-2' });
-
 async function downloadChunkWithRetry(
   bucket: string,
   key: string,
   range: string,
   stream: PassThrough,
+  s3: S3Client,
   retries = MAX_RETRIES
 ): Promise<void> {
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -41,7 +40,12 @@ async function downloadChunkWithRetry(
   }
 }
 
-export async function streamS3File(bucket: string, key: string, outStream: PassThrough): Promise<void> {
+export async function streamS3File(
+  bucket: string,
+  key: string,
+  outStream: PassThrough,
+  s3: S3Client
+): Promise<void> {
   const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
 
   const totalSize = head.ContentLength ?? 0;
@@ -53,7 +57,7 @@ export async function streamS3File(bucket: string, key: string, outStream: PassT
     const start = part * CHUNK_SIZE;
     const end = Math.min(start + CHUNK_SIZE - 1, totalSize - 1);
     const range = `bytes=${start}-${end}`;
-    await queue.add(() => downloadChunkWithRetry(bucket, key, range, outStream));
+    await queue.add(() => downloadChunkWithRetry(bucket, key, range, outStream, s3));
   }
 
   await queue.onIdle();
