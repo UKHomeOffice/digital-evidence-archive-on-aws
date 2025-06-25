@@ -4,23 +4,27 @@
  */
 
 import { PassThrough, Readable } from 'stream';
-import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import PQueue from 'p-queue';
+import { CredentialManager } from './credential-manager';
 
 const CHUNK_SIZE = 100 * 1024 * 1024;
 const MAX_CONCURRENCY = 5;
 const MAX_RETRIES = 3;
+
+const REGION = 'eu-west-2';
 
 async function downloadChunkWithRetry(
   bucket: string,
   key: string,
   range: string,
   stream: PassThrough,
-  s3: S3Client,
+  credentialManager: CredentialManager,
   retries = MAX_RETRIES
 ): Promise<void> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
+      const s3 = await credentialManager.getS3();
       const command = new GetObjectCommand({ Bucket: bucket, Key: key, Range: range });
       const result = await s3.send(command);
 
@@ -40,12 +44,10 @@ async function downloadChunkWithRetry(
   }
 }
 
-export async function streamS3File(
-  bucket: string,
-  key: string,
-  outStream: PassThrough,
-  s3: S3Client
-): Promise<void> {
+export async function streamS3File(bucket: string, key: string, outStream: PassThrough): Promise<void> {
+  const credentialManager = new CredentialManager(REGION);
+  const s3 = await credentialManager.getS3();
+
   const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
 
   const totalSize = head.ContentLength ?? 0;
@@ -57,7 +59,7 @@ export async function streamS3File(
     const start = part * CHUNK_SIZE;
     const end = Math.min(start + CHUNK_SIZE - 1, totalSize - 1);
     const range = `bytes=${start}-${end}`;
-    await queue.add(() => downloadChunkWithRetry(bucket, key, range, outStream, s3));
+    await queue.add(() => downloadChunkWithRetry(bucket, key, range, outStream, credentialManager));
   }
 
   await queue.onIdle();

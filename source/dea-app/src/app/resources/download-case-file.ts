@@ -8,9 +8,9 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
-import { createRefreshingS3Client, initTokenCache } from '../utils/refreshing-s3-client';
 import { streamS3File } from '../utils/s3-multi-part-file-download';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
@@ -19,20 +19,12 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider = defaultProvider,
   /* istanbul ignore next */
-  // datasetsProvider = defaultDatasetsProvider
+  datasetsProvider = defaultDatasetsProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
-  //const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
-
-  // const body = getRequiredPayload<DownloadCaseFileRequest>(
-  //   event,
-  //   'downloadCaseFile request body',
-  //   downloadFileRequestBodySchema
-  // );
-  //const downloadReason: string | undefined = body.downloadReason;
 
   const idToken = event.headers?.authorization?.split(' ')[1];
   const refreshToken = event.headers?.['x-refresh-token'];
@@ -41,20 +33,17 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
     throw new Error('Missing Authorization or refresh token');
   }
 
-  initTokenCache(idToken, refreshToken);
-  const s3 = await createRefreshingS3Client();
-
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
     throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
   }
 
-  const bucket = 'sheffield-upload-testing';
+  const bucket = datasetsProvider.bucketName;
   const key = retrievedCaseFile.fileS3Key;
 
   const passThrough = new PassThrough();
-  await streamS3File(bucket, key, passThrough, s3);
+  await streamS3File(bucket, key, passThrough);
 
   const chunks: Buffer[] = [];
   for await (const chunk of passThrough) {
@@ -62,13 +51,6 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   }
 
   const finalBuffer = Buffer.concat(chunks);
-
-  // const downloadResult = await getPresignedUrlForDownload(
-  //     retrievedCaseFile,
-  //     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-  //     datasetsProvider,
-  //     downloadReason
-  // );
 
   return {
     statusCode: 200,
