@@ -1,65 +1,79 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import fetch from 'node-fetch';
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
 
-let currentCredentials: any = null;
-let currentIdToken: string;
-let currentRefreshToken: string;
+import {
+  CognitoIdentityClient,
+  GetCredentialsForIdentityCommand,
+  GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
+import { httpApiPost } from '../helpers/apiHelper';
 
-export function initTokenCache(idToken: string, refreshToken: string) {
-    currentIdToken = idToken;
-    currentRefreshToken = refreshToken;
+export interface Credentials {
+  AccessKeyId: string;
+  SecretKey: string;
+  SessionToken: string;
 }
 
-type AwsCredentialsResponse = {
-    accessKeyId: string;
-    secretAccessKey: string;
-    sessionToken: string;
-    expiration: string;
+export interface RefreshTokenResponse {
+  username: string;
+  idToken: string;
+  identityPoolId: string;
+  userPoolId: string;
+  expiresIn: string;
+}
+
+export const refreshCredentials = async () => {
+  const response = await getRefreshToken();
+  return await getCredentialsByToken(response.idToken, response.identityPoolId, response.userPoolId);
 };
 
-type RefreshTokenResponse = { idToken: string };
+export const getRefreshToken = async (): Promise<RefreshTokenResponse> => {
+  try {
+    const response: RefreshTokenResponse = await httpApiPost(`auth/refreshToken`, {});
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
 
-export async function createRefreshingS3Client(): Promise<S3Client> {
-    return new S3Client({
-        region: 'eu-west-2',
-        credentials: async () => {
-            const expired = !currentCredentials || Date.now() > new Date(currentCredentials.expiration).getTime() - 5 * 60 * 1000;
+export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
+  const region = identityPoolId.substring(0, identityPoolId.indexOf(':'));
+  const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
 
-            if (!expired) {
-                return currentCredentials;
-            }
+  const cognitoIdentityClient = new CognitoIdentityClient({
+    region: cognitoRegion,
+  });
 
-            const tokenResponse = await fetch(vvfv, {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${currentRefreshToken}` }
-            });
+  const Logins: Record<string, string> = {
+    [`cognito-idp.${cognitoRegion}.amazonaws.com/${userPoolId}`]: idToken,
+  };
 
-            const tokenData = await tokenResponse.json() as RefreshTokenResponse;
+  const getIdCommand = new GetIdCommand({
+    IdentityPoolId: identityPoolId,
+    Logins,
+  });
 
-            if (!tokenData.idToken || typeof tokenData.idToken !== 'string') {
-                throw new Error('Invalid token data returned from refresh-token endpoint');
-            }
+  const { IdentityId } = await cognitoIdentityClient.send(getIdCommand);
 
-            currentIdToken = tokenData.idToken;
+  const getCredentialsCommand = new GetCredentialsForIdentityCommand({
+    IdentityId,
+    Logins,
+  });
 
-            const credentialResponse = await fetch(fdfd, {
-                headers: { Authorization: `Bearer ${currentIdToken}` }
-            })
+  const { Credentials } = await cognitoIdentityClient.send(getCredentialsCommand);
 
-            if (!credentialResponse.ok) {
-                throw new Error('Failed to fetch AWS credentials');
-            }
+  if (!Credentials || !Credentials.AccessKeyId || !Credentials.SecretKey || !Credentials.SessionToken) {
+    throw new Error('Credentials not found');
+  }
 
-            const newCredentials = await credentialResponse.json() as AwsCredentialsResponse;
+  const credentials: Credentials = {
+    AccessKeyId: Credentials.AccessKeyId,
+    SecretKey: Credentials.SecretKey,
+    SessionToken: Credentials.SessionToken,
+  };
 
-            currentCredentials = {
-                accessKeyId: newCredentials.accessKeyId,
-                secretAccessKey: newCredentials.secretAccessKey,
-                sessionToken: newCredentials.sessionToken,
-                expiration: newCredentials.expiration
-            };
-
-            return currentCredentials;
-        }
-    });
-}
+  return credentials;
+};
