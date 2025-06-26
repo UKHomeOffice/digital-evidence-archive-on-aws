@@ -30,17 +30,6 @@ export interface DownloadButtonProps {
   setDownloadProgressMap: React.Dispatch<React.SetStateAction<Record<string, FileDownloadProgressRow>>>;
 }
 
-function concatUint8Arrays(chunks: Uint8Array[]): Uint8Array {
-  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-  const result = new Uint8Array(totalLength);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return result;
-}
-
 function DownloadButton(props: DownloadButtonProps): JSX.Element {
   const { pushNotification } = useNotifications();
   const userActions = useGetCaseActions(props.caseId);
@@ -49,14 +38,9 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
   const [downloadReason, setDownloadReason] = useState('');
 
   async function downloadFilesHandler() {
-    // const downloadPromises = [];
-
     try {
       setDownloadReasonModalOpen(false);
       props.downloadInProgressCallback(true);
-
-      // let allFilesDownloaded = true;
-      // const startTime = performance.now();
 
       for (const file of props.selectedFiles) {
         try {
@@ -80,7 +64,6 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           }
 
           const response = await fetch(downloadResponse.downloadUrl);
-
           if (!response.ok || !response.body) {
             throw new Error('Download failed');
           }
@@ -88,23 +71,17 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           const handle = await (window as any).showSaveFilePicker({ suggestedName: file.fileName });
           const writable = await handle.createWritable();
           const reader = response.body.getReader();
-          const bufferQueue: Uint8Array[] = [];
-          let bufferedBytes = 0;
-          const BUFFER_LIMIT = 10 * 1024 * 1024; // 10 MB
-
-          let finished = false;
           const contentLengthHeader = response.headers.get('Content-Length');
           const contentLength = contentLengthHeader ? parseInt(contentLengthHeader, 10) : 0;
           let received = 0;
+          let finished = false;
 
           while (!finished) {
             const { done, value } = await reader.read();
             finished = done;
 
             if (value) {
-              bufferQueue.push(value);
-              bufferedBytes += value.length;
-
+              await writable.write(value);
               received += value.length;
 
               if (contentLength) {
@@ -127,16 +104,6 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
                 }));
               }
             }
-
-            if (bufferedBytes >= BUFFER_LIMIT) {
-              await writable.write(concatUint8Arrays(bufferQueue));
-              bufferQueue.length = 0;
-              bufferedBytes = 0;
-            }
-          }
-
-          if (bufferQueue.length) {
-            await writable.write(concatUint8Arrays(bufferQueue));
           }
 
           await writable.close();
@@ -186,7 +153,6 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
         confirmAction={downloadFilesHandler}
         confirmButtonText={commonLabels.downloadButton}
         cancelAction={() => {
-          // close modal and delete any reason inputted
           setDownloadReasonModalOpen(false);
           setDownloadReason('');
         }}
@@ -202,9 +168,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           props.selectedFiles.length === 0 ||
           props.downloadInProgress ||
           !canDownloadFiles(userActions?.data?.actions) ||
-          // inactive case can't download evidence, even if evidence are all active/not destroyed
           props.caseStatus !== CaseStatus.ACTIVE ||
-          // individual evidence download page needs special disallow case since the page requires a selectedFiles entry to load metadata
           (props.selectedFiles.length === 1 && props.selectedFiles[0].status !== CaseFileStatus.ACTIVE)
         }
       >

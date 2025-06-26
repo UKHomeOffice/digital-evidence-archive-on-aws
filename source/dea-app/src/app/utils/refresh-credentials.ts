@@ -1,5 +1,14 @@
-import {CognitoIdentityClient, GetCredentialsForIdentityCommand, GetIdCommand,} from '@aws-sdk/client-cognito-identity';
-import {httpApiPost} from '../helpers/apiHelper';
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
+import {
+  CognitoIdentityClient,
+  GetCredentialsForIdentityCommand,
+  GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
+import { httpApiPost } from '../helpers/apiHelper';
 
 export interface Credentials {
   AccessKeyId: string;
@@ -31,9 +40,9 @@ export const getRefreshToken = async (): Promise<RefreshTokenResponse> => {
 };
 
 export const getCredentialsByToken = async (
-    idToken: string,
-    identityPoolId: string,
-    userPoolId: string
+  idToken: string,
+  identityPoolId: string,
+  userPoolId: string
 ): Promise<Credentials> => {
   const region = identityPoolId.substring(0, identityPoolId.indexOf(':'));
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
@@ -45,14 +54,20 @@ export const getCredentialsByToken = async (
   };
 
   const { IdentityId } = await cognitoIdentityClient.send(
-      new GetIdCommand({ IdentityPoolId: identityPoolId, Logins })
+    new GetIdCommand({ IdentityPoolId: identityPoolId, Logins })
   );
 
   const { Credentials } = await cognitoIdentityClient.send(
-      new GetCredentialsForIdentityCommand({ IdentityId, Logins })
+    new GetCredentialsForIdentityCommand({ IdentityId, Logins })
   );
 
-  if (!Credentials || !Credentials.AccessKeyId || !Credentials.SecretKey || !Credentials.SessionToken || !Credentials.Expiration) {
+  if (
+    !Credentials ||
+    !Credentials.AccessKeyId ||
+    !Credentials.SecretKey ||
+    !Credentials.SessionToken ||
+    !Credentials.Expiration
+  ) {
     throw new Error('Incomplete credentials returned from Cognito');
   }
 
