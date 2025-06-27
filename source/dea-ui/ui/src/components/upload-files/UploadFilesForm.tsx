@@ -156,6 +156,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       console.log('Upload failed', e);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleProgress = (p: any) => {
       // console.log(p);
       setUploadedFiles((prevState) => {
