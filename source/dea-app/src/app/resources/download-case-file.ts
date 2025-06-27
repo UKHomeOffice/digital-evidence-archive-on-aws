@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { PassThrough } from 'node:stream';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
@@ -11,13 +12,11 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
-import { streamS3File } from '../utils/s3-multi-part-file-download';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
 export const downloadCaseFile: DEAGatewayProxyHandler = async (
   event,
   context,
-  /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
   /* istanbul ignore next */
@@ -25,13 +24,6 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
-
-  const idToken = event.headers?.authorization?.split(' ')[1];
-  const refreshToken = event.headers?.['x-refresh-token'];
-
-  if (!idToken || !refreshToken) {
-    throw new Error('Missing Authorization or refresh token');
-  }
 
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
@@ -42,24 +34,19 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   const bucket = datasetsProvider.bucketName;
   const key = retrievedCaseFile.fileS3Key;
 
-  const passThrough = new PassThrough();
-  await streamS3File(bucket, key, passThrough);
+  const s3Client = new S3Client({ region: process.env.AWS_REGION });
 
-  const chunks: Buffer[] = [];
-  for await (const chunk of passThrough) {
-    chunks.push(chunk);
-  }
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ResponseContentDisposition: `attachment; filename="${retrievedCaseFile.fileName}"`,
+  });
 
-  const finalBuffer = Buffer.concat(chunks);
+  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/octet-stream',
-      'Content-Disposition': `attachment; filename="${retrievedCaseFile.fileName}"`,
-      'Content-Length': finalBuffer.length.toString(),
-    },
-    body: finalBuffer.toString('base64'),
-    isBase64Encoded: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ downloadUrl: signedUrl }),
   };
 };
