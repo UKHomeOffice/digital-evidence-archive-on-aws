@@ -68,6 +68,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             throw new Error('Download failed');
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const handle = await (window as any).showSaveFilePicker({ suggestedName: file.fileName });
           const writable = await handle.createWritable();
           const reader = response.body.getReader();

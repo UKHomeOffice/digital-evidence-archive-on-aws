@@ -23,6 +23,7 @@ import {
   useGetCaseById,
   useGetFileDetailsById,
 } from '../../api/cases';
+import { DownloadStatus } from '../../common/enums';
 import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from '../../common/labels';
 import { FileDownloadProgressRow } from '../../common/types';
 import { formatFileSize } from '../../helpers/fileHelper';
@@ -30,7 +31,6 @@ import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
 import DownloadButton from '../buttons/DownloadButton';
 import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
-import { DownloadStatus } from '../../common/enums';
 
 export interface FileDetailsBodyProps {
   readonly caseId: string;
