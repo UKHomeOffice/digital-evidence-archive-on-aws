@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
