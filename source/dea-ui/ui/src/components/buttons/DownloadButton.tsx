@@ -63,6 +63,8 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
             continue;
           }
 
+          const downloadStartTime = performance.now();
+
           const response = await fetch(downloadResponse.downloadUrl);
           if (!response.ok || !response.body) {
             throw new Error('Download failed');
@@ -108,6 +110,11 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           }
 
           await writable.close();
+
+          const downloadDurationMs = performance.now() - downloadStartTime;
+          const minutes = Math.floor(downloadDurationMs / 60000);
+          const seconds = Math.floor((downloadDurationMs % 60000) / 1000);
+          console.log(`Downloaded ${file.fileName} in ${minutes} m ${seconds}s`);
 
           props.setDownloadProgressMap((prev: Record<string, FileDownloadProgressRow>) => ({
             ...prev,
