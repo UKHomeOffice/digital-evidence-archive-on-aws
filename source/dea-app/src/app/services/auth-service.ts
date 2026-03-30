@@ -249,8 +249,8 @@ export const exchangeAuthorizationCode = async (
 
   // Access token unused, removed for cookie size limit
   if (response.data.access_token && response.data.token_type) {
-    delete response.data.access_token;
     delete response.data.token_type;
+    delete response.data.access_token;
   }
 
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
