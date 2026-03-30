@@ -336,7 +336,7 @@ export const caseActionOptions = {
 
 export const breadcrumbLabels = {
   homePageLabel: 'Digital Evidence Archive',
-  createNewCaseLabel: 'Create case',
+  createNewCaseLabel: 'Create case TEST',
   caseLabel: 'Case',
   manageCaseLabel: 'Manage case',
   uploadFilesAndFoldersLabel: 'Upload folders and files',
