@@ -40,7 +40,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SANDBOX }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SANDBOX_HOMS_TEAM }}
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
       - name: cdk deploy
