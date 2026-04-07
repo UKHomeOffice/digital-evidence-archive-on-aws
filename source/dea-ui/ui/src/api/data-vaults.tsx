@@ -103,7 +103,7 @@ export const getDataVaultAuditCSV = async (dataVaultId: string): Promise<string>
   let maxRetries = 60;
   while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
-    await delay(1000);
+    await delay(3000);
     auditResponse = await retrieveDataVaultAuditResult(dataVaultId, auditId);
   }
 
@@ -131,7 +131,7 @@ export const getDataVaultFileAuditCSV = async (dataVaultId: string, fileId: stri
   let maxRetries = 60;
   while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
-    await delay(1000);
+    await delay(3000);
     auditResponse = await retrieveDataVaultFileAuditResult(dataVaultId, fileId, auditId);
   }
 
