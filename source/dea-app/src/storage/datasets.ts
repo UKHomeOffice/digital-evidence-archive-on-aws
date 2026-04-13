@@ -279,9 +279,9 @@ const handleUploadChecksum = async (
   s3Bucket: string,
   queueUrl: string
 ) => {
-  if (uploadedParts.length === 1) {
-    return uploadedParts[0].ChecksumSHA256;
-  }
+  // if (uploadedParts.length === 1) {
+  //   return uploadedParts[0].ChecksumSHA256;
+  // }
 
   // Add messsage to sqs for checksum calculation
   const sqsEntries: SendMessageBatchRequestEntry[] = [];
