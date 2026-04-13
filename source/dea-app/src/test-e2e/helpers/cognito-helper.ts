@@ -104,7 +104,8 @@ export default class CognitoHelper {
         });
         await this.userPoolProvider.send(command);
       } else {
-        throw new Error('Failed to create user with username: ' + user);
+        console.log('Failed to create user with username: ' + user);
+        return;
       }
     } catch (error) {
       console.log('Failed to create user ' + error);
@@ -127,7 +128,7 @@ export default class CognitoHelper {
   }
 
   public async doesUserExist(userName: string): Promise<boolean> {
-    return (await this.getUser(userName)) ? true : false;
+    return !!(await this.getUser(userName));
   }
 
   getClientSecret = async () => {
@@ -171,12 +172,10 @@ export default class CognitoHelper {
   }
 
   private generateSecretHash(clientId: string, clientSecret: string, userName: string): string {
-    const secretHash = crypto
+    return crypto
       .createHmac('SHA256', clientSecret)
       .update(userName + clientId)
       .digest('base64');
-
-    return secretHash;
   }
 
   public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {
@@ -298,11 +297,13 @@ function generatePassword(): string {
   const numberKeySet = '123456789';
   const specialKeySet = '!@#_';
 
-  // Need min length of 8, with one upper, one lower case letter, one number,
+  // Need min length of 14 (or higher), with one upper, one lower case letter, one number,
   // and a special symbol
   const unshuffledPassword: string[] = [];
-  // Add 2 from each keyset to make 8 characters
+  // Add 4 from each keyset to make 16 characters (covers most password policies)
   for (const keyset of [lowerCaseKeySet, upperCaseKeySet, numberKeySet, specialKeySet]) {
+    unshuffledPassword.push(getRandomCharacter(keyset));
+    unshuffledPassword.push(getRandomCharacter(keyset));
     unshuffledPassword.push(getRandomCharacter(keyset));
     unshuffledPassword.push(getRandomCharacter(keyset));
   }
