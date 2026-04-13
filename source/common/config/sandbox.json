@@ -1,6 +1,6 @@
 {
   "testStack": true,
-  "deaAllowedOrigins": "https://localhost:3001",
+  "deaAllowedOrigins": "https://localhost:3001,https://vb4apecede.execute-api.eu-west-2.amazonaws.com",
   "deletionAllowed": true,
   "isOneClick": false,
   "sourceIpValidation": false,
