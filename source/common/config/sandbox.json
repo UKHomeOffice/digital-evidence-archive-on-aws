@@ -456,6 +456,130 @@
           "method": "GET"
         }
       ]
+    },
+    {
+      "name": "AuthTestGroup",
+      "description": "used for auth e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "CreateCasesTestGroup",
+      "description": "used for create cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "GetCaseTestGroup",
+      "description": "used for get cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "GetMyCasesTestGroup",
+      "description": "used for get my cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        }
+      ]
     }
   ]
 }
