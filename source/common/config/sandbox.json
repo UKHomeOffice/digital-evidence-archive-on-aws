@@ -580,6 +580,11 @@
           "method": "GET"
         }
       ]
+    },
+    {
+      "name": "NoPermissionsGroup",
+      "description": "used for get my cases API e2e testing",
+      "endpoints": []
     }
   ]
 }
