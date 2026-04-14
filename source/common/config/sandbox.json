@@ -584,7 +584,12 @@
     {
       "name": "NoPermissionsGroup",
       "description": "used for get my cases API e2e testing",
-      "endpoints": []
+      "endpoints": [
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        }
+      ]
     }
   ]
 }
