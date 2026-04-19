@@ -129,10 +129,15 @@ export const myCaseFromEntityAndActionsMap = (
 };
 
 export const sessionFromEntity = (sessionEntity: SessionType): DeaSession => {
+  const ttl =
+    sessionEntity.ttl instanceof Date
+      ? Math.floor(sessionEntity.ttl.getTime() / 1000)
+      : Number(sessionEntity.ttl);
+
   return {
     userUlid: sessionEntity.userUlid,
     tokenId: sessionEntity.tokenId,
-    ttl: sessionEntity.ttl,
+    ttl,
     isRevoked: sessionEntity.isRevoked,
     created: sessionEntity.created,
     updated: sessionEntity.updated,

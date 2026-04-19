@@ -33,8 +33,8 @@ export interface UploaderOptions {
   threads?: number;
   timeout?: number;
   uploadDto: InitiateCaseFileUploadDTO;
-  onProgressFn: (payload: any) => void;
-  onErrorFn: (payload: any) => void;
+  onProgressFn: (payload: { fileName: string; part: number; total: number; percentage: number }) => void;
+  onErrorFn: (payload: unknown) => void;
   onCompleteFn: (payload: UploaderCompleteEvent) => void;
 }
 
@@ -53,12 +53,17 @@ export class MyUploader {
   private aborted: boolean;
 
   private readonly uploadDto: InitiateCaseFileUploadDTO;
-  private readonly onProgressFn: (payload: any) => void;
-  private readonly onErrorFn: (payload: any) => void;
+  private readonly onProgressFn: (payload: {
+    fileName: string;
+    part: number;
+    total: number;
+    percentage: number;
+  }) => void;
+  private readonly onErrorFn: (payload: unknown) => void;
   private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
 
   private uploadedSize: number;
-  private readonly progressCache: any;
+  private readonly progressCache: Record<number, number>;
   private readonly uploadedParts: Array<UploaderUploadedPart>;
   private readonly uploadId: string;
   private readonly fileKey: string;
@@ -103,7 +108,7 @@ export class MyUploader {
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
 
       console.log(`File ${this.file.name} uploaded successfully in ${totalTimeInMinsSecs}.`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const endTime = performance.now(); // Capture time if upload fails
       const timeTaken = (endTime - uploaderStartTime) / 1000;
       const totalTimeInMinsSecs = this.convertSecondsToMinutes(timeTaken);
@@ -249,7 +254,7 @@ export class MyUploader {
     return initiatedCaseFile.presignedUrls[0];
   }
 
-  handleProgress(part: number, event: any) {
+  handleProgress(part: number, event: AxiosProgressEvent) {
     const dateString = sessionStorage.getItem('tokenExpirationTime');
 
     if (dateString) {
@@ -271,8 +276,8 @@ export class MyUploader {
       if (eventObj.type === 'error') {
         console.log('Error detected...', part, '-', event);
       }
-      if (eventObj.type === 'progress' || event.type === 'error' || event.type === 'abort') {
-        this.progressCache[part] = event.loaded;
+      if (eventObj.type === 'progress' || eventObj.type === 'error' || eventObj.type === 'abort') {
+        this.progressCache[part] = event.loaded ?? 0;
       }
 
       if (eventObj.type === 'uploaded') {
@@ -297,7 +302,7 @@ export class MyUploader {
     }
   }
 
-  async complete(error?: any) {
+  async complete(error?: unknown) {
     console.log(`Completing uploads.....UploadId:${this.uploadId}, FileKey: ${this.fileKey}`);
     if (error && !this.aborted) {
       console.log('Completing Error and not aborted...');

@@ -8,8 +8,6 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
-const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200; // 12 hours (e.g. expiry of the refresh token)
-
 export enum AuditType {
   CASE = 'CASE',
   CASEFILE = 'CASEFILE',
@@ -131,10 +129,7 @@ export const DeaSchema = {
       tokenId: { type: String, required: true, unique: true },
       ttl: {
         ttl: true,
-        type: Number,
-        default: () => {
-          return Math.floor(Date.now() / 1000 + DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS);
-        },
+        type: Date,
         required: true,
       },
       isRevoked: { type: Boolean, required: true },

@@ -90,7 +90,7 @@ export async function cleanupCaseAndFiles(
   const folders: Set<string> = new Set();
   folders.add('/');
   while (folders.size > 0) {
-    const filePath: string = folders.values().next().value;
+    const filePath: string = folders.values().next().value!;
     folders.delete(filePath);
     // List files
     const listCaseFilesResponse = await listCaseFilesSuccess(baseUrl, idToken, creds, caseUlid, filePath);

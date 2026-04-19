@@ -30,10 +30,10 @@ export function addLegalHoldInfrastructure(
     memorySize: 512,
     tracing: Tracing.ACTIVE,
     timeout: Duration.seconds(60),
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_22_X,
     handler: 'handler',
     entry: path.join(__dirname, '../../src/handlers/put-legal-hold-for-created-s3-object-handler.ts'),
-    depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
+    depsLockFilePath: path.join(__dirname, '../../pnpm-lock.yaml'),
     environment: {
       NODE_OPTIONS: '--enable-source-maps',
     },

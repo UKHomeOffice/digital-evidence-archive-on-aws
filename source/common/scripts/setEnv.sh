@@ -120,3 +120,11 @@ export IDENTITY_STORE_ACCOUNT
 HAS_AWS_MANAGED_ACTIVE_DIRECTORY=false
 export HAS_AWS_MANAGED_ACTIVE_DIRECTORY
 unset ADMIN_ROLE_ARN
+
+# Jest may execute ESM dependencies via vm.Module; keep this flag enabled for test runs.
+VM_MODULES_FLAG="--experimental-vm-modules"
+case " ${NODE_OPTIONS:-} " in
+  *" ${VM_MODULES_FLAG} "*) ;;
+  *) export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }${VM_MODULES_FLAG}" ;;
+esac
+

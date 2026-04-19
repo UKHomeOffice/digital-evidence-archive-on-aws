@@ -520,12 +520,12 @@ export class DeaRestApiConstruct extends Construct {
       memorySize: 2048,
       role: role,
       timeout: Duration.seconds(20),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_22_X,
       handler: 'handler',
       tracing: Tracing.PASS_THROUGH,
       // nosemgrep
       entry: path.join(__dirname, pathToSource),
-      depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
+      depsLockFilePath: path.join(__dirname, '../../pnpm-lock.yaml'),
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
         STAGE: deaConfig.stage(),
