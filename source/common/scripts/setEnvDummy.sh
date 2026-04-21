@@ -19,3 +19,11 @@ export IDENTITY_STORE_REGION=us-east-1
 export IDENTITY_STORE_ACCOUNT="555555555555"
 export HAS_AWS_MANAGED_ACTIVE_DIRECTORY=false
 unset ADMIN_ROLE_ARN
+
+# Keep Jest compatible with ESM dependencies under Node by enabling vm modules.
+VM_MODULES_FLAG="--experimental-vm-modules"
+case " ${NODE_OPTIONS:-} " in
+  *" ${VM_MODULES_FLAG} "*) ;;
+  *) export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }${VM_MODULES_FLAG}" ;;
+esac
+

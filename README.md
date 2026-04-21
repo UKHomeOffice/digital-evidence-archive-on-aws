@@ -48,7 +48,7 @@ You will need npm and node installed on your machine:
 
 Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
 NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs".
-Additionally we currently require Node 18 LTS (lts/hydrogen). You can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file.
+Additionally we currently require the Node.js version defined in `.nvmrc` (`lts/krypton`). You can automatically use our recommended version with the `nvm install` command.
 
 *For Mac/Linux*
 

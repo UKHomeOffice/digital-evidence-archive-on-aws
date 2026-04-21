@@ -9,6 +9,11 @@ import { DeaSession, DeaSessionInput } from '../models/session';
 import { isDefined } from './persistence-helpers';
 import { SessionModelRepositoryProvider } from './schema/entities';
 
+const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200;
+
+const getSessionExpiryDate = (): Date =>
+  new Date(Date.now() + DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS * 1000);
+
 export const listSessionsForUser = async (
   userUlid: string,
   repositoryProvider: SessionModelRepositoryProvider
@@ -37,6 +42,7 @@ export const createSession = async (
 ): Promise<DeaSession> => {
   const newEntity = await repositoryProvider.SessionModel.create({
     ...deaSession,
+    ttl: getSessionExpiryDate(),
     isRevoked: false,
   });
 
@@ -47,9 +53,11 @@ export const updateSession = async (
   deaSession: DeaSession,
   repositoryProvider: SessionModelRepositoryProvider
 ): Promise<DeaSession> => {
+  const { ttl: _ttl, ...sessionWithoutTtl } = deaSession;
+
   const newEntity = await repositoryProvider.SessionModel.update(
     {
-      ...deaSession,
+      ...sessionWithoutTtl,
     },
     {
       // Normally, update() will return the updated item automatically,

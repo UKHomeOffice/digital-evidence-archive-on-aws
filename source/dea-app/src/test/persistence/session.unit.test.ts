@@ -72,7 +72,9 @@ describe('session persistence', () => {
     expect(session.created!.getTime()).toBeLessThan(new Date().getTime());
     // Check that the TTL was set to an hour from now
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(session.ttl).toBe(Math.floor(session.created!.getTime() / 1000) + 43200);
+    expect(
+      Math.abs(session.ttl - (Math.floor(session.created!.getTime() / 1000) + 43200))
+    ).toBeLessThanOrEqual(1);
     expect(session).toStrictEqual(result);
   });
 
@@ -136,6 +138,9 @@ describe('session persistence', () => {
       repositoryProvider
     );
     expect(session.isRevoked).toBeFalsy();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const expectedSessionTtl = Math.floor(session.created!.getTime() / 1000) + 43200;
+    expect(Math.abs(session.ttl - expectedSessionTtl)).toBeLessThanOrEqual(1);
 
     // Update Session
     await updateSession(
@@ -152,7 +157,7 @@ describe('session persistence', () => {
     const updatedSession = updatedSessions[0];
     expect(updatedSession.userUlid).toStrictEqual(session.userUlid);
     expect(updatedSession.tokenId).toStrictEqual(session.tokenId);
-    expect(updatedSession.ttl).toEqual(session.ttl);
+    expect(Math.abs(updatedSession.ttl - expectedSessionTtl)).toBeLessThanOrEqual(1);
     expect(updatedSession.created).toBeDefined();
     expect(updatedSession.created).toEqual(session.created);
     expect(updatedSession.isRevoked).toBeTruthy();

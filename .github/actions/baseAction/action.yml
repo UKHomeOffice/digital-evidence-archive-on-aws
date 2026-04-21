@@ -9,10 +9,10 @@ description: Generic base action used by workflows - Cache rush and pnpm; rush i
 runs:
   using: "composite"
   steps:
-    - name: Use Node.js 18.x
-      uses: actions/setup-node@v3
+    - name: Use Node.js 24.x
+      uses: actions/setup-node@v4
       with:
-        node-version: '18.20.0'
+        node-version: '24.15.0'
 
     - name: Cache Rush
       uses: actions/cache@v4
@@ -38,7 +38,7 @@ runs:
     - name: install pnpm
       uses: pnpm/action-setup@v4.0.0
       with:
-        version: 7.13.0
+        version: 10.33.0
 
     - name: Rush Update
       shell: bash

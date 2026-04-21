@@ -151,12 +151,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       PartNumber: index + 1,
     }));
 
-    const handleError = (e: Error) => {
+    const handleError = (e: unknown) => {
       updateFileProgress(activeFileUpload.file, UploadStatus.failed);
       console.log('Upload failed', e);
     };
 
-    const handleProgress = (p: any) => {
+    const handleProgress = (p: { fileName: string; percentage: number }) => {
       // console.log(p);
       setUploadedFiles((prevState) => {
         // Map over the previous state to update the specific file's uploadPercentage
@@ -164,7 +164,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           if (file.fileName === p['fileName']) {
             return {
               ...file,
-              uploadPercentage: p['percentage'], // Update the uploadPercentage
+              uploadPercentage: String(p['percentage']), // Update the uploadPercentage
             };
           }
           return file; // Return other files unchanged
