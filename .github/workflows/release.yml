@@ -22,18 +22,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@v3.82.1
+        uses: trufflesecurity/trufflehog@v3.95.2
         with:
-          extra_args: --only-verified                      
+          extra_args: --only-verified
       - name: Install
         uses: ./.github/actions/baseAction
       - name: Rush Build
         run: |
           node common/scripts/install-run-rush.js build
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TEST }}
           role-session-name: GITHUBACTIONSESSION
@@ -60,14 +60,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: Install
         uses: ./.github/actions/baseAction
       - name: Rush Build
         run: |
           node common/scripts/install-run-rush.js build
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_PROD }}
           role-session-name: GITHUBACTIONSESSION

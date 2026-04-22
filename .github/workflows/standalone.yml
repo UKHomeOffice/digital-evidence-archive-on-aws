@@ -27,9 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@v3.82.1
+        uses: trufflesecurity/trufflehog@v3.95.2
         with:
           extra_args: --only-verified
       - name: Install
@@ -38,7 +38,7 @@ jobs:
         run: |
           node common/scripts/install-run-rush.js build
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SANDBOX_HOMS_TEAM }}
           role-session-name: GITHUBACTIONSESSION
