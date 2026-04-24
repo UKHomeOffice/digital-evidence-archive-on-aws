@@ -213,6 +213,7 @@ export class DeaEventHandlers extends Construct {
       },
       deadLetterQueue: dlq ? dlq : undefined,
       deadLetterQueueEnabled: dlq ? true : false,
+      logRetention: deaConfig.retentionDays(),
     };
 
     const lambda = new NodejsFunction(this, id, lambdaProps);

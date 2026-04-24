@@ -690,6 +690,7 @@ export class DeaAuth extends Construct {
         minify: true,
         sourceMap: true,
       },
+      logRetention: deaConfig.retentionDays(),
     });
 
     const identityStoreAccountId = deaConfig.idpMetadata()?.identityStoreAccountId ?? Aws.ACCOUNT_ID;

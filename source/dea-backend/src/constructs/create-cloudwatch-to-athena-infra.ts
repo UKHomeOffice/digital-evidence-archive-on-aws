@@ -159,6 +159,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         minify: true,
         sourceMap: true,
       },
+      logRetention: deaConfig.retentionDays(),
     });
 
     props.opsDashboard?.addMetricFilterAlarmForLogGroup(

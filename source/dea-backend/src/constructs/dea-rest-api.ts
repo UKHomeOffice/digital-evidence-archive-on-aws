@@ -539,6 +539,7 @@ export class DeaRestApiConstruct extends Construct {
         minify: true,
         sourceMap: true,
       },
+      logRetention: deaConfig.retentionDays(),
     });
 
     lambda.addPermission('InvokeLambdaPermission', {

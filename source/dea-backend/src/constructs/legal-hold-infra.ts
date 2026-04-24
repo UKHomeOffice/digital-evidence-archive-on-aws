@@ -13,6 +13,7 @@ import { Bucket, EventType, NotificationKeyFilter } from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -42,6 +43,7 @@ export function addLegalHoldInfrastructure(
       minify: true,
       sourceMap: true,
     },
+    logRetention: deaConfig.retentionDays(),
   });
 
   opsDashboard?.addAuditLambdaErrorAlarm(objectLockHandler, 'ObjectLockLambda');
