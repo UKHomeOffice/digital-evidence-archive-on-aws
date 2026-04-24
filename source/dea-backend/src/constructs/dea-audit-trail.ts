@@ -164,13 +164,13 @@ export class DeaAuditTrail extends Construct {
     // that blocks access to the DDB table and the S3 evidence bucket
     // and put in the implementation guide that they can add this to the
     // IAM Roles for administrators/staff for the AWS account
-    const dataResources = [
-      {
-        type: 'AWS::S3::Object',
-        // data plane events for the datasets bucket only
-        values: [`${deaDatasetsBucket.bucketArn}/`],
-      },
-    ];
+    // const dataResources: unknown = [
+    //   {
+    //     type: 'AWS::S3::Object',
+    //     // data plane events for the datasets bucket only
+    //     values: [`${deaDatasetsBucket.bucketArn}/`],
+    //   },
+    // ];
     const partition = deaConfig.partition();
 
     const includeDynamoDBDataPlaneEvents =
@@ -179,17 +179,17 @@ export class DeaAuditTrail extends Construct {
       deaConfig.includeDynamoDataPlaneEventsInTrail();
 
     if (includeDynamoDBDataPlaneEvents) {
-      dataResources.push({
-        type: 'AWS::DynamoDB::Table',
-        // data plane events for the DEA dynamo table
-        values: [deaTableArn],
-      });
+      // dataResources.push({
+      //   type: 'AWS::DynamoDB::Table',
+      //   // data plane events for the DEA dynamo table
+      //   values: [deaTableArn],
+      // });
 
-      dataResources.push({
-        type: 'AWS::Lambda::Function',
-        // data plane events for our lambdas
-        values: ['arn:aws:lambda'],
-      });
+      // dataResources.push({
+      //   type: 'AWS::Lambda::Function',
+      //   // data plane events for our lambdas
+      //   values: ['arn:aws:lambda'],
+      // });
     }
 
     const cfnTrail = trail.node.defaultChild;
@@ -197,8 +197,8 @@ export class DeaAuditTrail extends Construct {
       cfnTrail.eventSelectors = [
         {
           includeManagementEvents: true,
-          readWriteType: ReadWriteType.ALL,
-          dataResources,
+          readWriteType: ReadWriteType.WRITE_ONLY,
+          dataResources: []
         },
       ];
     }
