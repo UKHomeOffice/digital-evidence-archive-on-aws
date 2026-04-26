@@ -222,6 +222,7 @@ export const completeUploadForCaseFile = async (
   datasetsProvider: DatasetsProvider
 ): Promise<string | undefined> => {
   let uploadedParts: Part[] = [];
+  let uploadedBytes = 0;
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
   const s3Key = getS3KeyForCaseFile(caseFile);
@@ -238,6 +239,10 @@ export const completeUploadForCaseFile = async (
       })
     );
     if (listPartsResponse !== undefined && listPartsResponse.Parts) {
+      uploadedBytes += listPartsResponse.Parts.reduce(
+        (total, part) => total + (typeof part.Size === 'number' ? part.Size : 0),
+        0
+      );
       uploadedParts = uploadedParts.concat(
         listPartsResponse.Parts.map(function (part) {
           return { ETag: part.ETag, PartNumber: part.PartNumber, ChecksumSHA256: part.ChecksumSHA256 };
@@ -250,8 +255,20 @@ export const completeUploadForCaseFile = async (
 
   logger.info('Collected all parts. Marking upload as completed.', {
     collectedParts: uploadedParts.length,
+    uploadedBytes,
     s3Key,
   });
+
+  if (uploadedBytes === 0) {
+    await datasetsProvider.s3Client.send(
+      new AbortMultipartUploadCommand({
+        Bucket: datasetsProvider.bucketName,
+        Key: s3Key,
+        UploadId: caseFile.uploadId,
+      })
+    );
+    throw new Error('Cannot complete upload for an empty file.');
+  }
 
   const uploadResponse = await datasetsProvider.s3Client.send(
     new CompleteMultipartUploadCommand({
