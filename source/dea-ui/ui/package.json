@@ -47,6 +47,7 @@
     "cdkunit:only:u": "echo ':)'",
     "test:sonar": "rushx test:only",
     "unit:only": "jest --ci '.*/*unit.test.*'",
+    "unit:debug:single": "jest --ci '.*/upload-files.unit.test.*'",
     "version:major": "npm version major",
     "version:minor": "npm version minor",
     "version:patch": "npm version patch"

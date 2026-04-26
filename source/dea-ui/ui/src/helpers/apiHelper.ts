@@ -18,6 +18,30 @@ if (typeof window !== 'undefined' && !urlBase) {
 // if using custom domain thru cdk get's the target aws region. Otherwise set undefined to allow automatic resolution.
 const region = isUsingCustomDomain ? process.env.NEXT_PUBLIC_AWS_REGION : undefined;
 
+const getResponseErrorMessage = (error: AxiosError): string | undefined => {
+  const responseData = error.response?.data;
+
+  if (typeof responseData === 'string' && responseData.trim().length > 0) {
+    return responseData;
+  }
+
+  if (responseData && typeof responseData === 'object') {
+    if ('message' in responseData && typeof responseData.message === 'string') {
+      return responseData.message;
+    }
+
+    if ('error' in responseData && typeof responseData.error === 'string') {
+      return responseData.error;
+    }
+  }
+
+  if (error.message) {
+    return error.message;
+  }
+
+  return undefined;
+};
+
 const handleErrors = async (error: Error) => {
   console.log(error);
 
@@ -34,9 +58,10 @@ const handleErrors = async (error: Error) => {
       window.location.assign(logoutUrl);
     }
 
-    if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+    const errorMessage = getResponseErrorMessage(error);
+    if (errorMessage) {
       console.log(error.response?.data);
-      throw new Error(error.response?.data);
+      throw new Error(errorMessage);
     }
   }
   throw new Error('there was an error while trying to retrieve data');

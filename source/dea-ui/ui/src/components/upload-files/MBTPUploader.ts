@@ -35,7 +35,7 @@ export interface UploaderOptions {
   uploadDto: InitiateCaseFileUploadDTO;
   onProgressFn: (payload: { fileName: string; part: number; total: number; percentage: number }) => void;
   onErrorFn: (payload: unknown) => void;
-  onCompleteFn: (payload: UploaderCompleteEvent) => void;
+  onCompleteFn: (payload: UploaderCompleteEvent) => void | Promise<void>;
 }
 
 const MAX_RETRIES = 5;
@@ -60,7 +60,7 @@ export class MyUploader {
     percentage: number;
   }) => void;
   private readonly onErrorFn: (payload: unknown) => void;
-  private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void;
+  private readonly onCompleteFn: (payload: UploaderCompleteEvent) => void | Promise<void>;
 
   private uploadedSize: number;
   private readonly progressCache: Record<number, number>;
@@ -316,7 +316,7 @@ export class MyUploader {
     }
 
     try {
-      this.onCompleteFn({
+      await this.onCompleteFn({
         uploadId: this.uploadId,
         fileKey: this.fileKey,
         parts: this.uploadedParts,
