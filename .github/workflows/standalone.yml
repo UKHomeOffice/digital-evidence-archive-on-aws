@@ -43,8 +43,14 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SANDBOX_HOMS_TEAM }}
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: cdk deploy
+
+      - name: CDK Diff
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER_SANDBOX}}/${{secrets.AWS_REGION}}
+          npm run cdk diff -- --all
+
+      - name: cdk deploy
+        run: |
+          cd dea-main
           npm run cdk deploy
