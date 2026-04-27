@@ -16,8 +16,8 @@ jobs:
   deploy:
     env:
       CONFIGNAME: 'sandbox'
-      STAGE: 'cfideasandbox'
-      DOMAIN_PREFIX: 'cfideasandbox'
+      STAGE: 'test-log-retention'
+      DOMAIN_PREFIX: 'testlogretention'
     environment: dea-sandbox
     defaults:
       run:
