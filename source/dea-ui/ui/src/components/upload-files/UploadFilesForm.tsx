@@ -25,6 +25,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
@@ -37,6 +38,7 @@ interface FileUploadProgressRow {
   fileSizeBytes: number;
   relativePath: string;
   uploadPercentage: string;
+  errorMessage?: string;
 }
 
 enum UploadStatus {
@@ -66,6 +68,50 @@ export const ONE_MB = 1024 * 1024;
 const MAX_PARALLEL_PART_UPLOADS = 10;
 const MAX_PARALLEL_UPLOADS = 2; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
+function fetchFilesWithStatus(files: DownloadDTO[], status: CaseFileStatus): string {
+  return files
+    .filter((file) => file.status === status)
+    .map((file) => file.filePath + file.fileName)
+    .join(',');
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  if (typeof error === 'string' && error.length > 0) {
+    return error;
+  }
+  return 'The upload could not be completed.';
+}
+
+function convertSecondsToMinutes(seconds: number): string {
+  const minutes = Math.floor(seconds / 60); // Get whole minutes
+  const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
+  return `${minutes}m ${remainingSeconds}s`;
+}
+
+function fetchCommonFiles(fileNames: string[], data: DownloadDTO[]): DownloadDTO[] {
+  const set1 = new Set(fileNames);
+  const set2 = new Set(data);
+  return [...new Set([...set2].filter((X) => set1.has(X.filePath + X.fileName)))];
+}
+
+function applyProgressUpdate(
+  rows: FileUploadProgressRow[],
+  progress: { fileName: string; percentage: number }
+): FileUploadProgressRow[] {
+  return rows.map((file) => {
+    if (file.fileName === progress.fileName) {
+      return {
+        ...file,
+        uploadPercentage: String(progress.percentage),
+      };
+    }
+    return file;
+  });
+}
+
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileUploadProgressRow[]>([]);
@@ -75,6 +121,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const router = useRouter();
   const { data } = useListCaseFiles(props.caseId, props.filePath);
+  const { pushNotification } = useNotifications();
 
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
   const [confirmDeletedFilesOverwrite, setConfirmDeletedFilesOverwrite] = useState(false);
@@ -92,8 +139,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         ...uploadedFiles,
         ...selectedFiles.map((file) => ({
           fileName: file.name,
-          fileSizeBytes: Math.max(file.size, 1),
-          status: UploadStatus.progress,
+          fileSizeBytes: file.size,
+          status: file.size === 0 ? UploadStatus.failed : UploadStatus.progress,
           relativePath: file.relativePath,
           uploadPercentage: '0',
         })),
@@ -116,14 +163,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
       console.log(`All files uploaded successfully in ${totalTimeInMinsSecs}.`);
     }
-  }
-
-  function convertSecondsToMinutes(seconds: number): string {
-    const minutes = Math.floor(seconds / 60); // Get whole minutes
-    const remainingSeconds = Math.floor(seconds % 60); // Get remaining seconds
-
-    // Format the output as "minutes:seconds"
-    return `${minutes}m ${remainingSeconds}s`;
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
@@ -152,33 +191,19 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }));
 
     const handleError = (e: unknown) => {
-      updateFileProgress(activeFileUpload.file, UploadStatus.failed);
+      reportUploadFailure(activeFileUpload.file, e);
       console.log('Upload failed', e);
     };
 
     const handleProgress = (p: { fileName: string; percentage: number }) => {
-      // console.log(p);
-      setUploadedFiles((prevState) => {
-        // Map over the previous state to update the specific file's uploadPercentage
-        return prevState.map((file) => {
-          if (file.fileName === p['fileName']) {
-            return {
-              ...file,
-              uploadPercentage: String(p['percentage']), // Update the uploadPercentage
-            };
-          }
-          return file; // Return other files unchanged
-        });
-      });
+      setUploadedFiles((prevState) => applyProgressUpdate(prevState, p));
     };
 
-    const handleComplete = (uce: UploaderCompleteEvent) => {
-      completeUpload({
+    const handleComplete = async (_uce: UploaderCompleteEvent) => {
+      await completeUpload({
         caseUlid: props.caseId,
         ulid: initiatedCaseFile.ulid,
         uploadId: initiatedCaseFile.uploadId,
-      }).catch((e) => {
-        console.log(e, uce.uploadId);
       });
       updateFileProgress(activeFileUpload.file, UploadStatus.complete);
     };
@@ -203,7 +228,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
-    const fileSizeBytes = Math.max(selectedFile.size, 1);
+    if (selectedFile.size === 0) {
+      reportUploadFailure(selectedFile, 'File is empty. Please select a file larger than 0 bytes.');
+      return;
+    }
+
+    const fileSizeBytes = selectedFile.size;
     // Trying to use small chunk size (50MB) to reduce memory use.
     // Maximum object size	5 TiB
     // Maximum number of parts per upload	10,000
@@ -231,23 +261,40 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       };
       await uploadFilePartsAndComplete(activeFileUpload);
     } catch (e) {
-      updateFileProgress(selectedFile, UploadStatus.failed);
+      reportUploadFailure(selectedFile, e);
       console.log('Upload failed', e);
     }
   }
 
-  function updateFileProgress(selectedFile: FileWithPath, status: UploadStatus) {
+  function reportUploadFailure(selectedFile: FileWithPath, error: unknown) {
+    const errorMessage = getErrorMessage(error);
+    updateFileProgress(selectedFile, UploadStatus.failed, errorMessage);
+    pushNotification('error', `${selectedFile.name}: ${errorMessage}`);
+  }
+
+  function updateFileProgress(selectedFile: FileWithPath, status: UploadStatus, errorMessage?: string) {
     setUploadedFiles((prev) => {
       const newList = [...prev];
+      const canUpdateStatus = (currentStatus: UploadStatus) => {
+        if (status === UploadStatus.failed) {
+          return currentStatus !== UploadStatus.failed;
+        }
+        return currentStatus === UploadStatus.progress;
+      };
+
       const fileToUpdateStatus = newList.find(
         (file) =>
           file.fileName === selectedFile.name &&
           file.relativePath === selectedFile.relativePath &&
-          file.status === UploadStatus.progress
+          canUpdateStatus(file.status)
       );
 
       if (fileToUpdateStatus) {
         fileToUpdateStatus.status = status;
+        fileToUpdateStatus.errorMessage = status === UploadStatus.failed ? errorMessage : undefined;
+        if (status === UploadStatus.complete) {
+          fileToUpdateStatus.uploadPercentage = '100';
+        }
       }
       return newList;
     });
@@ -270,11 +317,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       case UploadStatus.failed: {
         return (
           <Box>
-            <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
-              <Icon name="status-negative" variant="error" />
-              <span>
-                {uploadProgress.status} | {uploadProgress.uploadPercentage}%
-              </span>
+            <SpaceBetween direction="vertical" size="xxs" key={uploadProgress.fileName}>
+              <SpaceBetween direction="horizontal" size="xs">
+                <Icon name="status-negative" variant="error" />
+                <span>
+                  {uploadProgress.status} | {uploadProgress.uploadPercentage}%
+                </span>
+              </SpaceBetween>
+              {uploadProgress.errorMessage ? <span>{uploadProgress.errorMessage}</span> : null}
             </SpaceBetween>
           </Box>
         );
@@ -307,7 +357,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   function onDoneHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push(`/case-detail?caseId=${props.caseId}`);
+    void router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   function validateFields(): boolean {
@@ -340,19 +390,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         setConfirmDeletedFilesOverwrite(true);
       }
     }
-  }
-
-  function fetchFilesWithStatus(files: DownloadDTO[], status: CaseFileStatus): string {
-    return files
-      .filter((file) => file.status === status)
-      .map((file) => file.filePath + file.fileName)
-      .join(',');
-  }
-
-  function fetchCommonFiles(fileNames: string[], data: DownloadDTO[]): DownloadDTO[] {
-    const set1 = new Set(fileNames);
-    const set2 = new Set(data);
-    return [...new Set([...set2].filter((X) => set1.has(X.filePath + X.fileName)))];
   }
 
   function showConfirmUploadModal() {
@@ -409,8 +446,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               {fileOperationsLabels.modalBodyOverwriteWarn}
               <br />
               <ol>
-                {overwriteFileList.split(',').map((fileName, index) => (
-                  <li key={index}>{fileName}</li>
+                {overwriteFileList.split(',').map((fileName) => (
+                  <li key={fileName}>{fileName}</li>
                 ))}
               </ol>
             </>
@@ -421,8 +458,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               {fileOperationsLabels.modalBodyOverwriteDeleteWarn}
               <br />
               <ol>
-                {deleteOverwriteFileList.split(',').map((fileName, index) => (
-                  <li key={index}>{fileName}</li>
+                {deleteOverwriteFileList.split(',').map((fileName) => (
+                  <li key={fileName}>{fileName}</li>
                 ))}
               </ol>
             </>
@@ -482,7 +519,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           iconAlign="right"
           data-testid="upload-file-submit"
           onClick={() => {
-            void showConfirmUploadModal();
+            showConfirmUploadModal();
           }}
           disabled={uploadInProgress || !validateFields()}
         >

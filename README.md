@@ -1,6 +1,8 @@
 # Digital Evidence Archive
 
-Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest evidence data to aid digital data management
+Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest evidence data to aid digital data management.
+
+For development guidelines, please refer to [DEV_GUIDELINES.md](DEV_GUIDELINES.md).
 
 # Code Coverage
 

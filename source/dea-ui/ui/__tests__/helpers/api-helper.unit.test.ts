@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosHeaders } from 'axios';
 import * as apiHelper from '../../src/helpers/apiHelper';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = jest.mocked(axios);
 
 describe('api helper', () => {
   it('catches errors', async () => {
@@ -11,6 +11,23 @@ describe('api helper', () => {
 
     await expect(apiHelper.httpApiGet('any', {})).rejects.toThrow(
       'there was an error while trying to retrieve data'
+    );
+  });
+
+  it('returns the backend response message when the API includes one', async () => {
+    mockedAxios.create.mockReturnThis();
+    const axiosError = new AxiosError('Request failed', 'ERR_BAD_RESPONSE');
+    axiosError.response = {
+      status: 500,
+      statusText: 'Internal Server Error',
+      data: 'Cannot complete upload for an empty file.',
+      headers: new AxiosHeaders(),
+      config: { headers: new AxiosHeaders() },
+    };
+    mockedAxios.request.mockRejectedValue(axiosError);
+
+    await expect(apiHelper.httpApiPut('any', {})).rejects.toThrow(
+      'Cannot complete upload for an empty file.'
     );
   });
 
