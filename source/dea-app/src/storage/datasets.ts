@@ -164,8 +164,7 @@ export const getTemporaryCredentialsForUpload = async (
   const command = new AssumeRoleCommand(input);
   const federationTokenResponse = await stsClient.send(command);
   if (
-    !federationTokenResponse.Credentials ||
-    !federationTokenResponse.Credentials.AccessKeyId ||
+    !federationTokenResponse.Credentials?.AccessKeyId ||
     !federationTokenResponse.Credentials.SecretAccessKey ||
     !federationTokenResponse.Credentials.SessionToken
   ) {
@@ -239,7 +238,7 @@ export const completeUploadForCaseFile = async (
         UploadId: caseFile.uploadId,
       })
     );
-    if (listPartsResponse !== undefined && listPartsResponse.Parts) {
+    if (listPartsResponse?.Parts) {
       uploadedBytes += listPartsResponse.Parts.reduce(
         (total, part) => total + (typeof part.Size === 'number' ? part.Size : 0),
         0
@@ -297,10 +296,6 @@ const handleUploadChecksum = async (
   s3Bucket: string,
   queueUrl: string
 ) => {
-  // if (uploadedParts.length === 1) {
-  //   return uploadedParts[0].ChecksumSHA256;
-  // }
-
   // Add messsage to sqs for checksum calculation
   const sqsEntries: SendMessageBatchRequestEntry[] = [];
   for (let currentPart = 1; currentPart <= uploadedParts.length; ++currentPart) {
@@ -458,7 +453,7 @@ export const getMultiPartPresignedUrlForDownload = async (
   const partSize = Math.max(fileSize / 10_000, MAX_CHUNK_SIZE_NUMBER_ONLY * ONE_MB);
   const parts = fileSize / partSize;
   const expiresIn = datasetsProvider.downloadPresignedCommandExpirySeconds;
-  const presignedUrlPromises = [];
+  const presignedUrls = [];
 
   console.log('Parts :', parts);
 
@@ -475,10 +470,8 @@ export const getMultiPartPresignedUrlForDownload = async (
       expiresIn
     );
 
-    presignedUrlPromises.push(url);
+    presignedUrls.push(url);
   }
-
-  const presignedUrls = await Promise.all(presignedUrlPromises);
 
   result.downloadReason = downloadReason;
 
@@ -565,8 +558,6 @@ export const restoreObject = async (
       RestoreRequest,
     })
   );
-
-  return;
 };
 
 function isS3ObjectArchived(headObjectResponse: HeadObjectCommandOutput): boolean {
@@ -576,14 +567,9 @@ function isS3ObjectArchived(headObjectResponse: HeadObjectCommandOutput): boolea
   ) {
     return true;
   }
-  if (
-    headObjectResponse.StorageClass &&
-    ['DEEP_ARCHIVE', 'GLACIER'].includes(headObjectResponse.StorageClass)
-  ) {
-    return true;
-  }
-
-  return false;
+  return !!(
+    headObjectResponse.StorageClass && ['DEEP_ARCHIVE', 'GLACIER'].includes(headObjectResponse.StorageClass)
+  );
 }
 
 export const startDeleteCaseFilesS3BatchJob = async (
@@ -609,11 +595,7 @@ export const waitForJobCompletion = async (jobId: string, accountId: string): Pr
   while (isComplete < 5) {
     const s3BatchJob = await describeS3BatchJob(jobId, accountId);
 
-    if (
-      s3BatchJob.Job &&
-      s3BatchJob.Job.ProgressSummary &&
-      s3BatchJob.Job.ProgressSummary.NumberOfTasksFailed === 0
-    ) {
+    if (s3BatchJob.Job?.ProgressSummary?.NumberOfTasksFailed === 0) {
       isComplete = 10;
     } else {
       console.log('Waiting for job to complete...', isComplete);
@@ -747,7 +729,7 @@ async function getDownloadPresignedUrlClient(
     )
   ).Credentials;
 
-  if (!credentials || !credentials.SecretAccessKey || !credentials.AccessKeyId) {
+  if (!credentials?.SecretAccessKey || !credentials.AccessKeyId) {
     logger.error('Failed to assume datasets role', { datasetsRole: datasetsProvider.datasetsRole });
     throw new Error('Failed to assume role');
   }
