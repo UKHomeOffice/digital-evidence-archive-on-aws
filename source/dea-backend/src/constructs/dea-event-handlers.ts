@@ -5,7 +5,7 @@
 
 import path from 'path';
 import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
-import { Duration, aws_events_targets } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, aws_events_targets } from 'aws-cdk-lib';
 import { Rule } from 'aws-cdk-lib/aws-events';
 import {
   ArnPrincipal,
@@ -18,6 +18,7 @@ import {
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
@@ -213,7 +214,10 @@ export class DeaEventHandlers extends Construct {
       },
       deadLetterQueue: dlq ? dlq : undefined,
       deadLetterQueueEnabled: dlq ? true : false,
-      logRetention: deaConfig.retentionDays(),
+      logGroup: new LogGroup(this, `${id}-LogGroup`, {
+        retention: RetentionDays.TWO_WEEKS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
     };
 
     const lambda = new NodejsFunction(this, id, lambdaProps);

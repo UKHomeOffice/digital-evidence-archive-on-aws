@@ -4,17 +4,17 @@
  */
 
 import path from 'path';
-import { Duration, NestedStack } from 'aws-cdk-lib';
+import { Duration, NestedStack, RemovalPolicy } from 'aws-cdk-lib';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import { deaConfig } from '../config';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface ObjectChecksumStackProps {
@@ -62,7 +62,10 @@ export class ObjectChecksumStack extends NestedStack {
         minify: true,
         sourceMap: true,
       },
-      logRetention: deaConfig.retentionDays(),
+      logGroup: new LogGroup(scope, 'IncrementalChecksumHandler-LogGroup', {
+        retention: RetentionDays.TWO_WEEKS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
     });
 
     const checksumDLQ = new Queue(scope, 'incremental-checksum-dlq', {

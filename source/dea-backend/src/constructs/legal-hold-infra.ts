@@ -4,16 +4,16 @@
  */
 
 import path from 'path';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Bucket, EventType, NotificationKeyFilter } from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -43,7 +43,10 @@ export function addLegalHoldInfrastructure(
       minify: true,
       sourceMap: true,
     },
-    logRetention: deaConfig.retentionDays(),
+    logGroup: new LogGroup(scope, 'S3ObjectLocker-LogGroup', {
+      retention: RetentionDays.TWO_WEEKS,
+      removalPolicy: RemovalPolicy.DESTROY,
+    }),
   });
 
   opsDashboard?.addAuditLambdaErrorAlarm(objectLockHandler, 'ObjectLockLambda');

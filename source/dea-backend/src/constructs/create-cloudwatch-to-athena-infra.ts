@@ -14,7 +14,7 @@ import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'a
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
+import { FilterPattern, LogGroup, RetentionDays, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
@@ -159,7 +159,10 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         minify: true,
         sourceMap: true,
       },
-      logRetention: deaConfig.retentionDays(),
+      logGroup: new LogGroup(this, `AuditProcessingLambda-LogGroup`, {
+        retention: RetentionDays.TWO_WEEKS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
     });
 
     props.opsDashboard?.addMetricFilterAlarmForLogGroup(

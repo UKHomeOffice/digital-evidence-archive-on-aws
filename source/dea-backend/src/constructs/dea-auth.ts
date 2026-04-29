@@ -15,6 +15,7 @@ import {
   CfnParameter,
   Duration,
   Fn,
+  RemovalPolicy,
   SecretValue,
   Stack,
   StackProps,
@@ -50,6 +51,7 @@ import {
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -690,7 +692,10 @@ export class DeaAuth extends Construct {
         minify: true,
         sourceMap: true,
       },
-      logRetention: deaConfig.retentionDays(),
+      logGroup: new LogGroup(this, `${deaConfig.stage()}-PreTokenGenerationTrigger-LogGroup`, {
+        retention: RetentionDays.TWO_WEEKS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
     });
 
     const identityStoreAccountId = deaConfig.idpMetadata()?.identityStoreAccountId ?? Aws.ACCOUNT_ID;

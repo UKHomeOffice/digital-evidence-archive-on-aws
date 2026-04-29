@@ -7,7 +7,7 @@ import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
 import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
-import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
+import { Aws, Duration, Fn, NestedStack, RemovalPolicy } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -34,7 +34,7 @@ import {
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
@@ -539,7 +539,10 @@ export class DeaRestApiConstruct extends Construct {
         minify: true,
         sourceMap: true,
       },
-      logRetention: deaConfig.retentionDays(),
+      logGroup: new LogGroup(this, `${id}-LogGroup`, {
+        retention: RetentionDays.TWO_WEEKS,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
     });
 
     lambda.addPermission('InvokeLambdaPermission', {
