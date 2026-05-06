@@ -147,7 +147,7 @@ export const getCaseAuditCSV = async (caseId: string): Promise<string> => {
   let maxRetries = 60;
   while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
-    await delay(3000);
+    await delay(6000);
     auditResponse = await retrieveCaseAuditResult(caseId, auditId);
   }
 
@@ -172,7 +172,7 @@ export const getCaseFileAuditCSV = async (caseId: string, fileId: string): Promi
   let maxRetries = 60;
   while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
-    await delay(3000);
+    await delay(6000);
     auditResponse = await retrieveCaseFileAuditResult(caseId, fileId, auditId);
   }
 
@@ -210,7 +210,7 @@ export const getSystemAuditCSV = async (): Promise<string> => {
   let maxRetries = 60;
   while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
-    await delay(3000);
+    await delay(6000);
     auditResponse = await retrieveSystemAuditResult(auditId);
   }
 
