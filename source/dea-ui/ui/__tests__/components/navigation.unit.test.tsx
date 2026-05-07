@@ -1,6 +1,19 @@
-import { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
 import { render, screen } from '@testing-library/react';
 import Navigation from '../../src/components/Navigation';
+
+jest.mock('next/router', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+    query: {},
+  }),
+}));
+
+jest.mock('../../src/api/auth', () => ({
+  useAvailableEndpoints: jest.fn().mockReturnValue({
+    data: ['/cases/my-casesGET'],
+    isLoading: false,
+  }),
+}));
 
 describe('Navigation', () => {
   it('should render navigation with a default header', async () => {

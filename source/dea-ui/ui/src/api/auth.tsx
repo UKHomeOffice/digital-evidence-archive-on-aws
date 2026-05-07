@@ -36,7 +36,10 @@ export const refreshToken = async (): Promise<TokenResponse> => {
 
 export const getLoginUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});
+    const response: string = await httpApiGet(
+      `auth/loginUrl?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+      {}
+    );
     return response;
   } catch (error) {
     console.error(error);
@@ -46,7 +49,10 @@ export const getLoginUrl = async (callbackUrl: string) => {
 
 export const getLogoutUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/logoutUrl?callbackUrl=${callbackUrl}`, {});
+    const response: string = await httpApiGet(
+      `auth/logoutUrl?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+      {}
+    );
     return response;
   } catch (error) {
     console.error(error);
