@@ -95,10 +95,14 @@ function FileUpload(props: FileUploadProps) {
     const files: FileWithPath[] = [];
     return new Promise((resolve, reject) => {
       const entriesPromises = [];
-      for (const item of dataTransferItems) {
+      for (let i = 0; i < dataTransferItems.length; i++) {
+        const item = dataTransferItems[i];
+        if (!item) {
+          continue;
+        }
         const fileSystemEntry = item.webkitGetAsEntry();
         if (!fileSystemEntry) {
-          reject(`${item} is not a File`);
+          reject(new Error(`Item at index ${i} could not be read as a file or directory`));
         } else {
           entriesPromises.push(traverseFileTreePromise(fileSystemEntry, '', files));
         }
@@ -112,7 +116,8 @@ function FileUpload(props: FileUploadProps) {
   };
 
   return (
-    <div
+    <section
+      aria-label={fileUploadLabels.dragAndDropFolderLabel}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
@@ -176,7 +181,7 @@ function FileUpload(props: FileUploadProps) {
         limit={3}
       />
       <span>{fileOperationsLabels.selectFileSubtext}</span>
-    </div>
+    </section>
   );
 }
 

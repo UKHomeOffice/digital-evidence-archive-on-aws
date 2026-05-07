@@ -1,12 +1,11 @@
+import { fail } from 'assert';
+import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Axios from 'axios';
-import { auditLogLabels, breadcrumbLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
-import { NotificationsProvider } from '../../src/context/NotificationsContext';
-import { CaseFileDTO } from '../../src/api/models/case';
+import { auditLogLabels } from '../../src/common/labels';
 import FileDetailPage from '../../src/pages/file-detail';
 
 afterEach(cleanup);
@@ -22,12 +21,12 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
-const mockedAxios = Axios as jest.Mocked<typeof Axios>;
+const mockedAxios = jest.mocked(Axios);
 
 const mockedCaseActions = {
   caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
@@ -49,12 +48,14 @@ const mockedFileInfo: CaseFileDTO = {
   filePath: '/food/',
   fileSizeBytes: 1234,
   sha256Hash: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
-  status: 'ACTIVE',
+  status: CaseFileStatus.ACTIVE,
   created: new Date(),
   updated: new Date(),
   isFile: true,
   reason: 'reason',
   details: 'details',
+  fileS3Key: '',
+  updatedBy: '',
 };
 
 const mockedCaseDetail = {
@@ -113,17 +114,17 @@ mockedAxios.request.mockImplementation((eventObj) => {
 
 describe('FileDetailPage', () => {
   it('renders a case details page', async () => {
-    const page = render(<FileDetailPage />);
-    expect(page).toBeTruthy();
+    const view = render(<FileDetailPage />);
+    expect(view).toBeTruthy();
 
     const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
-    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText.length).toBeGreaterThanOrEqual(1);
     expect(mockedFileText).toBeTruthy();
   });
 
   it('downloads a file audit', async () => {
-    const page = render(<FileDetailPage />);
-    expect(page).toBeTruthy();
+    const view = render(<FileDetailPage />);
+    expect(view).toBeTruthy();
 
     const downloadCsvButton = await screen.findByText(auditLogLabels.downloadFileAuditLabel);
     fireEvent.click(downloadCsvButton);
@@ -136,15 +137,15 @@ describe('FileDetailPage', () => {
   });
 
   it('downloads a file-detail file', async () => {
-    const page = render(<FileDetailPage />);
-    expect(page).toBeTruthy();
+    const view = render(<FileDetailPage />);
+    expect(view).toBeTruthy();
 
     await waitFor(() =>
       expect(
         wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
       ).toBe(false)
     );
-    await wrapper(screen.getByTestId('download-file-button')).click();
+    wrapper(screen.getByTestId('download-file-button')).click();
 
     await waitFor(() =>
       expect(

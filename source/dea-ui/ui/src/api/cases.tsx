@@ -3,11 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { DeaCase } from '@aws/dea-app/lib/models/case';
 import { CaseFileDTO, DeaCaseFile, DeaCaseFileUpload, DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
+import { QueryExecutionState } from '@aws-sdk/client-athena';
 import useSWR from 'swr';
 import { httpApiDelete, httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
 import {

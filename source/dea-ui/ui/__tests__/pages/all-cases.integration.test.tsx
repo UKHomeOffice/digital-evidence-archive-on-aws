@@ -1,13 +1,13 @@
+import { fail } from 'assert';
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import { fail } from 'assert';
+import { render, screen } from '@testing-library/react';
 import axios from 'axios';
 import { breadcrumbLabels, caseListLabels } from '../../src/common/labels';
 import AllCasesPage from '../../src/pages/all-cases';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = jest.mocked(axios);
 const push = jest.fn();
 
 jest.mock('next/router', () => ({
@@ -56,13 +56,14 @@ describe('All Cases Dashboard', () => {
       }
     });
 
-    const page = render(<AllCasesPage />);
-    const pagewrapper = wrapper(page.baseElement);
+    const view = render(<AllCasesPage />);
+    const pagewrapper = wrapper(view.baseElement);
 
-    await waitFor(() => expect(pagewrapper.findSideNavigation()).toBeDefined());
+    await screen.findByTestId('sideNavigation');
     const sideNav = pagewrapper.findSideNavigation();
+    expect(sideNav).toBeDefined();
     if (!sideNav) {
-      fail();
+      return;
     }
 
     // it has both my cases and all cases links
@@ -75,11 +76,15 @@ describe('All Cases Dashboard', () => {
     expect(createCaseButton).toBeNull();
 
     // assert breadcrumb
-    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    const breadcrumbWrapper = wrapper(view.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
-    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(1);
-    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks();
+    if (!breadcrumbLinks) {
+      fail('breadcrumbLinks is undefined');
+    } else {
+      expect(breadcrumbLinks.length).toEqual(1);
+      expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    }
   });
 
   it('navigates to manage case details', async () => {

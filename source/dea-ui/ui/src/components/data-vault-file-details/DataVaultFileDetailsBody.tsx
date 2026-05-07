@@ -19,7 +19,7 @@ import {
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import {
   getDataVaultFileAuditCSV,
@@ -51,12 +51,30 @@ export const DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH =
   '/datavaults/{dataVaultId}/files/{fileId}/caseAssociationsDELETE';
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
-  const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
+  const { dataVaultId, fileId, setFileName } = props;
+  const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(dataVaultId, fileId);
   const [showDisassociateToCaseModal, setShowDisassociateToCaseModal] = useState(false);
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
   const [checkedState, setCheckedState] = useState<boolean[]>([]);
   const availableEndpoints = useAvailableEndpoints();
+  const hasCheckedCase = checkedState.some(Boolean);
+
+  useEffect(() => {
+    if (data?.fileName) {
+      setFileName(data.fileName);
+    }
+  }, [data?.fileName, setFileName]);
+
+  useEffect(() => {
+    const casesLength = data?.cases?.length ?? 0;
+    setCheckedState((prev) => {
+      if (prev.length === casesLength) {
+        return prev;
+      }
+      return new Array(casesLength).fill(false);
+    });
+  }, [data?.cases]);
 
   function enableDisassociateToCaseModal() {
     setShowDisassociateToCaseModal(true);
@@ -113,7 +131,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 data-testid="submit-case-disassociation"
                 variant="primary"
                 onClick={disassociateToCaseHandler}
-                disabled={IsSubmitLoading || !checkedState.find((checked) => checked)}
+                disabled={IsSubmitLoading || !hasCheckedCase}
               >
                 {IsSubmitLoading ? <Spinner variant="disabled" /> : null}
                 {commonLabels.disassociateButton}
@@ -144,21 +162,15 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   }
 
   function associatedCasesOption(cases: ScopedDeaCase[] | undefined) {
-    if (cases && checkedState.length !== cases?.length) {
-      setCheckedState(new Array(cases.length).fill(false));
-    }
-    return cases?.map(({ ulid, name }: { ulid: string; name: string }, index: number) => (
-      <Checkbox key={`check-${ulid}`} checked={checkedState[index]} onChange={() => handleOnChange(index)}>
-        {name}
+    return cases?.map((caseItem, index: number) => (
+      <Checkbox
+        key={`check-${caseItem.ulid}`}
+        checked={checkedState[index]}
+        onChange={() => handleOnChange(index)}
+      >
+        {caseItem.name}
       </Checkbox>
     ));
-  }
-
-  function associatedCasesTextContent(cases: ScopedDeaCase[] | undefined) {
-    if (!cases?.length) {
-      return '-';
-    }
-    return cases?.map(({ ulid, name }: { ulid: string; name: string }) => <p key={`p-${ulid}`}>{name}</p>);
   }
 
   if (isLoading) {
@@ -173,7 +185,6 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
 
-    props.setFileName(data.fileName);
     return (
       <ContentLayout
         header={
@@ -278,3 +289,10 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
 }
 
 export default DataVaultFileDetailsBody;
+
+function associatedCasesTextContent(cases: ScopedDeaCase[] | undefined) {
+  if (!cases?.length) {
+    return '-';
+  }
+  return cases?.map((caseItem) => <p key={`p-${caseItem.ulid}`}>{caseItem.name}</p>);
+}

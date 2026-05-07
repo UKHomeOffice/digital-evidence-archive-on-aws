@@ -52,7 +52,8 @@ get_export() {
 
   # AWS CLI may return "None" when query is empty
   if [ -z "$value" ] || [ "$value" = "None" ] || [ "$value" = "null" ]; then
-    log "Missing CloudFormation export '${export_name}' in region '${region}' (check STAGE/AWS_REGION/profile)."
+    # Keep diagnostics out of stdout so command substitution returns only the export value.
+    echo "[setEnv] Missing CloudFormation export '${export_name}' in region '${region}' (check STAGE/AWS_REGION/profile)." >&2
   fi
 
   printf '%s' "$value"

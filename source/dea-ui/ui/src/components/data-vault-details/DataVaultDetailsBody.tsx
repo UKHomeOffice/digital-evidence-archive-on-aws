@@ -16,6 +16,7 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { getDataVaultAuditCSV, useGetDataVaultById } from '../../api/data-vaults';
 import { auditLogLabels, commonLabels, dataVaultDetailLabels } from '../../common/labels';
@@ -38,10 +39,15 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = useGetDataVaultById(props.dataVaultId);
-  let dataVaultName: string;
+
+  useEffect(() => {
+    if (data?.name) {
+      setdataVaultName(data.name);
+    }
+  }, [data?.name, setdataVaultName]);
 
   function editHandler() {
-    return router.push(`/edit-data-vault?dataVaultId=${props.dataVaultId}&dataVaultName=${dataVaultName}`);
+    return router.push(`/edit-data-vault?dataVaultId=${props.dataVaultId}&dataVaultName=${data?.name ?? ''}`);
   }
 
   if (isLoading) {
@@ -55,9 +61,6 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
-
-    setdataVaultName(data.name);
-    dataVaultName = data.name;
 
     return (
       <ContentLayout

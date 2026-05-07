@@ -92,9 +92,18 @@ function convertSecondsToMinutes(seconds: number): string {
 }
 
 function fetchCommonFiles(fileNames: string[], data: DownloadDTO[]): DownloadDTO[] {
-  const set1 = new Set(fileNames);
-  const set2 = new Set(data);
-  return [...new Set([...set2].filter((X) => set1.has(X.filePath + X.fileName)))];
+  const selectedFileNames = new Set(fileNames);
+  const seen = new Set<string>();
+
+  return data.filter((file) => {
+    const fullPath = file.filePath + file.fileName;
+    if (!selectedFileNames.has(fullPath) || seen.has(fullPath)) {
+      return false;
+    }
+
+    seen.add(fullPath);
+    return true;
+  });
 }
 
 function applyProgressUpdate(

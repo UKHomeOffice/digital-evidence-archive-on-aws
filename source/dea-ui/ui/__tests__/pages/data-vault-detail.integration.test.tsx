@@ -1,9 +1,11 @@
-import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { DeaDataVault } from '@aws/dea-app/lib/models/data-vault';
-import '@testing-library/jest-dom';
+import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Axios from 'axios';
 import { AuditResult } from '../../src/api/cases';
+import { DeaCaseDTO } from '../../src/api/models/case';
+import '@testing-library/jest-dom';
+
 import { auditLogLabels } from '../../src/common/labels';
 import {
   DATA_VAULTS_AUDIT_ENDPOINT,
@@ -11,8 +13,6 @@ import {
   DOWNLOAD_AUDIT_TEST_ID,
 } from '../../src/components/data-vault-details/DataVaultDetailsBody';
 import DataVaultDetailsPage from '../../src/pages/data-vault-detail';
-import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
-import { DeaCaseDTO } from '../../src/api/models/case';
 
 afterEach(cleanup);
 
@@ -26,12 +26,12 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
-const mockedAxios = Axios as jest.Mocked<typeof Axios>;
+const mockedAxios = jest.mocked(Axios);
 
 const mockedDatavaultDetails: DeaDataVault = {
   name: 'DATAVAULT_NAME',
@@ -42,13 +42,10 @@ const mockedDatavaultDetails: DeaDataVault = {
   objectCount: 1,
 };
 
-const mockedFileList: DeaDataVaultFile[] = [];
-
 const mockedCaseList: DeaCaseDTO[] = [];
 
 let csvCall = -1;
 const csvResult: AuditResult[] = [
-  { status: QueryExecutionState.RUNNING, downloadUrl: undefined },
   { status: QueryExecutionState.RUNNING, downloadUrl: undefined },
   { status: QueryExecutionState.SUCCEEDED, downloadUrl: 'url' },
 ];
@@ -114,8 +111,8 @@ mockedAxios.request.mockImplementation((eventObj) => {
 
 describe('DatavaultDetailPage', () => {
   it('downloads a datavault audit', async () => {
-    const page = render(<DataVaultDetailsPage />);
-    expect(page).toBeTruthy();
+    const view = render(<DataVaultDetailsPage />);
+    expect(view).toBeTruthy();
 
     const downloadCsvButton = await screen.findByText(auditLogLabels.dataVaultAuditLogLabel);
     fireEvent.click(downloadCsvButton);
