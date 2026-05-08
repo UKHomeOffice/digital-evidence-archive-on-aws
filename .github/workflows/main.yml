@@ -35,6 +35,10 @@ jobs:
       - name: Build application
         run: |
           node common/scripts/install-run-rush.js build
+      - name: Run unit tests
+        run: node common/scripts/install-run-rush.js unit:only
+      - name: Run CDK unit tests
+        run: node common/scripts/install-run-rush.js cdkunit:only --to @aws/dea-main
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
