@@ -1,6 +1,7 @@
 name: Standalone DEA
 
 on:
+  push: {}
   workflow_dispatch: {}
 
 permissions:
@@ -8,7 +9,7 @@ permissions:
       contents: read    # This is required for actions/checkout
 
 jobs:
-  deploy:
+  test-and-optionally-deploy:
     env:
       CONFIGNAME: 'sandbox'
       STAGE: 'cfideasandbox'
@@ -40,12 +41,14 @@ jobs:
       - name: Run CDK unit tests
         run: node common/scripts/install-run-rush.js cdkunit:only --to @aws/dea-main
       - name: Configure AWS credentials
+        if: github.event_name == 'workflow_dispatch'
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_SANDBOX_HOMS_TEAM }}
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Deploy CDK stack
+        if: github.event_name == 'workflow_dispatch'
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER_SANDBOX}}/${{secrets.AWS_REGION}}
