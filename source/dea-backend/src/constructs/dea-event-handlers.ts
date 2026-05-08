@@ -209,7 +209,7 @@ export class DeaEventHandlers extends Construct {
       bundling: {
         externalModules: ['aws-sdk'],
         minify: true,
-        sourceMap: true,
+        sourceMap: deaConfig.includeSourceMaps(),
       },
       deadLetterQueue: dlq ? dlq : undefined,
       deadLetterQueueEnabled: dlq ? true : false,

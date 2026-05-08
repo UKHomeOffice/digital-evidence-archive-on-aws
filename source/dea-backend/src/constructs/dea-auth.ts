@@ -251,7 +251,7 @@ export class DeaAuth extends Construct {
       availableEndpointsPerRole.set(roleType.name, endpointStrings);
     });
 
-    /* 
+    /*
      * Commented out to avoid cdk the deployment failure due the max quota limit of 25 rules for RBAC reached.
     if (deaConfig.isTestStack()) {
       // create roles for individual endpoint allow/deny testing
@@ -688,7 +688,7 @@ export class DeaAuth extends Construct {
       bundling: {
         externalModules: ['aws-sdk'],
         minify: true,
-        sourceMap: true,
+        sourceMap: deaConfig.includeSourceMaps(),
       },
     });
 
