@@ -14,6 +14,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface ObjectChecksumStackProps {
@@ -59,7 +60,7 @@ export class ObjectChecksumStack extends NestedStack {
       bundling: {
         externalModules: ['aws-sdk'],
         minify: true,
-        sourceMap: true,
+        sourceMap: deaConfig.includeSourceMaps(),
       },
     });
 

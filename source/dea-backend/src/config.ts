@@ -345,6 +345,11 @@ const convictSchema = {
     format: 'Boolean',
     default: true,
   },
+  includeSourceMaps: {
+    doc: 'Whether or not to include sourcemaps for the Lambda functions',
+    format: 'Boolean',
+    default: false,
+  },
   isMultiRegionTrail: {
     doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.',
     format: 'Boolean',
@@ -466,6 +471,7 @@ interface DEAConfig {
   sameSiteValue(): string;
   preflightOptions(): CorsOptions | undefined;
   fipsEndpointsEnabled(): boolean;
+  includeSourceMaps(): boolean,
   isMultiRegionTrail(): boolean;
   uploadFilesTimeoutMinutes(): number;
   includeDynamoDataPlaneEventsInTrail(): boolean;
@@ -556,6 +562,7 @@ export const deaConfig: DEAConfig = {
     return vpcEndpoint;
   },
   fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
+  includeSourceMaps: () => convictConfig.get('includeSourceMaps') ?? false,
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
