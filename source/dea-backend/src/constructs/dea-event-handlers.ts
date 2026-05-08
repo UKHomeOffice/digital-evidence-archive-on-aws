@@ -207,7 +207,7 @@ export class DeaEventHandlers extends Construct {
         ...lambdaEnv,
       },
       bundling: {
-        externalModules: ['aws-sdk'],
+        externalModules: ['aws-sdk', '@aws-sdk/*'],
         minify: true,
         sourceMap: deaConfig.includeSourceMaps(),
       },

@@ -155,7 +155,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         NODE_OPTIONS: '--enable-source-maps',
       },
       bundling: {
-        externalModules: ['aws-sdk'],
+        externalModules: ['aws-sdk', '@aws-sdk/*'],
         minify: true,
         sourceMap: deaConfig.includeSourceMaps(),
       },

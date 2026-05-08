@@ -686,7 +686,7 @@ export class DeaAuth extends Construct {
         HAS_AWS_MANAGED_ACTIVE_DIRECTORY: hasAwsManagedActiveDirectory.toString(),
       },
       bundling: {
-        externalModules: ['aws-sdk'],
+        externalModules: ['aws-sdk', '@aws-sdk/*'],
         minify: true,
         sourceMap: deaConfig.includeSourceMaps(),
       },
