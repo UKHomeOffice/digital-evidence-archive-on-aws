@@ -24,15 +24,15 @@ jobs:
     name: Deploy DEA to CFI-Dev
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
-      - name: TruffleHog OSS
+      - name: Run TruffleHog secret scan
         uses: trufflesecurity/trufflehog@v3.95.2
         with:
           extra_args: --only-verified
-      - name: Install
+      - name: Install dependencies
         uses: ./.github/actions/baseAction
-      - name: Rush Build
+      - name: Build application
         run: |
           node common/scripts/install-run-rush.js build
       - name: Configure AWS credentials
@@ -41,7 +41,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: cdk deploy
+      - name: Deploy CDK stack
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
