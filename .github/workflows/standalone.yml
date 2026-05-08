@@ -1,10 +1,5 @@
 name: Standalone DEA
 
-#env:
-#  CONFIGNAME: env${{'dev', 'test', 'prod'}}
-#  STAGE: DEACFI${{github.event.pull_request.number}}
-#  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
-
 on:
   workflow_dispatch:
 
