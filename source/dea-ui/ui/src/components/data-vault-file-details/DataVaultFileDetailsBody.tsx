@@ -58,7 +58,9 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): React.R
   const { pushNotification } = useNotifications();
   const [checkedState, setCheckedState] = useState<Record<string, boolean>>({});
   const availableEndpoints = useAvailableEndpoints();
-  const hasCheckedCase = Object.values(checkedState).some(Boolean);
+  const selectedCaseUlids =
+    data?.cases?.filter((item) => checkedState[item.ulid]).map((item) => item.ulid) ?? [];
+  const hasCheckedCase = selectedCaseUlids.length > 0;
 
   useEffect(() => {
     if (data?.fileName) {
@@ -67,19 +69,36 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): React.R
   }, [data?.fileName, setFileName]);
 
   function enableDisassociateToCaseModal() {
+    const caseUlids = new Set(data?.cases?.map((item) => item.ulid) ?? []);
+    setCheckedState((prev) => {
+      if (!caseUlids.size) {
+        return {};
+      }
+
+      return Object.keys(prev).reduce<Record<string, boolean>>((acc, ulid) => {
+        if (caseUlids.has(ulid) && prev[ulid]) {
+          acc[ulid] = true;
+        }
+        return acc;
+      }, {});
+    });
     setShowDisassociateToCaseModal(true);
   }
 
   function disableDisassociateToCaseModal() {
+    setCheckedState({});
     setShowDisassociateToCaseModal(false);
   }
 
   async function disassociateToCaseHandler() {
+    if (!selectedCaseUlids.length) {
+      return;
+    }
+
     setIsSubmitLoading(true);
     try {
-      const caseUlids = data?.cases?.filter((item) => checkedState[item.ulid]).map((item) => item.ulid) ?? [];
       await removeDataVaultFileCaseAssociation(props.dataVaultId, props.fileId, {
-        caseUlids,
+        caseUlids: selectedCaseUlids,
       });
       pushNotification('success', dataVaultDetailLabels.disassociateFromCaseSuccessNotificationMessage);
       mutate();
@@ -93,11 +112,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): React.R
     }
   }
 
-  function handleOnChange(position: number) {
-    const caseUlid = data?.cases?.[position]?.ulid;
-    if (!caseUlid) {
-      return;
-    }
+  function handleOnChange(caseUlid: string) {
     setCheckedState((prev) => ({
       ...prev,
       [caseUlid]: !prev[caseUlid],
@@ -156,11 +171,11 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): React.R
   }
 
   function associatedCasesOption(cases: ScopedDeaCase[] | undefined) {
-    return cases?.map((caseItem, index: number) => (
+    return cases?.map((caseItem) => (
       <Checkbox
         key={`check-${caseItem.ulid}`}
         checked={checkedState[caseItem.ulid] ?? false}
-        onChange={() => handleOnChange(index)}
+        onChange={() => handleOnChange(caseItem.ulid)}
       >
         {caseItem.name}
       </Checkbox>
