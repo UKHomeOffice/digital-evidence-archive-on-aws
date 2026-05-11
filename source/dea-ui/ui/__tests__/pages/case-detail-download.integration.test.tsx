@@ -1,14 +1,11 @@
-import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
 import Axios from 'axios';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 afterEach(cleanup);
 
-const user = userEvent.setup();
 const push = jest.fn();
 const CASE_ID = '100';
 jest.mock('next/router', () => ({
@@ -18,8 +15,9 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
+global.window.open = jest.fn();
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
@@ -93,6 +91,8 @@ const mockedCaseActions = {
 
 describe('case detail file download', () => {
   it('downloads selected files', async () => {
+    const user = userEvent.setup();
+
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
@@ -135,17 +135,10 @@ describe('case detail file download', () => {
     expect(page).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');
-    const tableWrapper = wrapper(table);
     expect(table).toBeTruthy();
 
-    const fileSelector = tableWrapper.findCheckbox();
-    if (!fileSelector) {
-      fail();
-    }
-
-    await act(async () => {
-      fileSelector.click();
-    });
+    const fileSelector = within(table).getAllByRole('checkbox')[1];
+    await user.click(fileSelector);
 
     /**
      * Click the download button, then a modal with a second download button and input field should appear
@@ -153,32 +146,20 @@ describe('case detail file download', () => {
      */
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
     await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(false)
+      expect(screen.getByTestId('download-file-reason-modal').className).toMatch('awsui_hidden_')
     );
-    await wrapper(screen.getByTestId('download-file-button')).click();
+    await user.click(screen.getByTestId('download-file-button'));
 
-    await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(true)
-    );
-    const wrappedReason = wrapper(document.body).findInput(
-      '[data-testid="download-file-reason-modal-input"]'
-    );
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('Reason for download,;,.');
+    const downloadReasonModal = screen.getByTestId('download-file-reason-modal');
+    await waitFor(() => expect(downloadReasonModal.className).not.toMatch('awsui_hidden_'));
+
+    const reasonInput = within(downloadReasonModal).getByRole('textbox');
+    await user.clear(reasonInput);
+    await user.type(reasonInput, 'Reason for download,;,.');
 
     // download button will be disabled while in progress
-    wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
+    await user.click(screen.getByTestId('download-file-reason-modal-primary-button'));
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
-    await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(false)
-    );
+    await waitFor(() => expect(downloadReasonModal.className).toMatch('awsui_hidden_'));
   });
 });

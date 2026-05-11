@@ -45,11 +45,11 @@ export interface DataVaultsTableProps {
   headerDescription: string;
 }
 
-function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
+function DataVaultsTable(props: Readonly<DataVaultsTableProps>): React.ReactNode {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = props.useDataVaultFetcher();
-  const [showHowItWorksModal, setHowItWorksModal] = useState(false);
+  const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps, collectionProps, paginationProps } = useCollection(
@@ -58,19 +58,14 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       filtering: {
         empty: TableEmptyDisplay(dataVaultListLabels.noDataVaultsLabel, dataVaultListLabels.noDisplayLabel),
         noMatch: TableNoMatchDisplay(dataVaultListLabels.noDataVaultsMatchLabel),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filteringFunction: (item: any, filteringText): any => {
           const filteringTextLowerCase = filteringText.toLowerCase();
 
-          return (
-            searchableColumns
-              // eslint-disable-next-line security/detect-object-injection
-              .map((key) => item[key])
-              .some(
-                (value) =>
-                  typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
-              )
-          );
+          return searchableColumns
+            .map((key) => item[key])
+            .some(
+              (value) => typeof value === 'string' && value.toLowerCase().includes(filteringTextLowerCase)
+            );
         },
       },
       propertyFiltering: {
@@ -87,11 +82,11 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
   );
 
   function enableHowItWorksModal() {
-    setHowItWorksModal(true);
+    setShowHowItWorksModal(true);
   }
 
   function disableHowItWorksModal() {
-    setHowItWorksModal(false);
+    setShowHowItWorksModal(false);
   }
 
   function howItWorksModal() {

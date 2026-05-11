@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
 import { Box } from '@cloudscape-design/components';
 import { commonLabels } from '../../common/labels';
 
@@ -22,7 +23,7 @@ export function TableEmptyDisplay(
   noItemType: string,
   noItemTypeDisplay: string,
   action?: React.ReactNode
-): JSX.Element {
+): React.ReactNode {
   return (
     <Box textAlign="center" color="inherit">
       <b>{noItemType}</b>
@@ -44,7 +45,7 @@ export function TableEmptyDisplay(
  * ```
  * @returns no match information
  */
-export function TableNoMatchDisplay(noItemTypeMatch: string): JSX.Element {
+export function TableNoMatchDisplay(noItemTypeMatch: string): React.ReactNode {
   return (
     <Box textAlign="center" color="inherit">
       <b>{commonLabels.noMatchesLabel}</b>

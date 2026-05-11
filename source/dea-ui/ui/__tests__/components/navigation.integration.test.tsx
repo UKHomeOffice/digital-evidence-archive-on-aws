@@ -16,8 +16,8 @@ const router = {
 };
 useRouter.mockReturnValue(router);
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
 HTMLAnchorElement.prototype.click = jest.fn();
 
 let csvCall = -1;

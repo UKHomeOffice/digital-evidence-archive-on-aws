@@ -67,6 +67,18 @@ const renderHome = () =>
     </NotificationsProvider>
   );
 
+const fillUploadMetadata = async (): Promise<void> => {
+  const detailsField = screen.getByTestId('input-details');
+  const detailsTextarea = within(detailsField).getByRole('textbox');
+  await userEvent.clear(detailsTextarea);
+  await userEvent.type(detailsTextarea, 'description');
+
+  const reasonField = screen.getByTestId('input-reason');
+  const reasonInput = within(reasonField).getByRole('textbox');
+  await userEvent.clear(reasonInput);
+  await userEvent.type(reasonInput, 'reason');
+};
+
 describe('UploadFiles page', () => {
   afterEach(() => {
     mockFetch.mockClear();
@@ -106,20 +118,7 @@ describe('UploadFiles page', () => {
     expect(selectFileInput).toBeTruthy();
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
     await userEvent.upload(selectFileInput, [testFile]);
-
-    const detailsInput = screen.getByTestId('input-details');
-    const wrappedDetails = wrapper(detailsInput).findTextarea();
-    if (!wrappedDetails) {
-      fail();
-    }
-    wrappedDetails.setTextareaValue('description');
-
-    const reasonInput = screen.getByTestId('input-reason');
-    const wrappedReason = wrapper(reasonInput).findInput();
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('reason');
+    await fillUploadMetadata();
 
     // modal is not visible initially
     expect(wrapper(document.body).findModal()?.isVisible()).toBe(false);
@@ -148,20 +147,7 @@ describe('UploadFiles page', () => {
     const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
     const validFile = new File(['content'], 'valid.txt', { type: 'text/plain' });
     await userEvent.upload(selectFileInput, [emptyFile, validFile]);
-
-    const detailsInput = screen.getByTestId('input-details');
-    const wrappedDetails = wrapper(detailsInput).findTextarea();
-    if (!wrappedDetails) {
-      fail();
-    }
-    wrappedDetails.setTextareaValue('description');
-
-    const reasonInput = screen.getByTestId('input-reason');
-    const wrappedReason = wrapper(reasonInput).findInput();
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('reason');
+    await fillUploadMetadata();
 
     const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     const uploadButtonWrapper = wrapper(uploadButton);
@@ -200,20 +186,7 @@ describe('UploadFiles page', () => {
     const selectFileInput = screen.getByTestId('file-select');
     const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
     await userEvent.upload(selectFileInput, [emptyFile]);
-
-    const detailsInput = screen.getByTestId('input-details');
-    const wrappedDetails = wrapper(detailsInput).findTextarea();
-    if (!wrappedDetails) {
-      fail();
-    }
-    wrappedDetails.setTextareaValue('description');
-
-    const reasonInput = screen.getByTestId('input-reason');
-    const wrappedReason = wrapper(reasonInput).findInput();
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('reason');
+    await fillUploadMetadata();
 
     const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     const uploadButtonWrapper2 = wrapper(uploadButton);
@@ -238,20 +211,7 @@ describe('UploadFiles page', () => {
     const selectFileInput = screen.getByTestId('file-select');
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
     await userEvent.upload(selectFileInput, [testFile]);
-
-    const detailsInput = screen.getByTestId('input-details');
-    const wrappedDetails = wrapper(detailsInput).findTextarea();
-    if (!wrappedDetails) {
-      fail();
-    }
-    wrappedDetails.setTextareaValue('description');
-
-    const reasonInput = screen.getByTestId('input-reason');
-    const wrappedReason = wrapper(reasonInput).findInput();
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('reason');
+    await fillUploadMetadata();
 
     const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     wrapper(uploadButton).click();

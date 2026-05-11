@@ -121,7 +121,7 @@ function applyProgressUpdate(
   });
 }
 
-function UploadFilesForm(props: UploadFilesProps): JSX.Element {
+function UploadFilesForm(props: UploadFilesProps): React.ReactNode {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileUploadProgressRow[]>([]);
   const [details, setDetails] = useState('');
@@ -365,7 +365,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   function onDoneHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     void router.push(`/case-detail?caseId=${props.caseId}`);
   }
 

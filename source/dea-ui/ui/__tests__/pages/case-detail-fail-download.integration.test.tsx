@@ -1,11 +1,8 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
-import { NotificationsProvider } from '../../src/context/NotificationsContext';
+import { auditLogLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 afterEach(cleanup);
@@ -19,8 +16,8 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');

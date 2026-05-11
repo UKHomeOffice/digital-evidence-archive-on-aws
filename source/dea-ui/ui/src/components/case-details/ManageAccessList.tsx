@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { ColumnLayout, Header, SpaceBetween } from '@cloudscape-design/components';
 import ManageAccessListItem from './ManageAccessListItem';
@@ -15,7 +16,7 @@ export interface ManageAccessListProps {
   readonly headertext: string;
 }
 
-function ManageAccessList(props: ManageAccessListProps): JSX.Element {
+function ManageAccessList(props: ManageAccessListProps): React.ReactNode {
   const { caseMembers, onUpdateMember, onRemoveMember, activeUser } = props;
 
   return (

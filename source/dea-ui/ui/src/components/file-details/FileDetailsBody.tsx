@@ -36,7 +36,7 @@ export interface FileDetailsBodyProps {
   readonly setFileName: (name: string) => void;
 }
 
-function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
+function FileDetailsBody(props: FileDetailsBodyProps): React.ReactNode {
   const { setFileName } = props;
   const { data: fileData, isLoading: fileIsLoading } = useGetFileDetailsById(props.caseId, props.fileId);
   const { data: caseData, isLoading: caseIsLoading } = useGetCaseById(props.caseId);

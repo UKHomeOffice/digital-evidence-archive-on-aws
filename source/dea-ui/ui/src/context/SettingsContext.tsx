@@ -18,7 +18,7 @@ const SettingsContext: Context<ISettingsProps> = createContext<ISettingsProps>({
   },
 });
 
-export function SettingsProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function SettingsProvider({ children }: Readonly<{ children: React.ReactNode }>): React.ReactNode {
   const [settings] = useState<IAppSettings>(defaultAppSettings);
 
   const props = useMemo(

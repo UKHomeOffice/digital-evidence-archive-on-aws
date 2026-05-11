@@ -1,19 +1,19 @@
-import { render, screen } from '@testing-library/react';
 import { Button } from '@cloudscape-design/components';
+import { render, screen } from '@testing-library/react';
 import ActionContainer from '../../../src/components/common-components/ActionContainer';
 
 describe('action container', () => {
-  it('should render the inner component', async () => {
+  it('should render the inner component', () => {
     render(
       <ActionContainer required="Create" actions={['Create']}>
         <Button>Create</Button>
       </ActionContainer>
     );
-    const createButton = await screen.getByRole('button');
+    const createButton = screen.getByRole('button');
     expect(createButton).toBeTruthy();
   });
 
-  it('should not render the inner component', async () => {
+  it('should not render the inner component', () => {
     render(
       <ActionContainer required="Create" actions={['View']}>
         <Button>Create</Button>

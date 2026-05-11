@@ -28,9 +28,26 @@ const AuthenticationContext: Context<IAuthenticationProps> = createContext<IAuth
   isLoggedIn: false,
 });
 
-export function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function AuthenticationProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>): React.ReactNode {
   const [user, setUser] = useState<IUser>(unknownUser);
   const router = useRouter();
+
+  const signIn = async (): Promise<void> => {
+    try {
+      const callbackUrl = getCallbackUrl();
+      let loginUrl = await getLoginUrl(callbackUrl);
+
+      // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
+      const challenge = pkceChallenge(128);
+      sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
+      loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
+      await router.push(loginUrl);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -55,20 +72,6 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  const signIn = async (): Promise<void> => {
-    try {
-      const callbackUrl = getCallbackUrl();
-      let loginUrl = await getLoginUrl(callbackUrl);
-
-      // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
-      const challenge = pkceChallenge(128);
-      sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
-      loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
-      await router.push(loginUrl);
-    } catch (e) {
-      console.log(e);
-    }
-  };
   const signOut = async (): Promise<void> => {
     const logoutUrl = await signOutProcess();
     setUser(unknownUser);

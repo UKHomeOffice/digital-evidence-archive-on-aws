@@ -1,7 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
-import createWrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, caseListLabels, commonLabels } from '../../src/common/labels';
@@ -132,7 +131,12 @@ describe('Dashboard', () => {
   });
 
   it('removeTokenButtonAriaLabel returns the expected string', () => {
-    const result = i18nStrings.removeTokenButtonAriaLabel();
+    const removeTokenButtonAriaLabel = i18nStrings.removeTokenButtonAriaLabel;
+    if (!removeTokenButtonAriaLabel) {
+      fail('removeTokenButtonAriaLabel is undefined');
+    }
+    const token = {} as Parameters<typeof removeTokenButtonAriaLabel>[0];
+    const result = removeTokenButtonAriaLabel(token);
     expect(result).toEqual('Remove token');
   });
 
@@ -152,9 +156,7 @@ describe('Dashboard', () => {
 
     const activeCaseSelection = tableWrapper.findRowSelectionArea(1);
     expect(activeCaseSelection).toBeTruthy();
-    await act(async () => {
-      activeCaseSelection!.click();
-    });
+    fireEvent.click(activeCaseSelection!.getElement());
 
     expect(tableWrapper.findSelectedRows().length).toEqual(1);
 
@@ -185,9 +187,7 @@ describe('Dashboard', () => {
 
     const inactiveCaseSelection = tableWrapper.findRowSelectionArea(2);
     expect(inactiveCaseSelection).toBeTruthy();
-    await act(async () => {
-      inactiveCaseSelection!.click();
-    });
+    fireEvent.click(inactiveCaseSelection!.getElement());
 
     expect(tableWrapper.findSelectedRows().length).toEqual(1);
 

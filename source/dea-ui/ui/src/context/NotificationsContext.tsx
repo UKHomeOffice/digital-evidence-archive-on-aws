@@ -27,7 +27,9 @@ const defaultAppNotification: INotificationsProps = {
 const NotificationsContext: Context<INotificationsProps> =
   createContext<INotificationsProps>(defaultAppNotification);
 
-export function NotificationsProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function NotificationsProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>): React.ReactNode {
   const [notifications, setNotifications] = useState<IAppNotification[]>([]);
 
   function pushNotification(type: FlashbarProps.Type, content: React.ReactNode): void {

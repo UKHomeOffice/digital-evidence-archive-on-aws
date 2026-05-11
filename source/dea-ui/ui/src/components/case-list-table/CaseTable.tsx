@@ -55,7 +55,7 @@ export interface CaseTableProps {
   headerDescription: string;
 }
 
-function CaseTable(props: CaseTableProps): JSX.Element {
+function CaseTable(props: Readonly<CaseTableProps>): React.ReactNode {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading, mutate } = props.useCaseFetcher();
@@ -72,19 +72,14 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       filtering: {
         empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
         noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filteringFunction: (item: any, filteringText): any => {
           const filteringTextLowerCase = filteringText.toLowerCase();
 
-          return (
-            searchableColumns
-              // eslint-disable-next-line security/detect-object-injection
-              .map((key) => item[key])
-              .some(
-                (value) =>
-                  typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
-              )
-          );
+          return searchableColumns
+            .map((key) => item[key])
+            .some(
+              (value) => typeof value === 'string' && value.toLowerCase().includes(filteringTextLowerCase)
+            );
         },
       },
       propertyFiltering: {
@@ -122,7 +117,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       disableActivateCaseModal();
       pushNotification('success', `${deaCase.name} has been activated.`);
       mutate();
-    } catch (e) {
+    } catch (error) {
       pushNotification('error', `Failed to activate ${deaCase.name}.`);
     }
 
@@ -152,7 +147,8 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       await updatePromise;
       pushNotification('success', `${deaCase.name} has been deactivated.`);
       mutate();
-    } catch (e) {
+    } catch (error) {
+      console.error(error);
       pushNotification('error', `Failed to deactivate ${deaCase.name}.`);
     }
 

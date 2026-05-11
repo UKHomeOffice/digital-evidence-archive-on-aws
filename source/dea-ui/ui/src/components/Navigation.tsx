@@ -24,7 +24,7 @@ const SYSTEM_AUDIT_ENDPOINT = '/system/auditPOST';
 const DATA_VAULTS_ENDPOINT = '/datavaultsGET';
 const DATA_SYNC_TASKS_ENDPOINT = '/datasync/tasksGET';
 
-export default function Navigation({ initialHref }: NavigationProps): JSX.Element {
+export default function Navigation({ initialHref }: NavigationProps): React.ReactNode {
   const router = useRouter();
 
   const [activeHref, setActiveHref] = useState(initialHref);

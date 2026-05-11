@@ -1,9 +1,8 @@
-import { fail } from 'assert';
 import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
-import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Axios from 'axios';
 import { auditLogLabels } from '../../src/common/labels';
 import FileDetailPage from '../../src/pages/file-detail';
@@ -23,6 +22,7 @@ jest.mock('next/router', () => ({
 
 global.fetch = jest.fn(async () => new Response('foo'));
 global.window.URL.createObjectURL = jest.fn(() => '');
+global.window.open = jest.fn();
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
@@ -101,6 +101,14 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
+  } else if (eventObj.url?.endsWith('contents')) {
+    return Promise.resolve({
+      data: { downloadUrl: 'hello' },
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
   } /* /csv */ else {
     return Promise.resolve({
       data: csvResult[++csvCall],
@@ -137,40 +145,29 @@ describe('FileDetailPage', () => {
   });
 
   it('downloads a file-detail file', async () => {
+    const user = userEvent.setup();
+
     const view = render(<FileDetailPage />);
     expect(view).toBeTruthy();
 
     await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(false)
+      expect(screen.getByTestId('download-file-reason-modal').className).toMatch('awsui_hidden_')
     );
-    wrapper(screen.getByTestId('download-file-button')).click();
+    await user.click(screen.getByTestId('download-file-button'));
 
-    await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(true)
-    );
-    const wrappedReason = wrapper(document.body).findInput(
-      '[data-testid="download-file-reason-modal-input"]'
-    );
-    if (!wrappedReason) {
-      fail();
-    }
-    wrappedReason.setInputValue('Reason for download,;,.');
+    const downloadReasonModal = screen.getByTestId('download-file-reason-modal');
+    await waitFor(() => expect(downloadReasonModal.className).not.toMatch('awsui_hidden_'));
 
-    wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
+    const reasonInput = within(downloadReasonModal).getByRole('textbox');
+    await user.clear(reasonInput);
+    await user.type(reasonInput, 'Reason for download,;,.');
 
-    // download button will be disabled while in progress and then re-enabled when done
-    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
+    await user.click(screen.getByTestId('download-file-reason-modal-primary-button'));
+
+    await waitFor(() => expect(global.window.open).toHaveBeenCalledWith('hello', '_blank'));
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled(), {
       timeout: 4000,
     });
-    await waitFor(() =>
-      expect(
-        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
-      ).toBe(false)
-    );
+    await waitFor(() => expect(downloadReasonModal.className).toMatch('awsui_hidden_'));
   });
 });

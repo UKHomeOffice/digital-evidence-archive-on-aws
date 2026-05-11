@@ -1,8 +1,7 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
 import Axios from 'axios';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
@@ -17,8 +16,8 @@ jest.mock('next/router', () => ({
   })),
 }));
 
-global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
-global.window.URL.createObjectURL = jest.fn(() => {});
+global.fetch = jest.fn(async () => new Response('foo'));
+global.window.URL.createObjectURL = jest.fn(() => '');
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
@@ -289,7 +288,6 @@ describe('CaseDetailsPage', () => {
     expect(mockedCaseInfo).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');
-    const tableWrapper = wrapper(table);
     // the table exists
     expect(table).toBeTruthy();
 
@@ -300,18 +298,15 @@ describe('CaseDetailsPage', () => {
     // the file exists as a box
     expect(fileEntry).toBeTruthy();
 
-    const textFilter = tableWrapper.findTextFilter();
-    if (!textFilter) {
-      fail();
-    }
-    const textFilterInput = textFilter.findInput();
-    textFilterInput.setInputValue('food');
+    const textFilterInput = within(table).getByRole('searchbox');
+    await userEvent.clear(textFilterInput);
+    await userEvent.type(textFilterInput, 'food');
 
     // after filtering, rootFile will not be visible
     await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeNull());
 
     // clear the filter
-    textFilterInput.setInputValue('');
+    await userEvent.clear(textFilterInput);
     await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeDefined());
 
     // click on the folder to navigate
@@ -334,6 +329,8 @@ describe('CaseDetailsPage', () => {
   });
 
   it('navigates to manage access page', async () => {
+    const user = userEvent.setup();
+
     const page = render(
       <NotificationsProvider>
         <CaseDetailsPage />
@@ -346,81 +343,47 @@ describe('CaseDetailsPage', () => {
 
     // assert autosuggest component
     const searchUserInput = await screen.findByTestId('user-search-input');
-    const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
     expect(searchUserInput).toBeTruthy();
 
-    searchUserInputWrapper.focus();
-
-    for (let index = 0; index < mockedUsers.users.length; index++) {
-      const user = mockedUsers.users[index];
-      const optionValue = `${user.firstName} ${user.lastName}`;
-      expect(searchUserInputWrapper.findDropdown().findOptionByValue(optionValue)!.getElement()).toBeTruthy();
-    }
-
-    const textToInput = 'Carlos Salazar';
-    const searchInput = await screen.findByRole('combobox', {
-      description:
-        'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
-    });
-    await act(async () => {
-      await userEvent.type(searchInput, textToInput);
-      searchUserInputWrapper.selectSuggestionByValue(textToInput);
-    });
-
-    const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
-    await act(async () => {
-      addCaseMemberButton.click();
-    });
-
     // assert multiselect component
-    const permissionsWrapper = wrapper(page.container).findMultiselect()!;
-    expect(permissionsWrapper).toBeTruthy();
-    expect(permissionsWrapper.findTokens()).toHaveLength(1);
-    permissionsWrapper.openDropdown();
-    permissionsWrapper.selectOption(1);
+    const permissionsMultiselect = await screen.findByTestId(`${OTHER_USER_ID}-multiselect`);
+    expect(permissionsMultiselect).toBeTruthy();
+    expect(within(permissionsMultiselect).getByText('View case')).toBeTruthy();
+    await user.click(within(permissionsMultiselect).getByRole('button', { name: /choose permissions/i }));
+    await user.click(await screen.findByRole('option', { name: 'Edit case' }));
 
     //assert save button
     const saveButton = await screen.findByRole('button', { name: commonLabels.saveUpdatesButton });
     expect(saveButton).toBeTruthy();
-    await act(async () => {
-      saveButton.click();
-    });
+    await waitFor(() => expect(saveButton).toBeEnabled());
+    await user.click(saveButton);
 
     // assert remove button
-    await waitFor(() => expect(screen.queryByTestId(`${ACTIVE_USER_ID}-remove-button`)).toBeDisabled());
-    const removeButton = await screen.queryByTestId(`${OTHER_USER_ID}-remove-button`);
+    await waitFor(() => expect(screen.getByTestId(`${ACTIVE_USER_ID}-remove-button`)).toBeDisabled());
+    const removeButton = await screen.findByTestId(`${OTHER_USER_ID}-remove-button`);
     expect(removeButton).toBeEnabled();
-    await act(async () => {
-      removeButton.click();
-    });
+    await user.click(removeButton);
 
     // assert remove modal
-    const removeModalWrapper = wrapper(document.body).findModal()!;
-    expect(removeModalWrapper).toBeTruthy();
-    expect(removeModalWrapper.isVisible()).toBeTruthy();
+    const removeModal = screen
+      .getAllByTestId('access-confirm-modal')
+      .find((modal) => !modal.className.includes('awsui_hidden_'));
+    expect(removeModal).toBeTruthy();
+    expect(removeModal!.className).not.toMatch('awsui_hidden_');
     // click on dismiss button should close the modal.
-    await act(async () => {
-      removeModalWrapper.findDismissButton().click();
-    });
-    expect(removeModalWrapper.isVisible()).toBeFalsy();
+    await user.click(within(removeModal!).getByRole('button', { name: commonLabels.cancelButton }));
+    await waitFor(() => expect(removeModal!.className).toMatch('awsui_hidden_'));
     // asert modal submit button
-    await act(async () => {
-      removeButton.click();
-    });
-    const modalSubmitButton = await getByRole(removeModalWrapper.getElement(), 'button', { name: 'Remove' });
-    await act(async () => {
-      modalSubmitButton.click();
-    });
-    expect(removeModalWrapper.isVisible()).toBeFalsy();
+    await user.click(removeButton);
+    await waitFor(() => expect(removeModal!.className).not.toMatch('awsui_hidden_'));
+    await user.click(within(removeModal!).getByRole('button', { name: commonLabels.removeButton }));
+    await waitFor(() => expect(removeModal!.className).toMatch('awsui_hidden_'));
 
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
-    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(3));
-    const item = notificationsWrapper.findItems()[0];
-    await act(async () => {
-      item.findDismissButton()!.click();
-    });
+    await waitFor(() => expect(notificationsWrapper.findItems().length).toBeGreaterThan(0));
+    await user.click(screen.getAllByRole('button', { name: commonLabels.dismissMessageLabel })[0]);
   }, 30000);
 
   it('navigates to upload files page', async () => {

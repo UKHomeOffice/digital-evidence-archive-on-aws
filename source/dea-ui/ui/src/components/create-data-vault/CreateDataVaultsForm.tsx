@@ -22,7 +22,7 @@ import { createDataVault } from '../../api/data-vaults';
 import { commonLabels, commonTableLabels, createDataVaultLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 
-function CreateDataVaultsForm(): JSX.Element {
+function CreateDataVaultsForm(): React.ReactNode {
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<DeaDataVaultInput>({ name: '' });

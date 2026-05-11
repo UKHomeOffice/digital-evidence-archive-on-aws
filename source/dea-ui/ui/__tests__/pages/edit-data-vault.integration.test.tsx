@@ -1,8 +1,7 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
 import Axios from 'axios';
 import { commonLabels } from '../../src/common/labels';
 import EditDataVaultPage from '../../src/pages/edit-data-vault';
@@ -24,6 +23,8 @@ const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
 describe('EditDataVaultPage page', () => {
   it('responds to cancel', async () => {
+    const user = userEvent.setup();
+
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockResolvedValue({
       data: {
@@ -39,7 +40,7 @@ describe('EditDataVaultPage page', () => {
     render(<EditDataVaultPage />);
 
     const cancelButton = await screen.findByTestId('edit-data-vault-cancel');
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
 
     expect(push).toHaveBeenCalledWith(`/data-vault-detail?dataVaultId=${DATA_VAULT_ID}`);
   });
@@ -61,18 +62,14 @@ describe('EditDataVaultPage page', () => {
     render(<EditDataVaultPage />);
 
     const nameInput = await screen.findByTestId('input-name');
-    const wrappedName = wrapper(nameInput).findInput();
-    if (!wrappedName) {
-      fail();
-    }
-    wrappedName.setInputValue('a name');
+    const nameField = within(nameInput).getByRole('textbox');
+    await user.clear(nameField);
+    await user.type(nameField, 'a name');
 
     const descriptionInput = await screen.findByTestId('input-description');
-    const wrappedDescription = wrapper(descriptionInput).findTextarea();
-    if (!wrappedDescription) {
-      fail();
-    }
-    wrappedDescription.setTextareaValue('a description');
+    const descriptionField = within(descriptionInput).getByRole('textbox');
+    await user.clear(descriptionField);
+    await user.type(descriptionField, 'a description');
 
     const button = await screen.findByRole('button', { name: commonLabels.saveButton });
     await user.click(button);
@@ -108,18 +105,14 @@ describe('EditDataVaultPage page', () => {
     const page = render(<EditDataVaultPage />);
 
     const nameInput = await screen.findByTestId('input-name');
-    const wrappedName = wrapper(nameInput).findInput();
-    if (!wrappedName) {
-      fail();
-    }
-    wrappedName.setInputValue('a name');
+    const nameField = within(nameInput).getByRole('textbox');
+    await user.clear(nameField);
+    await user.type(nameField, 'a name');
 
     const descriptionInput = await screen.findByTestId('input-description');
-    const wrappedDescription = wrapper(descriptionInput).findTextarea();
-    if (!wrappedDescription) {
-      fail();
-    }
-    wrappedDescription.setTextareaValue('a description');
+    const descriptionField = within(descriptionInput).getByRole('textbox');
+    await user.clear(descriptionField);
+    await user.type(descriptionField, 'a description');
 
     const button = await screen.findByRole('button', { name: commonLabels.saveButton });
     await user.click(button);

@@ -19,7 +19,7 @@ export interface ManageAccessFormProps {
   readonly activeUser: CaseUser;
 }
 
-function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
+function ManageAccessForm(props: ManageAccessFormProps): React.ReactNode {
   const { data: caseMembers, mutate } = useGetCaseMembers(props.caseId);
   const { pushNotification } = useNotifications();
   const [isSaving, setIsSaving] = useState(false);
