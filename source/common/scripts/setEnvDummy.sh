@@ -1,4 +1,7 @@
 export DEA_API_URL=dummyUrl
+export STAGE=devsample
+export CONFIGNAME=devsample
+export AWS_REGION=us-east-1
 export IDENTITY_POOL_ID=dummyId
 export USER_POOL_ID=dummyPool
 export USER_POOL_CLIENT_ID=dummyClient

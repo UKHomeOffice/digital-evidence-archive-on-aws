@@ -4,6 +4,10 @@
   "sourceIpValidation": false,
   "deletionAllowed": true,
   "isMultiRegionTrail": false,
+  "fipsEndpointsEnabled": false,
+  "cognito": {
+    "domain": "dummydomain"
+  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

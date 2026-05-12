@@ -46,12 +46,14 @@ describe('convict based config', () => {
     expect(() => {
       loadConfig('invalid1');
     }).toThrow('deaRoleTypes: must be of type Array: value was "InvalidGroupConfig"');
+    loadConfig('devsample');
   });
 
   it('throws an error for invalid endpoint config', () => {
     expect(() => {
       loadConfig('invalid2');
     }).toThrow('endpoints: must be of type Array: value was "InvalidEndpoints"');
+    loadConfig('devsample');
   });
 
   it('throws an error for invalid domain config', () => {
@@ -208,12 +210,12 @@ describe('convict based config', () => {
     convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
   });
 
-  it('confirms upload timeout is less than 60', () => {
+  it('confirms upload timeout is less than 300', () => {
     const oldUploadTimeout = convictConfig.get('uploadFilesTimeoutMinutes');
-    convictConfig.set('uploadFilesTimeoutMinutes', 61);
+    convictConfig.set('uploadFilesTimeoutMinutes', 301);
     expect(() => {
       convictConfig.validate({ allowed: 'strict' });
-    }).toThrow('The Upload Timeout value must be less than 60 minutes');
+    }).toThrow('The Upload Timeout value must be less than 300 minutes');
     convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
   });
 });
