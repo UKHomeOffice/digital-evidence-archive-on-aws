@@ -52,7 +52,7 @@ export interface DataVaultFilesTableProps {
   readonly dataVaultName: string;
 }
 
-function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
+function DataVaultFilesTable(props: DataVaultFilesTableProps): React.ReactNode {
   const router = useRouter();
   const [displayFilesWithoutACase, setDisplayFilesWithoutACase] = useState(false);
   // Property and date filter collections

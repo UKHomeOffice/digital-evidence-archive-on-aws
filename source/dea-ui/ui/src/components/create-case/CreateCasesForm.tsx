@@ -21,7 +21,7 @@ import { commonLabels, createCaseLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { CreateCaseForm } from '../../models/Cases';
 
-function CreateCasesForm(): JSX.Element {
+function CreateCasesForm(): React.ReactNode {
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });

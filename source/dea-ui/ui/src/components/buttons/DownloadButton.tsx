@@ -26,7 +26,7 @@ export interface DownloadButtonProps {
   filesToRestoreCallback: (setFilesToRestore: DownloadDTO[]) => void;
 }
 
-function DownloadButton(props: DownloadButtonProps): JSX.Element {
+function DownloadButton(props: DownloadButtonProps): React.ReactNode {
   const { pushNotification } = useNotifications();
   const userActions = useGetCaseActions(props.caseId);
   const availableEndpoints = useAvailableEndpoints();

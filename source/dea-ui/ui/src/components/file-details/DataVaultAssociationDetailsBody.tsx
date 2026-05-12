@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import React from 'react';
 import { Container, Header, ColumnLayout, TextContent, SpaceBetween } from '@cloudscape-design/components';
 import { fileDetailLabels, commonTableLabels, dataVaultDetailLabels } from '../../common/labels';
 
@@ -13,7 +14,7 @@ export interface DataVaultAssociationDetailsProps {
   readonly associationDate: Date | undefined;
 }
 
-function DataVaultAssociationDetailsBody(props: DataVaultAssociationDetailsProps): JSX.Element {
+function DataVaultAssociationDetailsBody(props: DataVaultAssociationDetailsProps): React.ReactNode {
   return (
     <Container header={<Header variant="h2">{dataVaultDetailLabels.dataVaultDetailsLabel}</Header>}>
       <ColumnLayout columns={2} variant="text-grid">

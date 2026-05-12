@@ -26,7 +26,7 @@ import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 export const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
 
 export interface AuditResult {
-  status: QueryExecutionState | string;
+  status: QueryExecutionState;
   downloadUrl: string | undefined;
 }
 
@@ -53,10 +53,8 @@ export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
 export const useGetCaseById = (
   id: string | string[] | undefined
 ): DeaSingleResult<DeaCaseDTO | undefined> => {
-  if (!id || typeof id !== 'string') {
-    id = undefined;
-  }
-  const { data, error } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
+  const caseId = typeof id === 'string' ? id : undefined;
+  const { data, error } = useSWR(() => (caseId ? `cases/${caseId}/details` : null), httpApiGet<DeaCaseDTO>);
   return { data, isLoading: !data && !error };
 };
 
@@ -82,8 +80,7 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DownloadDTO> => {
-  const data = useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
-  return data;
+  return useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFileUpload> => {

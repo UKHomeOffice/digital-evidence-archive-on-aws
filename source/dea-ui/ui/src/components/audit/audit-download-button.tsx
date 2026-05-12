@@ -17,7 +17,7 @@ export interface AuditDownloadProps {
   testId: string;
 }
 
-export function AuditDownloadButton(props: AuditDownloadProps): JSX.Element {
+export function AuditDownloadButton(props: AuditDownloadProps): React.ReactNode {
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
   const { pushNotification } = useNotifications();
   return (

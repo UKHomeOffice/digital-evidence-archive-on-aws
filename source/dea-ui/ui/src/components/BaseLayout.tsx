@@ -4,7 +4,7 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import AppLayout, { AppLayoutProps } from '@cloudscape-design/components/app-layout';
+import AppLayout from '@cloudscape-design/components/app-layout';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 import Head from 'next/head';
 import * as React from 'react';
@@ -21,16 +21,10 @@ export interface LayoutProps {
   activeHref?: string;
 }
 
-export default function BaseLayout({
-  navigationHide,
-  children,
-  breadcrumbs,
-  activeHref = '#/',
-}: LayoutProps): JSX.Element {
+export default function BaseLayout(props: Readonly<LayoutProps>): React.ReactNode {
+  const { navigationHide, children, breadcrumbs, activeHref = '#/' } = props;
   const [navigationOpen, setNavigationOpen] = React.useState(false);
   const { settings } = useSettings();
-
-  const appLayoutLabels: AppLayoutProps.Labels = layoutLabels;
   return (
     <>
       <Head>
@@ -39,9 +33,9 @@ export default function BaseLayout({
         <meta name="version" content={packageJson.version} />
       </Head>
       <AppLayout
-        headerSelector="#header"
+        headerSelector="[data-testid='header-top-navigation']"
         toolsHide
-        ariaLabels={appLayoutLabels}
+        ariaLabels={layoutLabels}
         navigationOpen={navigationOpen}
         navigationHide={navigationHide}
         navigation={<Navigation initialHref={activeHref} />}
@@ -50,7 +44,6 @@ export default function BaseLayout({
         }
         content={children}
         onNavigationChange={({ detail }) => {
-          // eslint-disable-next-line security/detect-non-literal-fs-filename
           setNavigationOpen(detail.open);
         }}
         notifications={<Notifications />}

@@ -1,8 +1,7 @@
-import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { useGetFileDetailsById, useGetCaseActions } from '../../src/api/cases';
-import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
+import { useGetFileDetailsById as useGetFileDetailsByIdImport } from '../../src/api/cases';
+import { commonLabels } from '../../src/common/labels';
 import FileDetailPage from '../../src/pages/file-detail';
 
 let query: { caseId: any; fileId: any } = { caseId: '100', fileId: '200' };
@@ -17,6 +16,8 @@ jest.mock('../../src/api/cases', () => ({
   useGetFileDetailsById: jest.fn(),
   useGetCaseActions: jest.fn(),
 }));
+
+const useGetFileDetailsById = useGetFileDetailsByIdImport as jest.Mock;
 
 describe('CaseDetailsPage', () => {
   it('renders a blank page with no caseId', async () => {
@@ -39,7 +40,6 @@ describe('CaseDetailsPage', () => {
 
   it('renders a not found warning if no caseId is provided', () => {
     query = { caseId: undefined, fileId: '200' };
-    const page = render(<FileDetailPage />);
     render(<FileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
@@ -52,7 +52,6 @@ describe('CaseDetailsPage', () => {
 
   it('renders a not found warning if caseId is not a string', () => {
     query = { caseId: {}, fileId: '200' };
-    const page = render(<FileDetailPage />);
     render(<FileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });

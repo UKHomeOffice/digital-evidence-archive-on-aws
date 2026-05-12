@@ -1,6 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
@@ -129,9 +129,7 @@ describe('DataSyncTasks Dashboard', () => {
 
     const taskSelection = tableWrapper.findRowSelectionArea(1);
     expect(taskSelection).toBeTruthy();
-    await act(async () => {
-      taskSelection!.click();
-    });
+    fireEvent.click(taskSelection!.getElement());
 
     expect(tableWrapper.findSelectedRows().length).toEqual(1);
 

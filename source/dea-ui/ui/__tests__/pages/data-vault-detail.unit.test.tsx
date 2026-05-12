@@ -1,12 +1,13 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { useAvailableEndpoints } from '../../src/api/auth';
-import { useListAllCases } from '../../src/api/cases';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useAvailableEndpoints as useAvailableEndpointsImport } from '../../src/api/auth';
+import { useListAllCases as useListAllCasesImport } from '../../src/api/cases';
 import {
-  createDataVaultFileAssociation,
-  useGetDataVaultById,
-  useListDataVaultFiles,
+  createDataVaultFileAssociation as createDataVaultFileAssociationImport,
+  useGetDataVaultById as useGetDataVaultByIdImport,
+  useListDataVaultFiles as useListDataVaultFilesImport,
 } from '../../src/api/data-vaults';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import { CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-details/DataVaultFilesTable';
@@ -35,6 +36,12 @@ jest.mock('../../src/api/data-vaults', () => ({
   useListDataVaultFiles: jest.fn(),
   createDataVaultFileAssociation: jest.fn(),
 }));
+
+const useAvailableEndpoints = useAvailableEndpointsImport as jest.Mock;
+const useListAllCases = useListAllCasesImport as jest.Mock;
+const useGetDataVaultById = useGetDataVaultByIdImport as jest.Mock;
+const useListDataVaultFiles = useListDataVaultFilesImport as jest.Mock;
+const createDataVaultFileAssociation = createDataVaultFileAssociationImport as jest.Mock;
 
 describe('DataVaultDetailsPage', () => {
   beforeAll(() => {
@@ -185,14 +192,15 @@ describe('DataVaultDetailsPage', () => {
     if (!textFilter) {
       fail();
     }
-    const textFilterInput = textFilter.findInput();
-    textFilterInput.setInputValue('README.md');
+    const textFilterInput = within(table).getByRole('searchbox');
+    await userEvent.clear(textFilterInput);
+    await userEvent.type(textFilterInput, 'README.md');
 
     // after filtering, folder entry will not be visible
     await waitFor(() => expect(screen.queryByTestId('joi-17.9.1-file-button')).toBeNull());
 
     // clear the filter
-    textFilterInput.setInputValue('');
+    await userEvent.clear(textFilterInput);
     await waitFor(() => expect(screen.queryByTestId('joi-17.9.1-file-button')).toBeDefined());
 
     expect(page).toBeTruthy();
@@ -379,9 +387,7 @@ describe('DataVaultDetailsPage', () => {
 
     const activeCaseSelection = tableWrapper.findSelectAllTrigger();
     expect(activeCaseSelection).toBeTruthy();
-    await act(async () => {
-      activeCaseSelection!.click();
-    });
+    fireEvent.click(activeCaseSelection!.getElement());
 
     await waitFor(() => expect(associateButton).toBeEnabled());
     fireEvent.click(associateButton);
@@ -390,14 +396,15 @@ describe('DataVaultDetailsPage', () => {
     if (!cancelCaseAsssociationButton) fail();
     fireEvent.click(cancelCaseAsssociationButton);
 
-    const multiselectWrapper = pageWrapper.findMultiselect();
-    if (!multiselectWrapper) fail();
-    multiselectWrapper.openDropdown();
-    multiselectWrapper.selectOption(1);
+    await userEvent.click(screen.getByRole('button', { name: /choose case/i }));
+    await userEvent.click(await screen.findByRole('option', { name: 'speedy cam' }));
 
     const confirmCaseAsssociationButton = screen.queryByTestId('submit-case-association');
     if (!confirmCaseAsssociationButton) fail();
-    fireEvent.click(confirmCaseAsssociationButton);
+    await userEvent.click(confirmCaseAsssociationButton);
+    await waitFor(() =>
+      expect(screen.getByTestId('associate-to-case-modal').className).toMatch('awsui_hidden_')
+    );
 
     // success notification is visible
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;

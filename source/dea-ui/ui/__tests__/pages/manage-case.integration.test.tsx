@@ -1,6 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Axios from 'axios';
 import { breadcrumbLabels } from '../../src/common/labels';
@@ -111,21 +111,16 @@ describe('Manage Case Page', () => {
     );
 
     // assert autosuggest component
-    const searchUserInput = await screen.findByTestId('user-search-input');
-    const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
-    expect(searchUserInput).toBeDefined();
-
-    searchUserInputWrapper.focus();
-
     const textToInput = 'Carlos Salazar';
     const searchInput = await screen.findByRole('combobox');
+    expect(await screen.findByTestId('user-search-input')).toBeDefined();
+    await user.click(searchInput);
     await user.type(searchInput, textToInput);
-    await act(async () => {
-      searchUserInputWrapper.selectSuggestionByValue(textToInput);
-    });
+    await user.click(await screen.findByRole('option', { name: textToInput }));
 
     const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
-    fireEvent.click(addCaseMemberButton);
+    await waitFor(() => expect(addCaseMemberButton).toBeEnabled());
+    await user.click(addCaseMemberButton);
   }, 20000);
 
   it('notifies of failure to assign an owner', async () => {
@@ -176,20 +171,15 @@ describe('Manage Case Page', () => {
     expect(page).toBeDefined();
 
     // assert autosuggest component
-    const searchUserInput = await screen.findByTestId('user-search-input');
-    const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
-    expect(searchUserInput).toBeDefined();
-
-    searchUserInputWrapper.focus();
-
     const textToInput = 'Carlos Salazar';
     const searchInput = await screen.findByRole('combobox');
+    expect(await screen.findByTestId('user-search-input')).toBeDefined();
+    await user.click(searchInput);
     await user.type(searchInput, textToInput);
-    await act(async () => {
-      searchUserInputWrapper.selectSuggestionByValue(textToInput);
-    });
+    await user.click(await screen.findByRole('option', { name: textToInput }));
 
     const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
-    fireEvent.click(addCaseMemberButton);
+    await waitFor(() => expect(addCaseMemberButton).toBeEnabled());
+    await user.click(addCaseMemberButton);
   }, 20000);
 });

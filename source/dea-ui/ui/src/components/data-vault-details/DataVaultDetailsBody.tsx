@@ -34,7 +34,7 @@ export interface DataVaultDetailsBodyProps {
   readonly setdataVaultName: (name: string) => void;
 }
 
-function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
+function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): React.ReactNode {
   const { setdataVaultName } = props;
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();

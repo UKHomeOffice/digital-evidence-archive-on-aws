@@ -6,13 +6,13 @@
 import '@cloudscape-design/global-styles/index.css';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
+import React from 'react';
 import Header from '../components/Header';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { SettingsProvider } from '../context/SettingsContext';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-function App({ Component, pageProps }: AppProps): JSX.Element {
+function App({ Component, pageProps }: AppProps): React.ReactNode {
   return (
     <SettingsProvider>
       <AuthenticationProvider>

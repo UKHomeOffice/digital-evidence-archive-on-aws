@@ -15,7 +15,7 @@ import {
   SelectProps,
   SpaceBetween,
 } from '@cloudscape-design/components';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   caseActionOptions,
   commonLabels,
@@ -32,27 +32,26 @@ export interface ManageAccessListItemProps {
   readonly activeUser: CaseUser;
 }
 
-function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
+function isCaseAction(value: string | undefined): value is CaseAction {
+  return Object.values(CaseAction).some((caseAction) => caseAction === value);
+}
+
+function ManageAccessListItem(props: ManageAccessListItemProps): React.ReactNode {
   const { caseMember, onRemoveMember, onUpdateMember, activeUser } = props;
   const [selectedOptions, setSelectedOptions] = useState<ReadonlyArray<SelectProps.Option>>(
     caseMember.actions.map((action) => caseActionOptions.actionOption(action))
   );
   const [isOpenRemoveModal, setIsOpenRemoveModal] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
-  useMemo(() => {
-    const entryBelongsToActiveUser = caseMember.userUlid === activeUser?.userUlid;
-    setIsDisabled(isRemoving || entryBelongsToActiveUser);
-  }, [caseMember, activeUser, isRemoving]);
+  const isDisabled = isRemoving || caseMember.userUlid === activeUser?.userUlid;
 
   async function onPermissionsChangeHandler(event: {
     detail: MultiselectProps.MultiselectChangeDetail;
   }): Promise<void> {
     setSelectedOptions(event.detail.selectedOptions);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const actions = [
-      ...event.detail.selectedOptions.map((option: MultiselectProps.Option) => option.value),
-    ] as CaseAction[];
+    const actions = event.detail.selectedOptions
+      .map((option: MultiselectProps.Option) => option.value)
+      .filter(isCaseAction);
     await onUpdateMember({ ...caseMember, actions });
   }
 

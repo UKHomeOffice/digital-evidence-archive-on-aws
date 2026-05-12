@@ -24,7 +24,7 @@ export interface DeleteButtonProps {
   deleteCompleted: () => void;
 }
 
-function DeleteButton(props: DeleteButtonProps): JSX.Element {
+function DeleteButton(props: DeleteButtonProps): React.ReactNode {
   const { pushNotification } = useNotifications();
   const userActions = useGetCaseActions(props.caseId);
   const [deleteReasonModalOpen, setDeleteReasonModalOpen] = useState(false);

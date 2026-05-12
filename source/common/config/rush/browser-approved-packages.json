@@ -267,11 +267,23 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@eslint/eslintrc",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@eslint/js",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@hapi/boom",
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
       "name": "@microsoft/rush-lib",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@next/eslint-plugin-next",
       "allowedCategories": [ "production" ]
     },
     {
@@ -483,6 +495,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "eslint-plugin-react-hooks",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "eslint-plugin-security",
       "allowedCategories": [ "production", "prototypes" ]
     },
@@ -500,6 +516,10 @@
     },
     {
       "name": "generate-password",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "globals",
       "allowedCategories": [ "production" ]
     },
     {

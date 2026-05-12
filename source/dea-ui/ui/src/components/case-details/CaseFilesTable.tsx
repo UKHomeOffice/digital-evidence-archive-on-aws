@@ -40,7 +40,7 @@ import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/Com
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
-function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
+function CaseFilesTable(props: CaseDetailsTabsProps): React.ReactNode {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const userActions = useGetCaseActions(props.caseId);

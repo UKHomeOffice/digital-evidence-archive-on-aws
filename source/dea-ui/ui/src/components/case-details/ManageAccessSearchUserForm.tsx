@@ -22,7 +22,7 @@ export interface ManageAccessSearchUserFormProps {
   readonly onChange: (user: DeaUser) => void;
 }
 
-function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX.Element {
+function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): React.ReactNode {
   const { onChange } = props;
   const [filteringText, setFilteringText] = useState('');
   const [value, setValue] = useState('');

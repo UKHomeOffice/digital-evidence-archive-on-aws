@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import {
   Button,
@@ -27,7 +28,7 @@ export interface CaseDetailsBodyProps {
   readonly data: DeaCaseDTO;
 }
 
-function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
+function CaseDetailsBody(props: CaseDetailsBodyProps): React.ReactNode {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
   const caseName = props.data.name;

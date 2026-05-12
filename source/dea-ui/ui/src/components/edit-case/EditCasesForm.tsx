@@ -26,7 +26,7 @@ export interface EditCasesFormProps {
   readonly case: DeaCaseDTO;
 }
 
-function EditCasesForm(props: EditCasesFormProps): JSX.Element {
+function EditCasesForm(props: EditCasesFormProps): React.ReactNode {
   const { ulid, name, description } = props.case;
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();

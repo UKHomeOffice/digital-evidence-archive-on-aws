@@ -50,15 +50,17 @@ export const DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID = 'download-data-vault-file-audit
 export const DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH =
   '/datavaults/{dataVaultId}/files/{fileId}/caseAssociationsDELETE';
 
-function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
+function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): React.ReactNode {
   const { dataVaultId, fileId, setFileName } = props;
   const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(dataVaultId, fileId);
   const [showDisassociateToCaseModal, setShowDisassociateToCaseModal] = useState(false);
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
-  const [checkedState, setCheckedState] = useState<boolean[]>([]);
+  const [checkedState, setCheckedState] = useState<Record<string, boolean>>({});
   const availableEndpoints = useAvailableEndpoints();
-  const hasCheckedCase = checkedState.some(Boolean);
+  const selectedCaseUlids =
+    data?.cases?.filter((item) => checkedState[item.ulid]).map((item) => item.ulid) ?? [];
+  const hasCheckedCase = selectedCaseUlids.length > 0;
 
   useEffect(() => {
     if (data?.fileName) {
@@ -66,31 +68,37 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
     }
   }, [data?.fileName, setFileName]);
 
-  useEffect(() => {
-    const casesLength = data?.cases?.length ?? 0;
-    setCheckedState((prev) => {
-      if (prev.length === casesLength) {
-        return prev;
-      }
-      return new Array(casesLength).fill(false);
-    });
-  }, [data?.cases]);
-
   function enableDisassociateToCaseModal() {
+    const caseUlids = new Set(data?.cases?.map((item) => item.ulid) ?? []);
+    setCheckedState((prev) => {
+      if (!caseUlids.size) {
+        return {};
+      }
+
+      return Object.keys(prev).reduce<Record<string, boolean>>((acc, ulid) => {
+        if (caseUlids.has(ulid) && prev[ulid]) {
+          acc[ulid] = true;
+        }
+        return acc;
+      }, {});
+    });
     setShowDisassociateToCaseModal(true);
   }
 
   function disableDisassociateToCaseModal() {
+    setCheckedState({});
     setShowDisassociateToCaseModal(false);
   }
 
   async function disassociateToCaseHandler() {
+    if (!selectedCaseUlids.length) {
+      return;
+    }
+
     setIsSubmitLoading(true);
     try {
-      const caseUlids =
-        data?.cases?.filter((_item, index) => checkedState[index]).map((item) => item.ulid) ?? [];
       await removeDataVaultFileCaseAssociation(props.dataVaultId, props.fileId, {
-        caseUlids,
+        caseUlids: selectedCaseUlids,
       });
       pushNotification('success', dataVaultDetailLabels.disassociateFromCaseSuccessNotificationMessage);
       mutate();
@@ -104,10 +112,11 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
     }
   }
 
-  function handleOnChange(position: number) {
-    const updatedCheckedState = checkedState.map((item, index) => (index === position ? !item : item));
-
-    setCheckedState(updatedCheckedState);
+  function handleOnChange(caseUlid: string) {
+    setCheckedState((prev) => ({
+      ...prev,
+      [caseUlid]: !prev[caseUlid],
+    }));
   }
 
   function disassociateModal() {
@@ -162,11 +171,11 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   }
 
   function associatedCasesOption(cases: ScopedDeaCase[] | undefined) {
-    return cases?.map((caseItem, index: number) => (
+    return cases?.map((caseItem) => (
       <Checkbox
         key={`check-${caseItem.ulid}`}
-        checked={checkedState[index]}
-        onChange={() => handleOnChange(index)}
+        checked={checkedState[caseItem.ulid] ?? false}
+        onChange={() => handleOnChange(caseItem.ulid)}
       >
         {caseItem.name}
       </Checkbox>

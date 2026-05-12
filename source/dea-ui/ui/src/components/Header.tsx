@@ -10,7 +10,7 @@ import { isUsingCustomDomain } from '../common/utility';
 import { useAuthentication } from '../context/AuthenticationContext';
 import { useSettings } from '../context/SettingsContext';
 
-export default function Header(): JSX.Element {
+export default function Header(): React.ReactNode {
   const { settings } = useSettings();
   const { user, signOut, isLoggedIn } = useAuthentication();
 
@@ -18,8 +18,6 @@ export default function Header(): JSX.Element {
   const href = isUsingCustomDomain ? '/ui' : `/${settings.stage}/ui`;
   return (
     <TopNavigation
-      id="header"
-      className="header"
       data-testid="header-top-navigation"
       i18nStrings={headerLabels}
       identity={{

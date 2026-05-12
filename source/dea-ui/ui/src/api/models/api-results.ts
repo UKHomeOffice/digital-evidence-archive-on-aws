@@ -6,14 +6,12 @@
 export interface DeaListResult<T> {
   data: T[];
   isLoading: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mutate?: any;
 }
 
 export interface DeaSingleResult<T> {
   data: T;
   isLoading: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mutate?: any;
 }
 

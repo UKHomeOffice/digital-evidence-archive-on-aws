@@ -25,7 +25,7 @@ export interface EditDataVaultFormProps {
   readonly dataVault: DeaDataVault;
 }
 
-function EditDataVaultForm(props: EditDataVaultFormProps): JSX.Element {
+function EditDataVaultForm(props: EditDataVaultFormProps): React.ReactNode {
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<DeaDataVault>(props.dataVault);

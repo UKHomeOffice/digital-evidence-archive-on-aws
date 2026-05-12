@@ -55,7 +55,7 @@ export interface DataVaultsTableProps {
   headerDescription: string;
 }
 
-function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
+function DataSyncTasksTable(props: Readonly<DataVaultsTableProps>): React.ReactNode {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data: dataSyncTasks, isLoading: dataSyncTasksLoading } = props.useDataSyncTasksFectcher();
@@ -94,19 +94,14 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           dataSyncTaskListLabels.noDisplayLabel
         ),
         noMatch: TableNoMatchDisplay(dataSyncTaskListLabels.noDataSyncTasksMatchLabel),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filteringFunction: (item: any, filteringText): any => {
           const filteringTextLowerCase = filteringText.toLowerCase();
 
-          return (
-            searchableColumns
-              // eslint-disable-next-line security/detect-object-injection
-              .map((key) => item[key])
-              .some(
-                (value) =>
-                  typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
-              )
-          );
+          return searchableColumns
+            .map((key) => item[key])
+            .some(
+              (value) => typeof value === 'string' && value.toLowerCase().includes(filteringTextLowerCase)
+            );
         },
       },
       propertyFiltering: {
@@ -205,11 +200,11 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         <SpaceBetween direction="vertical" size="l">
           <TextContent>
             <h5>{commonTableLabels.dataSyncTaskIdHeader}</h5>
-            <p>{selectedTasks.length && selectedTasks[0].taskId}</p>
+            <p>{selectedTasks.length > 0 ? selectedTasks[0].taskId : ''}</p>
           </TextContent>
           <TextContent>
             <h5>{commonTableLabels.dataVaultNameHeader}</h5>
-            <p>{selectedTasks.length && (selectedTasks[0].dataVaultName ?? '-')}</p>
+            <p>{selectedTasks.length > 0 ? selectedTasks[0].dataVaultName ?? '-' : ''}</p>
           </TextContent>
           <TextContent>
             <h4>{dataSyncTaskListLabels.runTaskLocationsLabel}</h4>
@@ -218,13 +213,15 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
             <TextContent>
               <div>
                 <h5>{commonTableLabels.sourceLocationIdHeader}</h5>
-                <p>{selectedTasks.length && locationIdFromArn(selectedTasks[0].sourceLocationArn)}</p>
+                <p>{selectedTasks.length > 0 ? locationIdFromArn(selectedTasks[0].sourceLocationArn) : ''}</p>
               </div>
             </TextContent>
             <TextContent>
               <div>
                 <h5>{commonTableLabels.destinationLocationIdHeader}</h5>
-                <p>{selectedTasks.length && locationIdFromArn(selectedTasks[0].destinationLocationArn)}</p>
+                <p>
+                  {selectedTasks.length > 0 ? locationIdFromArn(selectedTasks[0].destinationLocationArn) : ''}
+                </p>
               </div>
             </TextContent>
           </ColumnLayout>
@@ -255,13 +252,6 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         {deaDataSyncTask.dataVaultName}
       </Link>
     );
-  }
-
-  function locationIdFromArn(locationArn: string | undefined) {
-    if (!locationArn) {
-      return '-';
-    }
-    return locationArn.split('/')[1];
   }
 
   function statusCell(deaDataSyncTask: DeaDataSyncTaskDTO) {
@@ -405,6 +395,13 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       pagination={<Pagination {...paginationProps} ariaLabels={paginationLabels} />}
     />
   );
+}
+
+function locationIdFromArn(locationArn: string | undefined) {
+  if (!locationArn) {
+    return '-';
+  }
+  return locationArn.split('/')[1];
 }
 
 const getFilterCounterText = (count: number | undefined): string =>

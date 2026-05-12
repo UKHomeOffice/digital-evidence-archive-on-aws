@@ -1,11 +1,17 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
-import Axios from 'axios';
+import Axios, { AxiosError } from 'axios';
 import { breadcrumbLabels, commonLabels, createCaseLabels } from '../../src/common/labels';
+import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import Home from '../../src/pages/create-cases';
+
+afterEach(cleanup);
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 const push = jest.fn();
 
@@ -20,17 +26,20 @@ jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
 describe('CreateCases page', () => {
-  it('responds to cancel', () => {
+  it('responds to cancel', async () => {
+    const user = userEvent.setup();
+
     render(<Home />);
 
     const cancelButton = screen.getByTestId('create-case-cancel');
 
-    const btn = wrapper(cancelButton);
-    btn.click();
+    await user.click(cancelButton);
     expect(push).toHaveBeenCalledWith('/');
   });
 
-  it('responds to form submit', () => {
+  it('responds to form submit', async () => {
+    const user = userEvent.setup();
+
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockResolvedValue({
       data: {
@@ -46,23 +55,16 @@ describe('CreateCases page', () => {
 
     render(<Home />);
 
-    const nameInput = screen.getByTestId('input-name');
-    const wrappedName = wrapper(nameInput).findInput();
-    if (!wrappedName) {
-      fail();
-    }
-    wrappedName.setInputValue('a name');
+    const nameField = within(screen.getByTestId('input-name')).getByRole('textbox');
+    await user.clear(nameField);
+    await user.type(nameField, 'a name');
 
-    const descriptionInput = screen.getByTestId('input-description');
-    const wrappedDescription = wrapper(descriptionInput).findTextarea();
-    if (!wrappedDescription) {
-      fail();
-    }
-    wrappedDescription.setTextareaValue('a description');
+    const descriptionField = within(screen.getByTestId('input-description')).getByRole('textbox');
+    await user.clear(descriptionField);
+    await user.type(descriptionField, 'a description');
 
-    const form = screen.getByTestId('create-case-form');
-    fireEvent.submit(form);
-    expect(push).toHaveBeenCalledWith('/');
+    await user.click(screen.getByTestId('create-case-submit'));
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc'));
   });
 
   it('responds to create button click', async () => {
@@ -82,39 +84,41 @@ describe('CreateCases page', () => {
     const user = userEvent.setup();
     render(<Home />);
 
-    const nameInput = screen.getByTestId('input-name');
-    const wrappedName = wrapper(nameInput).findInput();
-    if (!wrappedName) {
-      fail();
-    }
-    wrappedName.setInputValue('a name');
+    const nameField = within(screen.getByTestId('input-name')).getByRole('textbox');
+    await user.clear(nameField);
+    await user.type(nameField, 'a name');
 
-    const descriptionInput = screen.getByTestId('input-description');
-    const wrappedDescription = wrapper(descriptionInput).findTextarea();
-    if (!wrappedDescription) {
-      fail();
-    }
-    wrappedDescription.setTextareaValue('a description');
+    const descriptionField = within(screen.getByTestId('input-description')).getByRole('textbox');
+    await user.clear(descriptionField);
+    await user.type(descriptionField, 'a description');
 
     const button = screen.getByRole('button', { name: commonLabels.createButton });
     await user.click(button);
-    expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc');
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc'));
   });
 
   it('recovers from creation failure', async () => {
     const caseName = 'mocked case';
     const validationMessage = `Case with name "${caseName}" is already in use`;
     mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockRejectedValue({
-      data: validationMessage,
-      status: 400,
-      statusText: '',
-      headers: {},
-      config: {},
-    });
+    mockedAxios.request.mockRejectedValue(
+      Object.assign(new AxiosError(validationMessage), {
+        response: {
+          data: validationMessage,
+          status: 400,
+          statusText: '',
+          headers: {},
+          config: {},
+        },
+      })
+    );
 
     const user = userEvent.setup();
-    const page = render(<Home />);
+    const page = render(
+      <NotificationsProvider>
+        <Home />
+      </NotificationsProvider>
+    );
     const headerWrapper = wrapper(page.container).findHeader();
     expect(page).toBeTruthy();
     expect(headerWrapper).toBeTruthy();
@@ -130,12 +134,9 @@ describe('CreateCases page', () => {
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
     expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.createNewCaseLabel);
 
-    const nameInput = screen.getByTestId('input-name');
-    const wrappedName = wrapper(nameInput).findInput();
-    if (!wrappedName) {
-      fail();
-    }
-    wrappedName.setInputValue(caseName);
+    const nameField = within(screen.getByTestId('input-name')).getByRole('textbox');
+    await user.clear(nameField);
+    await user.type(nameField, caseName);
 
     const button = screen.getByRole('button', { name: commonLabels.createButton });
     await user.click(button);
@@ -143,5 +144,7 @@ describe('CreateCases page', () => {
     // error notification is visible
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
+    await waitFor(() => expect(push).not.toHaveBeenCalled());
+    await waitFor(() => expect(notificationsWrapper.findItems().length).toBeGreaterThan(0));
   });
 });
