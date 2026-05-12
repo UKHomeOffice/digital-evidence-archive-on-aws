@@ -1,0 +1,9 @@
+{
+  "deaRoleTypes": [
+    {
+      "name": "InvalidEndpointsRole",
+      "description": "invalid endpoints fixture",
+      "endpoints": "InvalidEndpoints"
+    }
+  ]
+}
