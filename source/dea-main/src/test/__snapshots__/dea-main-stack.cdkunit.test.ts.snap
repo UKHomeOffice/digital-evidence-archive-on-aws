@@ -1034,7 +1034,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -1185,7 +1185,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -1352,7 +1352,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -1535,7 +1535,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -1702,7 +1702,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -1869,7 +1869,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2036,7 +2036,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2203,7 +2203,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2370,7 +2370,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2537,7 +2537,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2704,7 +2704,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -2871,7 +2871,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3038,7 +3038,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3205,7 +3205,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3372,7 +3372,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3539,7 +3539,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3706,7 +3706,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -3873,7 +3873,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4040,7 +4040,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4207,7 +4207,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4374,7 +4374,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4541,7 +4541,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4708,7 +4708,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -4875,7 +4875,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5042,7 +5042,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5209,7 +5209,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5376,7 +5376,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5543,7 +5543,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5710,7 +5710,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -5877,7 +5877,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6044,7 +6044,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6195,7 +6195,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6378,7 +6378,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6545,7 +6545,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6712,7 +6712,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -6879,7 +6879,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7046,7 +7046,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7213,7 +7213,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7380,7 +7380,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7547,7 +7547,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7714,7 +7714,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -7881,7 +7881,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8048,7 +8048,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8215,7 +8215,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8382,7 +8382,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8549,7 +8549,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8716,7 +8716,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -8883,7 +8883,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -9050,7 +9050,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -9217,7 +9217,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -9384,7 +9384,7 @@ def sort_filter_rules(json_obj):
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
-            "UPLOAD_FILES_TIMEOUT_MINUTES": "180",
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
             "UPLOAD_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaApiGatewaydeaenduseruploadroleCE396283",
@@ -11059,7 +11059,7 @@ def sort_filter_rules(json_obj):
           ],
           "Version": "2012-10-17",
         },
-        "MaxSessionDuration": 10800,
+        "MaxSessionDuration": 3600,
       },
       "Type": "AWS::IAM::Role",
     },
@@ -11151,7 +11151,7 @@ def sort_filter_rules(json_obj):
           ],
           "Version": "2012-10-17",
         },
-        "MaxSessionDuration": 10800,
+        "MaxSessionDuration": 3600,
       },
       "Type": "AWS::IAM::Role",
     },
@@ -13785,6 +13785,36 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
+                      "/DELETE/cases/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
                       "/GET/cases/*/actions",
                     ],
                   ],
@@ -14205,7 +14235,7 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/DELETE/cases/*/files",
+                      "/PUT/cases/*/files/*/contents",
                     ],
                   ],
                 },
@@ -14235,7 +14265,7 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/PUT/cases/*/files/*/contents",
+                      "/PUT/cases/*/files/*/restore",
                     ],
                   ],
                 },
@@ -14296,36 +14326,6 @@ def sort_filter_rules(json_obj):
                         ],
                       },
                       "/POST/cases/*/files/*/contents",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/PUT/cases/*/files/*/restore",
                     ],
                   ],
                 },
@@ -14696,9 +14696,9 @@ def sort_filter_rules(json_obj):
                 Array [
                   "
         Hello {username},<br><br>
-        You have been invited to use DEA! (undefined)<br><br>
+        You have been invited to use DEA! ([STAGE-REMOVED])<br><br>
         Your temporary password is <strong>{####}</strong><br><br>
-        To log in, please visit <a href=\\"https://",
+        To log in, please visit <a href="https://",
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
@@ -15189,456 +15189,6 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/POST/datavaults",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datasync/tasks",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/details",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/PUT/datavaults/*/details",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/caseAssociations",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/tasks",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files/*/info",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/DELETE/datavaults/*/files/*/caseAssociations",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/tasks/*/executions",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/files/*/audit",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/audit",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files/*/audit/*/csv",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/audit/*/csv",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
                       "/GET/cases/*/userMemberships",
                     ],
                   ],
@@ -16060,6 +15610,456 @@ def sort_filter_rules(json_obj):
                         ],
                       },
                       "/GET/system/audit/*/csv",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datasync/tasks",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/PUT/datavaults/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/caseAssociations",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/tasks",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files/*/info",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/DELETE/datavaults/*/files/*/caseAssociations",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/tasks/*/executions",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/files/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files/*/audit/*/csv",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/audit/*/csv",
                     ],
                   ],
                 },
@@ -16676,6 +16676,17 @@ def sort_filter_rules(json_obj):
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
+                      "DeaAuthConstructNoPermissionsGroupRoleE403EB55",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "NoPermissionsGroup",
+                },
+                Object {
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
                       "DeaAuthConstructAuthTestGroupRole238CB12C",
                       "Arn",
                     ],
@@ -16714,17 +16725,6 @@ def sort_filter_rules(json_obj):
                     ],
                   },
                   "Value": "GetMyCasesTestGroup",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthConstructNoPermissionsGroupRoleE403EB55",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "NoPermissionsGroup",
                 },
               ],
             },
@@ -16790,7 +16790,7 @@ def sort_filter_rules(json_obj):
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for get my cases API e2e testing",
+        "Description": "Role users who can't do anything in the system",
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
@@ -16962,456 +16962,6 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/POST/datavaults",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datasync/tasks",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/details",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/PUT/datavaults/*/details",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/caseAssociations",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/tasks",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files/*/info",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/DELETE/datavaults/*/files/*/caseAssociations",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/tasks/*/executions",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/files/*/audit",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/POST/datavaults/*/audit",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/files/*/audit/*/csv",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/GET/datavaults/*/audit/*/csv",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
                       "/GET/cases/*/details",
                     ],
                   ],
@@ -17472,7 +17022,67 @@ def sort_filter_rules(json_obj):
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
+                      "/DELETE/cases/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
                       "/GET/cases/*/actions",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/PUT/cases/*/status",
                     ],
                   ],
                 },
@@ -17833,36 +17443,6 @@ def sort_filter_rules(json_obj):
                         ],
                       },
                       "/GET/cases/*/files",
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":execute-api:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
-                        ],
-                      },
-                      "/",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
-                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
-                        ],
-                      },
-                      "/DELETE/cases/*/files",
                     ],
                   ],
                 },
@@ -18313,6 +17893,456 @@ def sort_filter_rules(json_obj):
                         ],
                       },
                       "/GET/system/audit/*/csv",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datasync/tasks",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/PUT/datavaults/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/caseAssociations",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/tasks",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files/*/info",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/DELETE/datavaults/*/files/*/caseAssociations",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/tasks/*/executions",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/files/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/POST/datavaults/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/files/*/audit/*/csv",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/GET/datavaults/*/audit/*/csv",
                     ],
                   ],
                 },

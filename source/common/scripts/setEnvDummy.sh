@@ -1,5 +1,6 @@
 export DEA_API_URL=dummyUrl
 export STAGE=devsample
+export DOMAIN_PREFIX=devsample
 export CONFIGNAME=devsample
 export AWS_REGION=us-east-1
 export IDENTITY_POOL_ID=dummyId
