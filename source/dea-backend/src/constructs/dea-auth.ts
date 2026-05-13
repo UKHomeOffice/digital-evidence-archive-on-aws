@@ -348,7 +348,7 @@ export class DeaAuth extends Construct {
 
     let defaultRoleArn;
     if (idpInfo?.defaultRole) {
-      const defaultRoleArn = deaRoles.get(idpInfo.defaultRole)?.roleArn;
+      defaultRoleArn = deaRoles.get(idpInfo.defaultRole)?.roleArn;
       if (!defaultRoleArn) {
         throw new Error(`Default Role is an invalid DeaRole Name ${idpInfo.defaultRole}`);
       }

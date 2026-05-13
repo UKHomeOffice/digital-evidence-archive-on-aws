@@ -72,17 +72,8 @@ const config = [
       ],
       'import/no-unresolved': ['off'],
       'import/named': ['off'],
-      'import/order': [
-        'error',
-        {
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true,
-          },
-          groups: ['builtin', 'external', 'parent', 'sibling'],
-        },
-      ],
-      'import/newline-after-import': ['error'],
+      'import/order': ['off'],
+      'import/newline-after-import': ['off'],
       curly: ['error'],
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-floating-promises': 'error',

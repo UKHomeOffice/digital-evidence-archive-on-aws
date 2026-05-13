@@ -19,7 +19,7 @@ import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/enti
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
-import { getCaseFile } from '../services/case-file-service';
+import { getCaseFile } from './case-file-service';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -174,7 +174,7 @@ export const updateCaseStatus = async (
     );
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);
-    throw new Error('Failed to delete files. Please retry.');
+    throw new Error('Failed to delete files. Please retry.', { cause: e });
   }
 };
 
@@ -239,7 +239,7 @@ export const deleteCaseFiles = async (
     return updateStatus;
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);
-    throw new Error('Failed to delete files. Please retry.');
+    throw new Error('Failed to delete files. Please retry.', { cause: e });
   }
 };
 
@@ -253,7 +253,7 @@ export const waitForFileToBeDeleted = async (
   while (isComplete < 5) {
     const deletedCaseFile = await getCaseFile(caseId, fileUlId, repositoryProvider);
 
-    if (deletedCaseFile && deletedCaseFile.status === CaseFileStatus.DELETED) {
+    if (deletedCaseFile?.status === CaseFileStatus.DELETED) {
       isComplete = 10;
     } else {
       console.log('Waiting for job to complete...', isComplete);
