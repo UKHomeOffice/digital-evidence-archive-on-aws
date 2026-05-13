@@ -35,7 +35,7 @@ export const createSession = async (
       return maybeSession;
     });
     if (!maybeSession) {
-      throw new Error(error);
+      throw new Error('Could not find session', { cause: error });
     }
 
     return maybeSession;

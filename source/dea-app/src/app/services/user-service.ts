@@ -30,7 +30,7 @@ export const createUser = async (
       return maybeUser;
     });
     if (!maybeUser) {
-      throw new Error(error);
+      throw new Error('Could not find user', { cause: error });
     }
 
     return maybeUser;
