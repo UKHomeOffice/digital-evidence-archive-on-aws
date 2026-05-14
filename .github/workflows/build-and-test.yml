@@ -1,9 +1,8 @@
-name: Digital Evidence Archive - main
+name: Build and Test
 
 on:
-  workflow_dispatch: {}
   push:
-    branches:
+    branches-ignore:
       - main
 
 permissions:
@@ -11,17 +10,16 @@ permissions:
   contents: read    # This is required for actions/checkout
 
 jobs:
-  deploy_to_dev:
+  build:
     env:
-      CONFIGNAME: 'dev'
-      STAGE: 'cfidev'
-      DOMAIN_PREFIX: 'deadev'
-    environment: dea-dev
+      CONFIGNAME: 'sandbox'
+      STAGE: 'cfideasandbox'
+      DOMAIN_PREFIX: 'cfideasandbox'
     defaults:
       run:
         shell: bash
         working-directory: ./source
-    name: Deploy DEA to CFI-Dev
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,14 +33,9 @@ jobs:
       - name: Build application
         run: |
           node common/scripts/install-run-rush.js build
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: GITHUBACTIONSESSION
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Deploy CDK stack
+      - name: Run linting
         run: |
-          cd dea-main
-          npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
-          npm run cdk deploy
+          node common/scripts/install-run-rush.js lint
+      - name: Run unit tests
+        run: |
+          node common/scripts/install-run-rush.js unit:only

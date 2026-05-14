@@ -5,6 +5,7 @@
   "isOneClick": false,
   "sourceIpValidation": false,
   "fipsEndpointsEnabled": false,
+  "includeSourceMaps": false,
   "isMultiRegionTrail": false,
   "uploadFilesTimeoutMinutes": 180,
   "cognito": {
