@@ -281,22 +281,13 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": Object {
-          "Fn::FindInMap": Array [
-            "LatestNodeRuntimeMap",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
+        "Runtime": "nodejs22.x",
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": Object {
       "DependsOn": Array [
-        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
       ],
       "Properties": Object {
@@ -420,7 +411,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "python3.11",
+        "Runtime": "python3.13",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -456,27 +447,6 @@ def sort_filter_rules(json_obj):
       },
       "Type": "AWS::IAM::Role",
     },
-    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "s3:PutBucketNotification",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-        "Roles": Array [
-          Object {
-            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": Object {
       "DependsOn": Array [
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
@@ -508,15 +478,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": Object {
-          "Fn::FindInMap": Array [
-            "LatestNodeRuntimeMap",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
+        "Runtime": "nodejs22.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -3024,6 +2986,7 @@ def sort_filter_rules(json_obj):
     "DeaBackendConstructdeaDataSyncReportsBucketNotificationsFCF53C15": Object {
       "DependsOn": Array [
         "DeaBackendConstructdeaDataSyncReportsBucketAllowBucketNotificationsToteststackDeaEventHandlersdatasyncexecutionevent514EC215434A7440",
+        "DeaBackendConstructdeaDataSyncReportsBucketNotificationsHandlerPolicy5CA036B6",
         "DeaBackendConstructdeaDataSyncReportsBucketPolicy6420EA8C",
       ],
       "Properties": Object {
@@ -3065,6 +3028,32 @@ def sort_filter_rules(json_obj):
         "SkipDestinationValidation": false,
       },
       "Type": "Custom::S3BucketNotifications",
+    },
+    "DeaBackendConstructdeaDataSyncReportsBucketNotificationsHandlerPolicy5CA036B6": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendConstructdeaDataSyncReportsBucket18D80514",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaBackendConstructdeaDataSyncReportsBucketNotificationsHandlerPolicy5CA036B6",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaBackendConstructdeaDataSyncReportsBucketPolicy6420EA8C": Object {
       "Properties": Object {
@@ -11922,6 +11911,9 @@ def sort_filter_rules(json_obj):
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
       ],
+      "Metadata": Object {
+        "aws:cdk:do-not-refactor": true,
+      },
       "Properties": Object {
         "Description": "Backend API",
         "RestApiId": Object {
@@ -20208,15 +20200,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": Object {
-          "Fn::FindInMap": Array [
-            "LatestNodeRuntimeMap",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
+        "Runtime": "nodejs22.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
