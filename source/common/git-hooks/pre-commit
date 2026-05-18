@@ -21,3 +21,9 @@ if [ "$RUN_HOOKS" = true ]; then
     node common/scripts/install-run-rush.js common-coverage-make-badge
     node common/scripts/install-run-rush.js common-cov-info
 fi
+
+## Runs Trufflehog secret scanning tool
+REPO_ROOT_DIR=$(git rev-parse --show-toplevel)
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+docker run --rm -v "$REPO_ROOT_DIR:/app" trufflesecurity/trufflehog:latest git file:///app --only-verified  --branch="$CURRENT_BRANCH" --fail
