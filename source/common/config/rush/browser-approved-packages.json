@@ -335,6 +335,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@smithy/util-stream",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@testing-library/dom",
       "allowedCategories": [ "production", "prototypes" ]
     },
