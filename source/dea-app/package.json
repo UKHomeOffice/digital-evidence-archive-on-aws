@@ -100,7 +100,7 @@
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
-    "@smithy/types": "~4.14.1",
+    "@smithy/types": "~4.14.2",
     "@types/cors": "^2.8.13",
     "@types/heft-jest": "1.0.3",
     "@types/jest": "^29.5.0",
