@@ -567,12 +567,38 @@ DEA does not protect against uploading viruses (as they can be considered eviden
 
 ## Contributing via Pull Requests
 
-Before commiting any changes please ensure that git hooks are enabled.
-The `pre-commit` hook lives in the [.githooks](./githooks) directory. The hooks may be activated by running the following command.
+Before committing any changes please ensure that git hooks are enabled.
 
+RushJS has the ability to manage git hooks as seen in [the
+documentation](https://rushjs.io/pages/maintainer/git_hooks/).
+
+>[!TIP]
+> The hooks can be found in <./source/common/git-hooks/>
+
+All that is
+required to configure the git hooks is running:
+
+```bash
+cd source
+rush cupdate
 ```
-git config core.hooksPath .githooks
+
+Then from the root of the repo, the hooks can be verified with:
+
+```bash
+ls -la .git/hooks
+## This should return something like
+
+# .r-x------@ 1.2k joe.bloggs 18 May 16:31 󰡯 commit-msg
+# .r-x------@ 1.0k joe.bloggs 18 May 16:31 󰡯 pre-commit
+# .r-x------@   87 joe.bloggs 18 May 16:31 󰡯 prepare-commit-msg
 ```
+
+> [!IMPORTANT] The pre-commit hook currently uses a
+> [Trufflehog](https://github.com/trufflesecurity/trufflehog) container image to
+> scan for secrets in staged code before committing to git. As this runs a
+> container, [docker](https://www.docker.com/) or [podman](https://podman.io/)
+> is required to be installed
 
 ## Creating a PR from a Commit(s)
 
