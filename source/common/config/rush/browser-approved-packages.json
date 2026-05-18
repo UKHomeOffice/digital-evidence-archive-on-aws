@@ -139,6 +139,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "@aws-sdk/region-config-resolver",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/s3-request-presigner",
       "allowedCategories": [ "production" ]
     },

@@ -57,6 +57,7 @@
     "@aws-sdk/client-cognito-identity": "~3.1048.0",
     "@aws-sdk/client-cognito-identity-provider": "~3.1048.0",
     "@aws-sdk/client-s3": "~3.1048.0",
+    "@aws-sdk/region-config-resolver": "3.972.15",
     "@aws-sdk/xhr-http-handler": "^3.1048.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
