@@ -1532,7 +1532,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 300,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -3243,7 +3243,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 900,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -3482,7 +3482,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 60,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -3834,7 +3834,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 60,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -3962,7 +3962,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4076,7 +4076,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4206,7 +4206,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4352,7 +4352,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4482,7 +4482,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4612,7 +4612,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4742,7 +4742,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4872,7 +4872,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5002,7 +5002,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5132,7 +5132,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5262,7 +5262,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5392,7 +5392,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5522,7 +5522,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5652,7 +5652,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5782,7 +5782,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5912,7 +5912,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6042,7 +6042,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6172,7 +6172,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6302,7 +6302,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6432,7 +6432,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6562,7 +6562,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6692,7 +6692,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6822,7 +6822,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6952,7 +6952,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7082,7 +7082,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7212,7 +7212,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7342,7 +7342,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7472,7 +7472,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7586,7 +7586,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7732,7 +7732,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7862,7 +7862,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7976,7 +7976,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8122,7 +8122,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8252,7 +8252,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8382,7 +8382,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8512,7 +8512,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8642,7 +8642,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8772,7 +8772,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8902,7 +8902,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9032,7 +9032,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9162,7 +9162,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9292,7 +9292,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9422,7 +9422,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9552,7 +9552,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9682,7 +9682,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9812,7 +9812,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9942,7 +9942,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -10072,7 +10072,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -10202,7 +10202,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -10332,7 +10332,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -10462,7 +10462,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",

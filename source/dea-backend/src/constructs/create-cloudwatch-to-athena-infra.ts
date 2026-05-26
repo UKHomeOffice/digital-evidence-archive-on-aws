@@ -146,7 +146,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       memorySize: 512,
       // transformation lambda has a maximum execution of 5 minutes
       timeout: Duration.minutes(5),
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       tracing: Tracing.ACTIVE,
       handler: 'handler',
       entry: path.join(__dirname, '../../src/handlers/audit-logs-transform-handler.ts'),
