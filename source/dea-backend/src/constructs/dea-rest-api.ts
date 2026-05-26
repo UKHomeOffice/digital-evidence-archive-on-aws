@@ -207,7 +207,7 @@ export class DeaRestApiConstruct extends Construct {
           customDomainNameInfo.certificateArn ?? fail()
         ),
         domainName: customDomainNameInfo.domainName ?? fail(),
-        securityPolicy: SecurityPolicy.TLS_1_2,
+        securityPolicy: SecurityPolicy.TLS13_1_3_2025_09,
       };
     }
 
