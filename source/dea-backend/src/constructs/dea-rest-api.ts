@@ -534,7 +534,7 @@ export class DeaRestApiConstruct extends Construct {
       memorySize: 2048,
       role: role,
       timeout: Duration.seconds(20),
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       tracing: Tracing.PASS_THROUGH,
       // nosemgrep

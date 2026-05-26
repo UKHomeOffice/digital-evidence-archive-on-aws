@@ -49,7 +49,7 @@ export class ObjectChecksumStack extends NestedStack {
       memorySize: 1024,
       tracing: Tracing.ACTIVE,
       timeout: runtimeWithPadding,
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       entry: path.join(__dirname, '../../src/handlers/calculate-incremental-checksum-handler.ts'),
       depsLockFilePath: path.join(__dirname, '../../pnpm-lock.yaml'),

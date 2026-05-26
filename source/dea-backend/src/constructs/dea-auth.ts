@@ -674,7 +674,7 @@ export class DeaAuth extends Construct {
       memorySize: 512,
       tracing: Tracing.ACTIVE,
       timeout: Duration.seconds(60),
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       entry: path.join(__dirname, '../../src/handlers/add-groups-claim-to-token-handler.ts'),
       depsLockFilePath: path.join(__dirname, '../../../pnpm-lock.yaml'),
