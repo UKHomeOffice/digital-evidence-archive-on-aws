@@ -196,7 +196,7 @@ export class DeaEventHandlers extends Construct {
       role,
       timeout: Duration.seconds(timeoutSeconds),
       reservedConcurrentExecutions,
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       // nosemgrep
       entry: path.join(__dirname, pathToSource),
