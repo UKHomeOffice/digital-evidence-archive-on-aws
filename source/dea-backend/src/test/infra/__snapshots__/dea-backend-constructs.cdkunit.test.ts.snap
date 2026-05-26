@@ -11675,12 +11675,14 @@ def sort_filter_rules(json_obj):
       "Properties": Object {
         "Description": "Backend API",
         "DisableExecuteApiEndpoint": false,
+        "EndpointAccessMode": "STRICT",
         "EndpointConfiguration": Object {
           "Types": Array [
             "REGIONAL",
           ],
         },
         "Name": "dea-api",
+        "SecurityPolicy": "SecurityPolicy_TLS13_1_3_2025_09",
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
