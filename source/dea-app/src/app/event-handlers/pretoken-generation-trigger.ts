@@ -9,7 +9,7 @@ import {
   IdentitystoreClient,
   ListGroupMembershipsForMemberCommand,
 } from '@aws-sdk/client-identitystore';
-import { Callback, Context } from 'aws-lambda';
+import { Context } from 'aws-lambda';
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 
 import { logger } from '../../logger';
@@ -59,14 +59,12 @@ export interface PreTokenGenerationEvent {
 
 export type PreTokenGenerationSignature = (
   event: PreTokenGenerationEvent,
-  _context: Context,
-  _callback: Callback
+  _context: Context
 ) => Promise<PreTokenGenerationEvent>;
 
 export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
   event: PreTokenGenerationEvent,
-  _context: Context,
-  _callback: Callback
+  _context: Context
 ) => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
 

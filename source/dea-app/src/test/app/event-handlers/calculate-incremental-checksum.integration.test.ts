@@ -113,15 +113,10 @@ describe('calculate incremental checksum', () => {
       ],
     };
 
-    const response = await calculateIncrementalChecksum(
-      sqsEvent,
-      dummyContext,
-      () => {
-        /* do nothing */
-      },
-      instance(s3ClientMock),
-      modelProvider
-    );
+    const response = await calculateIncrementalChecksum(sqsEvent, dummyContext, {
+      s3Client: instance(s3ClientMock),
+      repositoryProvider: modelProvider,
+    });
 
     expect(response).toEqual('Successfully processed 1 messages.');
 
@@ -146,15 +141,10 @@ describe('calculate incremental checksum', () => {
         },
       ],
     };
-    const response2 = await calculateIncrementalChecksum(
-      sqsEvent2,
-      dummyContext,
-      () => {
-        /* do nothing */
-      },
-      instance(s3ClientMock),
-      modelProvider
-    );
+    const response2 = await calculateIncrementalChecksum(sqsEvent2, dummyContext, {
+      s3Client: instance(s3ClientMock),
+      repositoryProvider: modelProvider,
+    });
 
     expect(response2).toEqual('Successfully processed 1 messages.');
 
@@ -207,15 +197,10 @@ describe('calculate incremental checksum', () => {
     };
     let exception = false;
     try {
-      await calculateIncrementalChecksum(
-        sqsEvent,
-        dummyContext,
-        () => {
-          /* do nothing */
-        },
-        instance(s3ClientMock),
-        modelProvider
-      );
+      await calculateIncrementalChecksum(sqsEvent, dummyContext, {
+        s3Client: instance(s3ClientMock),
+        repositoryProvider: modelProvider,
+      });
     } catch (e) {
       exception = true;
     }
