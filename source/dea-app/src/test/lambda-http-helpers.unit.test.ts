@@ -13,6 +13,16 @@ import {
 } from '../lambda-http-helpers';
 import { getDummyEvent } from './integration-objects';
 
+const validIdToken = 'header.payload.signature';
+const validRefreshToken = 'refresh.token.signature';
+
+const createEventWithCookies = (cookies: string[]) => ({
+  ...getDummyEvent({
+    headers: {},
+  }),
+  cookies,
+});
+
 describe('lambda http helper edge cases', () => {
   describe('getRequiredEnv', () => {
     it('throws if the env is not found and no default is provided', () => {
@@ -63,6 +73,42 @@ describe('lambda http helper edge cases', () => {
   });
 
   describe('getOauthToken', () => {
+    it('reads cookies from multiValueHeaders', () => {
+      const event = getDummyEvent({
+        headers: {},
+        multiValueHeaders: {
+          cookie: [
+            `idToken=${JSON.stringify({
+              id_token: validIdToken,
+              expires_in: 123,
+            })}; refreshToken=${JSON.stringify({ refresh_token: validRefreshToken })}`,
+          ],
+        },
+      });
+
+      expect(getOauthToken(event)).toEqual({
+        id_token: validIdToken,
+        expires_in: 123,
+        refresh_token: validRefreshToken,
+      });
+    });
+
+    it('reads cookies from the API Gateway v2 cookies array', () => {
+      const event = createEventWithCookies([
+        `idToken=${JSON.stringify({
+          id_token: validIdToken,
+          expires_in: 123,
+        })}`,
+        `refreshToken=${JSON.stringify({ refresh_token: validRefreshToken })}`,
+      ]);
+
+      expect(getOauthToken(event)).toEqual({
+        id_token: validIdToken,
+        expires_in: 123,
+        refresh_token: validRefreshToken,
+      });
+    });
+
     it('throws when idtoken is missing', () => {
       const event = getDummyEvent({
         headers: {
