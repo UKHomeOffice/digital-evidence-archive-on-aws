@@ -14,7 +14,6 @@ import { getAllCaseFileS3Objects } from '../persistence/case-file';
 import { deleteJob, getJob } from '../persistence/job';
 import { defaultProvider, ModelRepositoryProvider } from '../persistence/schema/entities';
 import { describeS3BatchJob } from './datasets';
-import { lambdaCallBackFunction } from './s3-batch-delete-case-file-handler';
 
 export interface S3BatchEventBridgeDetail {
   serviceEventDetails: ServiceEventDetails;
@@ -32,14 +31,12 @@ export interface ServiceEventDetails {
 export const s3BatchJobStatusChangeHandler = async (
   event: EventBridgeEvent<string, S3BatchEventBridgeDetail>,
   context: Context,
-  callbackFn: lambdaCallBackFunction,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<void> => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   logger.debug('Context', { Data: JSON.stringify(context, null, 2) });
-  logger.debug('callbackFn', callbackFn);
 
   if (event.detail.serviceEventDetails.status !== 'Complete') {
     logger.info("Job status isn't complete. No actions performed.");

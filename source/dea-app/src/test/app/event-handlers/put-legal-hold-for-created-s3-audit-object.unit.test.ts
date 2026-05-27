@@ -99,9 +99,6 @@ describe('put legal hold for created s3 object', () => {
         Records: [objectCreatedRecord, testRecord],
       },
       dummyContext,
-      () => {
-        /* do nothing */
-      },
       instance(s3MockClient)
     );
 

@@ -13,13 +13,9 @@ import {
 import { defaultProvider } from '../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider, deleteCaseFile } from './datasets';
 
-export interface lambdaCallBackFunction {
-  (arg: string): void;
-}
 export const deleteCaseFileHandler = async (
   event: S3BatchEvent,
   context: Context,
-  callbackFn: lambdaCallBackFunction,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
@@ -28,7 +24,6 @@ export const deleteCaseFileHandler = async (
 ): Promise<S3BatchResult> => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   logger.debug('Context', { Data: JSON.stringify(context, null, 2) });
-  logger.debug('callbackFn', { callbackFn });
   const results: S3BatchResultResult[] = [];
 
   for (const task of event.tasks) {

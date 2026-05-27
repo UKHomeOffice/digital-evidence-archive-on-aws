@@ -5,7 +5,7 @@
 
 import { Readable } from 'stream';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Callback, Context, SQSEvent } from 'aws-lambda';
+import { Context, SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
 import { logger } from '../../logger';
 import { getObjectChecksumJob, upsertObjectChecksumJob } from '../../persistence/object-checksum-job';
@@ -24,7 +24,6 @@ export interface MultipartChecksumBody {
 export type SQSS3ObjectCreatedSignature = (
   event: SQSEvent,
   _context: Context,
-  _callback: Callback,
   s3Client: S3Client,
   repositoryProvider: ModelRepositoryProvider
 ) => Promise<string>;
@@ -32,7 +31,6 @@ export type SQSS3ObjectCreatedSignature = (
 export const calculateIncrementalChecksum: SQSS3ObjectCreatedSignature = async (
   event: SQSEvent,
   _context: Context,
-  _callback: Callback,
   s3Client = new S3Client({}),
   repositoryProvider = defaultProvider
 ) => {

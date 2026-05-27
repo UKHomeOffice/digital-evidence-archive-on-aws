@@ -115,7 +115,6 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       DATASETS_PROVIDER
     );
@@ -152,7 +151,6 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, null),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       DATASETS_PROVIDER
     );
@@ -182,7 +180,6 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, caseId, 'version-id'),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       DATASETS_PROVIDER
     );
@@ -223,7 +220,6 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, 'version-id'),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       datasetsProvider
     );
@@ -255,7 +251,6 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       DATASETS_PROVIDER
     );

@@ -42,7 +42,6 @@ import {
 import { dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 import {
-  CALLBACK_FN,
   getS3BatchDeleteCaseFileEvent,
   getS3BatchResult,
 } from './s3-batch-delete-case-file-handler.integration.test';
@@ -113,9 +112,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(jobId, 'Complete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -133,9 +129,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(jobId, 'Complete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -153,9 +146,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(jobId, 'Complete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -183,9 +173,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(jobId, 'InComplete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -203,9 +190,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(jobId, 'InComplete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -223,9 +207,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent('not a dea job id', 'Complete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -251,9 +232,6 @@ describe('S3 batch job status change handler', () => {
     await s3BatchJobStatusChangeHandler(
       getEventBridgeEvent(badJob.jobId, 'Complete'),
       dummyContext,
-      () => {
-        return 'hello';
-      },
       repositoryProvider
     );
 
@@ -326,7 +304,6 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     const deleteFileResponse = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
       repositoryProvider,
       DATASETS_PROVIDER
     );

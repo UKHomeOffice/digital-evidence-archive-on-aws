@@ -56,9 +56,7 @@ describe('pretoken generation trigger', () => {
         DisplayName: 'group1',
       });
 
-    const result = await addGroupsClaimToToken(token, dummyContext, () => {
-      /* do nothing */
-    });
+    const result = await addGroupsClaimToToken(token, dummyContext);
     expect(result.response.claimsOverrideDetails?.claimsToAddOrOverride?.['custom:SAMLGroups']).toEqual(
       'group1'
     );
@@ -100,9 +98,7 @@ describe('pretoken generation trigger', () => {
         DisplayName: 'group1',
       });
 
-    const result = await addGroupsClaimToToken(token, dummyContext, () => {
-      /* do nothing */
-    });
+    const result = await addGroupsClaimToToken(token, dummyContext);
     expect(result.response.claimsOverrideDetails?.claimsToAddOrOverride?.['custom:SAMLGroups']).toEqual(
       'group1'
     );
@@ -125,11 +121,9 @@ describe('pretoken generation trigger', () => {
       response: {},
     };
 
-    await expect(
-      addGroupsClaimToToken(token, dummyContext, () => {
-        /* do nothing */
-      })
-    ).rejects.toThrow('Identity center id is not set for user.');
+    await expect(addGroupsClaimToToken(token, dummyContext)).rejects.toThrow(
+      'Identity center id is not set for user.'
+    );
   });
 
   it('should except for missing idCenterId when using Active Directory', async () => {
@@ -154,11 +148,9 @@ describe('pretoken generation trigger', () => {
       response: {},
     };
 
-    await expect(
-      addGroupsClaimToToken(token, dummyContext, () => {
-        /* do nothing */
-      })
-    ).rejects.toThrow('External Active Directory ID is not set for user.');
+    await expect(addGroupsClaimToToken(token, dummyContext)).rejects.toThrow(
+      'External Active Directory ID is not set for user.'
+    );
   });
 
   it('should except for missing group membership', async () => {
@@ -183,11 +175,9 @@ describe('pretoken generation trigger', () => {
       GroupMemberships: undefined,
     });
 
-    await expect(
-      addGroupsClaimToToken(token, dummyContext, () => {
-        /* do nothing */
-      })
-    ).rejects.toThrow(`Unable to obtain group membership for user bogusid`);
+    await expect(addGroupsClaimToToken(token, dummyContext)).rejects.toThrow(
+      `Unable to obtain group membership for user bogusid`
+    );
   });
 
   afterEach(() => {

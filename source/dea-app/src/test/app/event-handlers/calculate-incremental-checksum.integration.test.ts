@@ -116,9 +116,6 @@ describe('calculate incremental checksum', () => {
     const response = await calculateIncrementalChecksum(
       sqsEvent,
       dummyContext,
-      () => {
-        /* do nothing */
-      },
       instance(s3ClientMock),
       modelProvider
     );
@@ -149,9 +146,6 @@ describe('calculate incremental checksum', () => {
     const response2 = await calculateIncrementalChecksum(
       sqsEvent2,
       dummyContext,
-      () => {
-        /* do nothing */
-      },
       instance(s3ClientMock),
       modelProvider
     );
@@ -207,15 +201,7 @@ describe('calculate incremental checksum', () => {
     };
     let exception = false;
     try {
-      await calculateIncrementalChecksum(
-        sqsEvent,
-        dummyContext,
-        () => {
-          /* do nothing */
-        },
-        instance(s3ClientMock),
-        modelProvider
-      );
+      await calculateIncrementalChecksum(sqsEvent, dummyContext, instance(s3ClientMock), modelProvider);
     } catch (e) {
       exception = true;
     }
