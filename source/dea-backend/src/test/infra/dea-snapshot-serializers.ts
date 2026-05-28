@@ -32,16 +32,29 @@ export const addSnapshotSerializers = (): void => {
     },
   });
 
+  const stage = deaConfig.stage();
+  const configName = deaConfig.configName()?.replace('.json', '');
+
   expect.addSnapshotSerializer({
-    test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
+    test: (val) =>
+      typeof val === 'string' &&
+      [stage, configName].some((value) => value !== undefined && val.includes(value)),
     print: (val) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const newVal1 = (val as string).replaceAll(deaConfig.stage(), '[STAGE-REMOVED]');
-      const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/g, '[HASH REMOVED]');
+      const originalVal = val as string;
+
+      const newVal1 = stage
+        ? originalVal.replaceAll(stage, '[STAGE-REMOVED]')
+        : originalVal;
+
+      const newVal2 = configName
+        ? newVal1.replaceAll(configName, '[STAGE-REMOVED]')
+        : newVal1;
+
+      const newVal = newVal2.replace(/([A-Fa-f0-9]{8})/g, '[HASH REMOVED]');
       return `"${newVal}"`;
     },
   });
-
   const domain = deaConfig.cognitoDomain();
   if (domain) {
     expect.addSnapshotSerializer({

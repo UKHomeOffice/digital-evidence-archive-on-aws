@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { Context, Callback, S3Event } from 'aws-lambda';
+import { Context, S3Event } from 'aws-lambda';
 import { ValidationError } from '../app/exceptions/validation-exception';
 import { describeDatasyncLocation } from '../app/services/data-sync-service';
 import { createDataVaultFiles } from '../app/services/data-vault-file-service';
@@ -42,7 +42,6 @@ interface FileMetadata {
 export const dataSyncExecutionEvent = async (
   event: S3Event,
   context: Context,
-  _callback: Callback,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,

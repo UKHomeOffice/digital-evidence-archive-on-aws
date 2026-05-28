@@ -140,8 +140,49 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
 };
 
 export const getCookieValue = (event: APIGatewayProxyEvent, cookieName: string): string | null => {
-  const cookie = event.headers['cookie'] ?? event.headers['Cookie'];
-  return isolateCookieValue(cookie, cookieName);
+  const cookieHeaders = getCookieHeaders(event);
+
+  for (const cookieHeader of cookieHeaders) {
+    const cookieValue = isolateCookieValue(cookieHeader, cookieName);
+    if (cookieValue) {
+      return cookieValue;
+    }
+  }
+
+  return null;
+};
+
+const hasCookiesArray = (
+  value: unknown
+): value is { cookies: string[] } => {
+  if (
+    typeof value !== 'object' ||
+    value === null ||
+    !('cookies' in value)
+  ) {
+    return false;
+  }
+
+  return Array.isArray(value.cookies);
+};
+
+const getCookieHeaders = (event: APIGatewayProxyEvent): string[] => {
+  const cookies = new Set<string>();
+
+  const headerCookie = event.headers['cookie'] ?? event.headers['Cookie'];
+  if (headerCookie) {
+    cookies.add(headerCookie);
+  }
+
+  const multiValueCookie = event.multiValueHeaders?.['cookie'] ?? event.multiValueHeaders?.['Cookie'];
+  multiValueCookie?.forEach((cookie) => cookies.add(cookie));
+
+  // API Gateway v2 surfaces cookies as a top-level string array.
+  if (hasCookiesArray(event)) {
+    event.cookies.forEach((cookie) => cookies.add(cookie));
+  }
+
+  return [...cookies];
 };
 
 export const isolateCookieValue = (cookie: string | undefined, cookieName: string) => {

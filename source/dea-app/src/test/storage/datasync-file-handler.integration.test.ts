@@ -84,14 +84,7 @@ describe('datasync event handler', () => {
     const reportKey = `Detailed-Reports/${deaTask.taskId}/${deaExecution.executionId}/${deaExecution.executionId}.files-verified-v1-00001-00000000000000000.json`;
 
     // Run datasync execution event
-    await dataSyncExecutionEvent(
-      getEventBridgeEvent(region, reportKey),
-      dummyContext,
-      () => {
-        return;
-      },
-      repositoryProvider
-    );
+    await dataSyncExecutionEvent(getEventBridgeEvent(region, reportKey), dummyContext, repositoryProvider);
 
     // Check data vault for updated files
     const retreivedDataVault = await getDataVault(deaDataVault.ulid, repositoryProvider);
@@ -128,16 +121,9 @@ describe('datasync event handler', () => {
     const reportKey = `Detailed-Reports/task-00000000000000000/exec-00000000000000000/exec-00000000000000000.files-verified-v1-00001-00000000000000000.json`;
     const event = getEventBridgeEvent(region, reportKey);
 
-    await expect(
-      dataSyncExecutionEvent(
-        event,
-        dummyContext,
-        () => {
-          return;
-        },
-        repositoryProvider
-      )
-    ).rejects.toThrow('Could not find DataVaultExecution with id exec-00000000000000000');
+    await expect(dataSyncExecutionEvent(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Could not find DataVaultExecution with id exec-00000000000000000'
+    );
   });
 
   it('should create folders based on location uri', async () => {

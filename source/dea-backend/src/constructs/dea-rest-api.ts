@@ -11,6 +11,7 @@ import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
+  CfnRestApi,
   DomainNameOptions,
   EndpointType,
   LambdaIntegration,
@@ -207,7 +208,7 @@ export class DeaRestApiConstruct extends Construct {
           customDomainNameInfo.certificateArn ?? fail()
         ),
         domainName: customDomainNameInfo.domainName ?? fail(),
-        securityPolicy: SecurityPolicy.TLS_1_2,
+        securityPolicy: SecurityPolicy.TLS13_1_3_2025_09,
       };
     }
 
@@ -304,6 +305,19 @@ export class DeaRestApiConstruct extends Construct {
         target: RecordTarget.fromAlias(new ApiGateway(this.deaRestApi)),
       });
     }
+
+    // TODO: replace this once RestApiProps exposes these fields directly.
+    // Workaround for https://github.com/aws/aws-cdk/issues/36663
+    // These are API-level settings on AWS::ApiGateway::RestApi
+    // domainNameOptions.securityPolicy only applies to custom domains
+    const cfnRestApi = this.deaRestApi.node.defaultChild;
+
+    if (!(cfnRestApi instanceof CfnRestApi)) {
+      throw new Error('Expected defaultChild to be a CfnRestApi');
+    }
+
+    cfnRestApi.securityPolicy = 'SecurityPolicy_TLS13_1_3_2025_09';
+    cfnRestApi.endpointAccessMode = 'STRICT';
 
     this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
 
@@ -520,7 +534,7 @@ export class DeaRestApiConstruct extends Construct {
       memorySize: 2048,
       role: role,
       timeout: Duration.seconds(20),
-      runtime: Runtime.NODEJS_22_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'handler',
       tracing: Tracing.PASS_THROUGH,
       // nosemgrep

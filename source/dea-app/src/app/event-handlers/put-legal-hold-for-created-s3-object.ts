@@ -9,7 +9,7 @@ import {
   PutObjectLegalHoldCommandOutput,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Callback, Context, SQSMessageAttributes, SQSRecordAttributes } from 'aws-lambda';
+import { Context, SQSMessageAttributes, SQSRecordAttributes } from 'aws-lambda';
 import { logger } from '../../logger';
 
 export interface SQSS3ObjectCreatedDetail {
@@ -68,19 +68,22 @@ export interface SQSS3ObjectCreatedEvent {
   Records: SQSS3ObjectCreatedRecord[];
 }
 
+export interface PutLegalHoldForCreatedS3ObjectDeps {
+  s3Client?: S3Client;
+}
+
 export type SQSS3ObjectCreatedSignature = (
   event: SQSS3ObjectCreatedEvent,
   _context: Context,
-  _callback: Callback,
-  s3Client: S3Client
+  deps?: PutLegalHoldForCreatedS3ObjectDeps
 ) => Promise<string>;
 
 export const putLegalHoldForCreatedS3Object: SQSS3ObjectCreatedSignature = async (
   event: SQSS3ObjectCreatedEvent,
   _context: Context,
-  _callback: Callback,
-  s3Client = new S3Client({})
+  deps = {}
 ) => {
+  const s3Client = deps.s3Client ?? new S3Client({});
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   const legalHoldPromises: Promise<PutObjectLegalHoldCommandOutput>[] = [];
   event.Records.forEach((record) => {

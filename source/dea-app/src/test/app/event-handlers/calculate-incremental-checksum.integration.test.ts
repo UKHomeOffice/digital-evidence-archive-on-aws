@@ -6,7 +6,7 @@
 import { fail } from 'assert';
 import { Readable } from 'stream';
 import { S3Client } from '@aws-sdk/client-s3';
-import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+import { sdkStreamMixin } from '@smithy/util-stream';
 import { SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
 import { anything, instance, mock, when } from 'ts-mockito';
@@ -68,18 +68,9 @@ describe('calculate incremental checksum', () => {
 
   it('calculates a checksum across multiple parts', async () => {
     const s3ClientMock = mock(S3Client);
-    const body1 = sdkStreamMixin(new Readable());
-    body1._read = () => {
-      /* do nothing */
-    };
-    body1.push('hello');
-    body1.push(null);
-    const body2 = sdkStreamMixin(new Readable());
-    body2._read = () => {
-      /* do nothing */
-    };
-    body2.push('world');
-    body2.push(null);
+
+    const body1 = sdkStreamMixin(Readable.from(['hello']));
+    const body2 = sdkStreamMixin(Readable.from(['world']));
     when(s3ClientMock.send(anything()))
       .thenResolve({ Body: body1, $metadata: {} })
       .thenResolve({ Body: body2, $metadata: {} });
@@ -122,15 +113,10 @@ describe('calculate incremental checksum', () => {
       ],
     };
 
-    const response = await calculateIncrementalChecksum(
-      sqsEvent,
-      dummyContext,
-      () => {
-        /* do nothing */
-      },
-      instance(s3ClientMock),
-      modelProvider
-    );
+    const response = await calculateIncrementalChecksum(sqsEvent, dummyContext, {
+      s3Client: instance(s3ClientMock),
+      repositoryProvider: modelProvider,
+    });
 
     expect(response).toEqual('Successfully processed 1 messages.');
 
@@ -155,15 +141,10 @@ describe('calculate incremental checksum', () => {
         },
       ],
     };
-    const response2 = await calculateIncrementalChecksum(
-      sqsEvent2,
-      dummyContext,
-      () => {
-        /* do nothing */
-      },
-      instance(s3ClientMock),
-      modelProvider
-    );
+    const response2 = await calculateIncrementalChecksum(sqsEvent2, dummyContext, {
+      s3Client: instance(s3ClientMock),
+      repositoryProvider: modelProvider,
+    });
 
     expect(response2).toEqual('Successfully processed 1 messages.');
 
@@ -216,15 +197,10 @@ describe('calculate incremental checksum', () => {
     };
     let exception = false;
     try {
-      await calculateIncrementalChecksum(
-        sqsEvent,
-        dummyContext,
-        () => {
-          /* do nothing */
-        },
-        instance(s3ClientMock),
-        modelProvider
-      );
+      await calculateIncrementalChecksum(sqsEvent, dummyContext, {
+        s3Client: instance(s3ClientMock),
+        repositoryProvider: modelProvider,
+      });
     } catch (e) {
       exception = true;
     }

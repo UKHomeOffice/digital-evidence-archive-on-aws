@@ -115,9 +115,10 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      DATASETS_PROVIDER
+      {
+        repositoryProvider,
+        datasetsProvider: DATASETS_PROVIDER,
+      }
     );
     const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
     expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
@@ -152,9 +153,10 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, null),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      DATASETS_PROVIDER
+      {
+        repositoryProvider,
+        datasetsProvider: DATASETS_PROVIDER,
+      }
     );
     const notDeletedCaseFile = await callGetCaseFileDetails(
       caseOwner.ulid,
@@ -182,9 +184,10 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, caseId, 'version-id'),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      DATASETS_PROVIDER
+      {
+        repositoryProvider,
+        datasetsProvider: DATASETS_PROVIDER,
+      }
     );
 
     const expectedResult = `Could not find case file: fileId: ${caseId}, caseId: ${caseId}`;
@@ -223,9 +226,10 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, 'version-id'),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      datasetsProvider
+      {
+        repositoryProvider,
+        datasetsProvider,
+      }
     );
 
     const expectedResult = 'This installation of DEA does not allow deletion';
@@ -255,9 +259,10 @@ describe('S3 batch delete case-file lambda', () => {
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      DATASETS_PROVIDER
+      {
+        repositoryProvider,
+        datasetsProvider: DATASETS_PROVIDER,
+      }
     );
     const notDeletedCaseFile = await callGetCaseFileDetails(
       caseOwner.ulid,

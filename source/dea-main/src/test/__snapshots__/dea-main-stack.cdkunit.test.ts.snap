@@ -414,7 +414,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
@@ -438,7 +438,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -637,7 +637,6 @@ Object {
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": Object {
       "DependsOn": Array [
-        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
       ],
       "Properties": Object {
@@ -761,7 +760,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "python3.11",
+        "Runtime": "python3.13",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -796,27 +795,6 @@ def sort_filter_rules(json_obj):
         ],
       },
       "Type": "AWS::IAM::Role",
-    },
-    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "s3:PutBucketNotification",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-        "Roles": Array [
-          Object {
-            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": Object {
       "DependsOn": Array [
@@ -867,7 +845,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1051,7 +1029,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -1202,7 +1180,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -1369,7 +1347,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -1552,7 +1530,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -1719,7 +1697,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -1886,7 +1864,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2053,7 +2031,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2220,7 +2198,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2387,7 +2365,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2554,7 +2532,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2721,7 +2699,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -2888,7 +2866,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3055,7 +3033,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3222,7 +3200,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3389,7 +3367,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3556,7 +3534,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3723,7 +3701,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -3890,7 +3868,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4057,7 +4035,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4224,7 +4202,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4391,7 +4369,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4558,7 +4536,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4725,7 +4703,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -4892,7 +4870,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5059,7 +5037,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5226,7 +5204,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5393,7 +5371,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5560,7 +5538,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5727,7 +5705,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -5894,7 +5872,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6061,7 +6039,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6212,7 +6190,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6395,7 +6373,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6562,7 +6540,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6729,7 +6707,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -6896,7 +6874,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7063,7 +7041,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7230,7 +7208,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7397,7 +7375,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7564,7 +7542,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7731,7 +7709,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -7898,7 +7876,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8065,7 +8043,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8232,7 +8210,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8399,7 +8377,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8566,7 +8544,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8733,7 +8711,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -8900,7 +8878,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9067,7 +9045,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9234,7 +9212,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -9401,7 +9379,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 20,
         "TracingConfig": Object {
           "Mode": "PassThrough",
@@ -12391,6 +12369,7 @@ def sort_filter_rules(json_obj):
     },
     "DeaAuditauditBucketNotifications37F46D9A": Object {
       "DependsOn": Array [
+        "DeaAuditauditBucketNotificationsHandlerPolicyA0BDB425",
         "DeaAuditauditBucketPolicy9640F504",
         "s3objectlockqueuePolicy306ABF3E",
         "s3objectlockqueue113069A2",
@@ -12434,6 +12413,32 @@ def sort_filter_rules(json_obj):
         "SkipDestinationValidation": false,
       },
       "Type": "Custom::S3BucketNotifications",
+    },
+    "DeaAuditauditBucketNotificationsHandlerPolicyA0BDB425": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditBucketD75893B5",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuditauditBucketNotificationsHandlerPolicyA0BDB425",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaAuditauditBucketPolicy9640F504": Object {
       "Properties": Object {
@@ -12652,7 +12657,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 300,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -14923,7 +14928,7 @@ def sort_filter_rules(json_obj):
               Object {
                 "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
-              "\\"}}",
+              "\\"},\\"logApiResponseData\\":false}",
             ],
           ],
         },
@@ -14950,7 +14955,7 @@ def sort_filter_rules(json_obj):
               Object {
                 "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
-              "\\"}}",
+              "\\"},\\"logApiResponseData\\":false}",
             ],
           ],
         },
@@ -20934,6 +20939,7 @@ def sort_filter_rules(json_obj):
     },
     "DeaBackendStackS3DatasetsBucketNotifications6B1A671F": Object {
       "DependsOn": Array [
+        "DeaBackendStackS3DatasetsBucketNotificationsHandlerPolicyA195CC85",
         "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
         "s3objectlockqueuePolicy306ABF3E",
         "s3objectlockqueue113069A2",
@@ -20967,6 +20973,32 @@ def sort_filter_rules(json_obj):
         "SkipDestinationValidation": false,
       },
       "Type": "Custom::S3BucketNotifications",
+    },
+    "DeaBackendStackS3DatasetsBucketNotificationsHandlerPolicyA195CC85": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackS3DatasetsBucket408FF954",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaBackendStackS3DatasetsBucketNotificationsHandlerPolicyA195CC85",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaBackendStackS3DatasetsBucketPolicy328F21B8": Object {
       "Metadata": Object {
@@ -21757,6 +21789,7 @@ def sort_filter_rules(json_obj):
     "DeaBackendStackdeaDataSyncReportsBucketNotificationsD68F9E59": Object {
       "DependsOn": Array [
         "DeaBackendStackdeaDataSyncReportsBucketAllowBucketNotificationsToDeaMainStackDeaEventHandlersdatasyncexecutionevent022440E1FAFCEC00",
+        "DeaBackendStackdeaDataSyncReportsBucketNotificationsHandlerPolicyBA818E1F",
         "DeaBackendStackdeaDataSyncReportsBucketPolicy5B1E6413",
       ],
       "Properties": Object {
@@ -21798,6 +21831,32 @@ def sort_filter_rules(json_obj):
         "SkipDestinationValidation": false,
       },
       "Type": "Custom::S3BucketNotifications",
+    },
+    "DeaBackendStackdeaDataSyncReportsBucketNotificationsHandlerPolicyBA818E1F": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackdeaDataSyncReportsBucketC2315882",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaBackendStackdeaDataSyncReportsBucketNotificationsHandlerPolicyBA818E1F",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaBackendStackdeaDataSyncReportsBucketPolicy5B1E6413": Object {
       "Properties": Object {
@@ -22000,7 +22059,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 900,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -22252,7 +22311,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 60,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -22645,7 +22704,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 60,
         "TracingConfig": Object {
           "Mode": "Active",
@@ -22761,7 +22820,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -23518,7 +23577,7 @@ def sort_filter_rules(json_obj):
             "Arn",
           ],
         },
-        "Runtime": "nodejs22.x",
+        "Runtime": "nodejs24.x",
         "Timeout": 60,
         "TracingConfig": Object {
           "Mode": "Active",

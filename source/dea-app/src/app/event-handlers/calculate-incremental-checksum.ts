@@ -5,7 +5,7 @@
 
 import { Readable } from 'stream';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Callback, Context, SQSEvent } from 'aws-lambda';
+import { Context, SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
 import { logger } from '../../logger';
 import { getObjectChecksumJob, upsertObjectChecksumJob } from '../../persistence/object-checksum-job';
@@ -21,21 +21,24 @@ export interface MultipartChecksumBody {
   totalParts: number;
 }
 
+export interface CalculateIncrementalChecksumDeps {
+  s3Client?: S3Client;
+  repositoryProvider?: ModelRepositoryProvider;
+}
+
 export type SQSS3ObjectCreatedSignature = (
   event: SQSEvent,
   _context: Context,
-  _callback: Callback,
-  s3Client: S3Client,
-  repositoryProvider: ModelRepositoryProvider
+  deps?: CalculateIncrementalChecksumDeps
 ) => Promise<string>;
 
 export const calculateIncrementalChecksum: SQSS3ObjectCreatedSignature = async (
   event: SQSEvent,
   _context: Context,
-  _callback: Callback,
-  s3Client = new S3Client({}),
-  repositoryProvider = defaultProvider
+  deps = {}
 ) => {
+  const s3Client = deps.s3Client ?? new S3Client({});
+  const repositoryProvider = deps.repositoryProvider ?? defaultProvider;
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   logger.debug(`processing ${event.Records.length} records`);
   for (const record of event.Records) {

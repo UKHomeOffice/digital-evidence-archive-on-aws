@@ -42,7 +42,6 @@ import {
 import { dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 import {
-  CALLBACK_FN,
   getS3BatchDeleteCaseFileEvent,
   getS3BatchResult,
 } from './s3-batch-delete-case-file-handler.integration.test';
@@ -110,14 +109,9 @@ describe('S3 batch job status change handler', () => {
     const { jobId, caseId } = await setupTestEnv('happy path');
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(jobId, 'Complete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(jobId, 'Complete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeFalsy();
@@ -130,14 +124,9 @@ describe('S3 batch job status change handler', () => {
     const { jobId, caseId } = await setupTestEnv('files not deleted', false);
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(jobId, 'Complete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(jobId, 'Complete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeFalsy();
@@ -150,14 +139,9 @@ describe('S3 batch job status change handler', () => {
     const { jobId, caseId } = await setupTestEnv('job failure', true, 1);
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(jobId, 'Complete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(jobId, 'Complete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeFalsy();
@@ -180,14 +164,9 @@ describe('S3 batch job status change handler', () => {
     );
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(jobId, 'InComplete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(jobId, 'InComplete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeTruthy();
@@ -200,14 +179,9 @@ describe('S3 batch job status change handler', () => {
     const { jobId, caseId } = await setupTestEnv('not complete');
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(jobId, 'InComplete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(jobId, 'InComplete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeTruthy();
@@ -220,14 +194,9 @@ describe('S3 batch job status change handler', () => {
     const { jobId, caseId } = await setupTestEnv('not a dea job');
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent('not a dea job id', 'Complete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent('not a dea job id', 'Complete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeTruthy();
@@ -248,14 +217,9 @@ describe('S3 batch job status change handler', () => {
     );
 
     // call lambda
-    await s3BatchJobStatusChangeHandler(
-      getEventBridgeEvent(badJob.jobId, 'Complete'),
-      dummyContext,
-      () => {
-        return 'hello';
-      },
-      repositoryProvider
-    );
+    await s3BatchJobStatusChangeHandler(getEventBridgeEvent(badJob.jobId, 'Complete'), dummyContext, {
+      repositoryProvider,
+    });
 
     const job = await getJob(jobId, repositoryProvider);
     expect(job).toBeTruthy();
@@ -326,9 +290,10 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     const deleteFileResponse = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
       dummyContext,
-      CALLBACK_FN,
-      repositoryProvider,
-      DATASETS_PROVIDER
+      {
+        repositoryProvider,
+        datasetsProvider: DATASETS_PROVIDER,
+      }
     );
     const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;

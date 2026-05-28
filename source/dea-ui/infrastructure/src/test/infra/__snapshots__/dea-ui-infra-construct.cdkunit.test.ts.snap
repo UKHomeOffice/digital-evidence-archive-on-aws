@@ -155,6 +155,9 @@ Object {
         "testApiuiuploadfilesGET6DFAC286",
         "testApiuiuploadfilesD762C518",
       ],
+      "Metadata": Object {
+        "aws:cdk:do-not-refactor": true,
+      },
       "Properties": Object {
         "Description": "Backend API",
         "RestApiId": Object {
